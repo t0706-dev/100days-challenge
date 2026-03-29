@@ -397,6 +397,66 @@
       100% { transform: scale(1); opacity: 1; }
     }
 
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .modal-box {
+      background: linear-gradient(135deg, #fff 0%, #f0f0f0 100%);
+      border-radius: 20px;
+      padding: 24px 28px;
+      text-align: center;
+      max-width: 280px;
+      width: 90%;
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+    }
+    .modal-emoji { font-size: 2.5rem; margin-bottom: 8px; }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #333;
+      margin-bottom: 6px;
+    }
+    .modal-msg {
+      font-size: 0.85rem;
+      color: #666;
+      font-weight: 700;
+      margin-bottom: 18px;
+    }
+    .modal-btns { display: flex; gap: 10px; }
+    .modal-btn {
+      flex: 1;
+      padding: 11px;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-weight: 800;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      cursor: pointer;
+    }
+    .modal-btn.primary {
+      background: linear-gradient(135deg, #FF6B6B, #FF8E53);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(255,107,107,0.4);
+    }
+    .modal-btn.secondary {
+      background: #e0e0e0;
+      color: #555;
+    }
+
     /* Particles */
     .particle-container {
       position: fixed;
@@ -422,6 +482,19 @@
 <body>
 
   <div class="particle-container" id="particles"></div>
+
+  <!-- Custom Modal -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal-box">
+      <div class="modal-emoji">💸</div>
+      <div class="modal-title">コイン切れ！</div>
+      <div class="modal-msg">所持コインが0になりました。<br>1000コインでリセットしますか？</div>
+      <div class="modal-btns">
+        <button class="modal-btn secondary" onclick="closeModal(false)">やめる</button>
+        <button class="modal-btn primary" onclick="closeModal(true)">リセット！</button>
+      </div>
+    </div>
+  </div>
 
   <h1>🪙 COIN TOSS</h1>
   <p class="subtitle">タップしてコインを投げよう！</p>
@@ -649,7 +722,7 @@
           document.querySelectorAll('.bet-preset-btn').forEach(b => b.classList.remove('active'));
           if (wallet <= 0) {
             wallet = 0; updateWallet();
-            setTimeout(() => { if(confirm('コインが0に！リセットしますか？')) { wallet=1000; updateWallet(); } }, 600);
+            setTimeout(() => showModal(), 600);
           }
         } else {
           playResultSound(isHeads);
@@ -716,6 +789,15 @@
         container.appendChild(p);
         setTimeout(() => p.remove(), 900);
       }
+    }
+
+    function showModal() {
+      document.getElementById('modalOverlay').classList.add('show');
+    }
+
+    function closeModal(reset) {
+      document.getElementById('modalOverlay').classList.remove('show');
+      if (reset) { wallet = 1000; updateWallet(); }
     }
 
     document.getElementById('coinScene').addEventListener('click', toss);
