@@ -8,16 +8,19 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+    html {
+      height: -webkit-fill-available;
+    }
     body {
       font-family: 'M PLUS Rounded 1c', sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
-      height: 100dvh;
-      height: 100vh;
+      height: 100svh;
+      height: -webkit-fill-available;
       overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: env(safe-area-inset-top, 8px) 12px env(safe-area-inset-bottom, 8px);
+      padding: env(safe-area-inset-top, 8px) 12px env(safe-area-inset-bottom, 12px);
     }
 
     .container {
