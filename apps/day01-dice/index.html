@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🎲 サイコロBET</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #f093fb 100%);
+      min-height: 100vh;
+      min-height: -webkit-fill-available;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 16px 48px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* ── Header ── */
+    .header {
+      text-align: center;
+      padding: 20px 0 4px;
+    }
+    .title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: white;
+      text-shadow: 0 3px 10px rgba(0,0,0,0.2);
+      letter-spacing: 2px;
+    }
+    .subtitle {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.75);
+      margin-top: 4px;
+      font-weight: 700;
+    }
+
+    /* ── Points ── */
+    .points-card {
+      background: white;
+      border-radius: 20px;
+      padding: 14px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    .points-label {
+      font-size: 0.88rem;
+      color: #999;
+      font-weight: 700;
+    }
+    .points-value {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #6C63FF;
+      transition: transform 0.2s;
+    }
+    .points-value.bump { animation: bump 0.3s ease-out; }
+    @keyframes bump {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.15); }
+    }
+    .points-value span { font-size: 1rem; color: #bbb; }
+
+    /* ── Dice area ── */
+    .dice-area {
+      background: white;
+      border-radius: 24px;
+      padding: 28px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+      min-height: 196px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dice-area.shake { animation: shake 0.4s ease-out; }
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-10px); }
+      40% { transform: translateX(10px); }
+      60% { transform: translateX(-7px); }
+      80% { transform: translateX(7px); }
+    }
+
+    .dice {
+      width: 144px;
+      height: 144px;
+      background: white;
+      border-radius: 26px;
+      box-shadow: 0 6px 28px rgba(108,99,255,0.28), inset 0 0 0 3px #6C63FF;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      grid-template-rows: repeat(3, 1fr);
+      padding: 18px;
+      gap: 6px;
+    }
+    .dice.rolling { animation: diceRoll 0.9s ease-out; }
+    @keyframes diceRoll {
+      0%   { transform: rotate(0deg)   scale(1);    }
+      15%  { transform: rotate(-22deg) scale(1.12); }
+      30%  { transform: rotate(17deg)  scale(0.94); }
+      45%  { transform: rotate(-12deg) scale(1.06); }
+      60%  { transform: rotate(8deg)   scale(1);    }
+      75%  { transform: rotate(-5deg)  scale(1.03); }
+      90%  { transform: rotate(3deg)   scale(0.99); }
+      100% { transform: rotate(0deg)   scale(1);    }
+    }
+    .dice.win-bounce { animation: winBounce 0.55s ease-out; }
+    @keyframes winBounce {
+      0%   { transform: scale(1); }
+      30%  { transform: scale(1.22); }
+      60%  { transform: scale(0.94); }
+      80%  { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+
+    .pip-cell {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .pip {
+      width: 88%;
+      height: 88%;
+      border-radius: 50%;
+      background: #6C63FF;
+      max-width: 26px;
+      max-height: 26px;
+      transition: opacity 0.08s;
+    }
+    .pip-cell.empty .pip { visibility: hidden; }
+
+    /* ── Card ── */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 18px 20px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+    .card-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #aaa;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+    }
+
+    /* ── Bet input ── */
+    .bet-input {
+      width: 100%;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 1.6rem;
+      font-weight: 900;
+      color: #333;
+      border: 3px solid #e8e8e8;
+      border-radius: 14px;
+      padding: 10px 16px;
+      outline: none;
+      text-align: center;
+      transition: border-color 0.2s;
+      margin-bottom: 10px;
+    }
+    .bet-input:focus { border-color: #6C63FF; }
+
+    .bet-presets {
+      display: flex;
+      gap: 6px;
+    }
+    .preset-btn {
+      flex: 1;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 7px 4px;
+      border: none;
+      border-radius: 10px;
+      background: #f0eeff;
+      color: #6C63FF;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .preset-btn:active, .preset-btn:hover {
+      background: #6C63FF;
+      color: white;
+      transform: scale(1.06);
+    }
+
+    /* ── Bet type ── */
+    .bet-types {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .bet-type-btn {
+      flex: 1;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 14px 8px;
+      border: 3px solid transparent;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      line-height: 1.4;
+    }
+    .bet-type-hint { font-size: 0.68rem; opacity: 0.85; }
+
+    .bet-type-btn.big {
+      background: #fff0f3; color: #FF6584; border-color: #ffd6df;
+    }
+    .bet-type-btn.big.selected {
+      background: #FF6584; color: white; border-color: #FF6584;
+      transform: scale(1.04);
+      box-shadow: 0 4px 14px rgba(255,101,132,0.4);
+    }
+    .bet-type-btn.small {
+      background: #f0faf9; color: #4ECDC4; border-color: #c4e9e6;
+    }
+    .bet-type-btn.small.selected {
+      background: #4ECDC4; color: white; border-color: #4ECDC4;
+      transform: scale(1.04);
+      box-shadow: 0 4px 14px rgba(78,205,196,0.4);
+    }
+
+    .or-divider {
+      text-align: center;
+      font-size: 0.78rem;
+      color: #bbb;
+      font-weight: 700;
+      margin: 6px 0 10px;
+    }
+
+    .number-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+    .number-btn {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 12px 4px;
+      border: 3px solid #e8e8e8;
+      border-radius: 12px;
+      background: #fafafa;
+      color: #555;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .number-btn.selected {
+      background: #FFD93D;
+      color: #333;
+      border-color: #FFD93D;
+      transform: scale(1.1);
+      box-shadow: 0 4px 12px rgba(255,217,61,0.5);
+    }
+    .number-btn:active { transform: scale(0.93); }
+
+    /* ── Roll button ── */
+    .roll-btn {
+      width: 100%;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 900;
+      padding: 18px;
+      border: none;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #6C63FF 0%, #f093fb 100%);
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 6px 20px rgba(108,99,255,0.4);
+      letter-spacing: 2px;
+    }
+    .roll-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(108,99,255,0.5); }
+    .roll-btn:active { transform: translateY(1px) scale(0.98); }
+    .roll-btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── Result ── */
+    .result-message {
+      text-align: center;
+      padding: 14px 16px;
+      border-radius: 16px;
+      font-size: 1.15rem;
+      font-weight: 900;
+      display: none;
+      animation: fadeInUp 0.3s ease-out;
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .result-message.win  { display: block; background: #e6f9ee; color: #27ae60; }
+    .result-message.lose { display: block; background: #fde8e8; color: #e74c3c; }
+    .result-message.warn { display: block; background: #fff8e1; color: #e67e22; }
+
+    /* ── Payout info ── */
+    .payout-info {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding-bottom: 4px;
+    }
+    .payout-badge {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.85);
+      background: rgba(255,255,255,0.2);
+      border-radius: 8px;
+      padding: 4px 10px;
+    }
+
+    /* ── Particles ── */
+    .particle {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: particleFly var(--dur) ease-out forwards;
+      z-index: 999;
+    }
+    @keyframes particleFly {
+      0%   { opacity: 1; transform: translate(0, 0) scale(1); }
+      100% { opacity: 0; transform: translate(var(--tx), var(--ty)) scale(0); }
+    }
+
+    /* ── Game Over ── */
+    .game-over {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.65);
+      justify-content: center;
+      align-items: center;
+      z-index: 500;
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .game-over.show { display: flex; }
+    .game-over-card {
+      background: white;
+      border-radius: 28px;
+      padding: 40px 32px;
+      text-align: center;
+      max-width: 320px;
+      width: 90%;
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.4); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    .game-over-emoji  { font-size: 4rem; margin-bottom: 10px; }
+    .game-over-title  { font-size: 1.8rem; font-weight: 900; color: #FF6584; margin-bottom: 8px; }
+    .game-over-text   { font-size: 0.95rem; color: #999; margin-bottom: 24px; line-height: 1.6; }
+    .restart-btn {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      padding: 14px 32px;
+      border: none;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #6C63FF, #f093fb);
+      color: white;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(108,99,255,0.4);
+      transition: transform 0.2s;
+    }
+    .restart-btn:active, .restart-btn:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <div class="header">
+      <div class="title">🎲 サイコロBET</div>
+    </div>
+
+    <div class="points-card">
+      <div class="points-label">💰 所持ポイント</div>
+      <div class="points-value" id="pointsDisplay">1000 <span>pt</span></div>
+    </div>
+
+    <div class="dice-area" id="diceArea">
+      <div class="dice" id="dice"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🪙 ベット額</div>
+      <input type="number" class="bet-input" id="betInput" value="100" min="1" inputmode="numeric">
+      <div class="bet-presets">
+        <button class="preset-btn" onclick="setBet(50)">50</button>
+        <button class="preset-btn" onclick="setBet(100)">100</button>
+        <button class="preset-btn" onclick="setBet(200)">200</button>
+        <button class="preset-btn" onclick="setBet(500)">500</button>
+        <button class="preset-btn" onclick="setBetMax()">MAX</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">🎯 賭け方を選ぶ</div>
+      <div class="bet-types">
+        <button class="bet-type-btn big" id="betBig" onclick="selectBetType('big')">
+          大 🔥<br><span class="bet-type-hint">4〜6 → ×2倍</span>
+        </button>
+        <button class="bet-type-btn small" id="betSmall" onclick="selectBetType('small')">
+          小 🌊<br><span class="bet-type-hint">1〜3 → ×2倍</span>
+        </button>
+      </div>
+      <div class="or-divider">または ズバリ一点賭け → ×6倍</div>
+      <div class="number-grid">
+        <button class="number-btn" id="numBtn1" onclick="selectBetType('num', 1)">1</button>
+        <button class="number-btn" id="numBtn2" onclick="selectBetType('num', 2)">2</button>
+        <button class="number-btn" id="numBtn3" onclick="selectBetType('num', 3)">3</button>
+        <button class="number-btn" id="numBtn4" onclick="selectBetType('num', 4)">4</button>
+        <button class="number-btn" id="numBtn5" onclick="selectBetType('num', 5)">5</button>
+        <button class="number-btn" id="numBtn6" onclick="selectBetType('num', 6)">6</button>
+      </div>
+    </div>
+
+    <button class="roll-btn" id="rollBtn" onclick="rollDice()">🎲 サイコロを振る！</button>
+
+    <div class="result-message" id="resultMessage"></div>
+
+    <div class="payout-info">
+      <span class="payout-badge">大 / 小 → ×2</span>
+      <span class="payout-badge">一点賭け → ×6</span>
+    </div>
+
+  </div>
+
+  <div class="game-over" id="gameOver">
+    <div class="game-over-card">
+      <div class="game-over-emoji">😭</div>
+      <div class="game-over-title">GAME OVER</div>
+      <div class="game-over-text">ポイントが0になりました！<br>もう一度チャレンジしますか？</div>
+      <button class="restart-btn" onclick="restartGame()">🔄 もう一度プレイ</button>
+    </div>
+  </div>
+
+  <script>
+    /* ── State ── */
+    let points   = 1000;
+    let betType  = null;   // 'big' | 'small' | 1-6
+    let isRolling = false;
+
+    /* ── Pip patterns (3×3) ── */
+    const PATTERNS = {
+      1: [[0,0,0],[0,1,0],[0,0,0]],
+      2: [[0,0,1],[0,0,0],[1,0,0]],
+      3: [[0,0,1],[0,1,0],[1,0,0]],
+      4: [[1,0,1],[0,0,0],[1,0,1]],
+      5: [[1,0,1],[0,1,0],[1,0,1]],
+      6: [[1,0,1],[1,0,1],[1,0,1]],
+    };
+
+    /* ── Init dice DOM ── */
+    function initDice() {
+      const dice = document.getElementById('dice');
+      dice.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const cell = document.createElement('div');
+        cell.className = 'pip-cell empty';
+        const pip  = document.createElement('div');
+        pip.className = 'pip';
+        cell.appendChild(pip);
+        dice.appendChild(cell);
+      }
+    }
+
+    function showDiceFace(n) {
+      const cells   = document.querySelectorAll('#dice .pip-cell');
+      const pattern = PATTERNS[n];
+      let idx = 0;
+      for (let r = 0; r < 3; r++) {
+        for (let c = 0; c < 3; c++) {
+          cells[idx].classList.toggle('empty', !pattern[r][c]);
+          idx++;
+        }
+      }
+    }
+
+    /* ── Bet helpers ── */
+    function setBet(amount) {
+      document.getElementById('betInput').value = Math.min(amount, points);
+    }
+    function setBetMax() {
+      document.getElementById('betInput').value = points;
+    }
+
+    function selectBetType(type, num = null) {
+      document.getElementById('betBig').classList.remove('selected');
+      document.getElementById('betSmall').classList.remove('selected');
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById('numBtn' + i).classList.remove('selected');
+      }
+      if (type === 'big') {
+        betType = 'big';
+        document.getElementById('betBig').classList.add('selected');
+      } else if (type === 'small') {
+        betType = 'small';
+        document.getElementById('betSmall').classList.add('selected');
+      } else {
+        betType = num;
+        document.getElementById('numBtn' + num).classList.add('selected');
+      }
+    }
+
+    /* ── Roll ── */
+    function rollDice() {
+      if (isRolling) return;
+
+      const bet = parseInt(document.getElementById('betInput').value, 10);
+
+      if (!betType) {
+        showResult('賭け方を選んでください！', 'warn');
+        return;
+      }
+      if (!bet || bet <= 0 || isNaN(bet)) {
+        showResult('ベット額を入力してください！', 'warn');
+        return;
+      }
+      if (bet > points) {
+        showResult('ポイントが足りません！', 'warn');
+        return;
+      }
+
+      isRolling = true;
+      document.getElementById('rollBtn').disabled = true;
+      hideResult();
+
+      const result = Math.floor(Math.random() * 6) + 1;
+      const dice = document.getElementById('dice');
+
+      // Trigger roll animation
+      dice.classList.remove('rolling', 'win-bounce');
+      void dice.offsetWidth;
+      dice.classList.add('rolling');
+
+      // Rapid face-change then settle
+      let frame = 0;
+      const TOTAL = 18;
+      const id = setInterval(() => {
+        frame++;
+        if (frame < TOTAL) {
+          showDiceFace(Math.floor(Math.random() * 6) + 1);
+        } else {
+          clearInterval(id);
+          showDiceFace(result);
+          resolveRoll(result, bet, dice);
+        }
+      }, 55);
+    }
+
+    function resolveRoll(result, bet, dice) {
+      let won = false;
+      let multiplier = 0;
+
+      if (betType === 'big'  && result >= 4)           { won = true; multiplier = 2; }
+      else if (betType === 'small' && result <= 3)     { won = true; multiplier = 2; }
+      else if (typeof betType === 'number' && result === betType) { won = true; multiplier = 6; }
+
+      if (won) {
+        const gain = bet * (multiplier - 1);
+        points += gain;
+        dice.classList.add('win-bounce');
+        showResult(`🎉 当たり！ +${gain.toLocaleString()}pt (×${multiplier})`, 'win');
+        spawnParticles();
+      } else {
+        points -= bet;
+        const area = document.getElementById('diceArea');
+        area.classList.remove('shake');
+        void area.offsetWidth;
+        area.classList.add('shake');
+        showResult(`😢 はずれ… -${bet.toLocaleString()}pt`, 'lose');
+      }
+
+      updatePoints();
+      isRolling = false;
+      document.getElementById('rollBtn').disabled = false;
+
+      if (points <= 0) {
+        setTimeout(() => document.getElementById('gameOver').classList.add('show'), 900);
+      }
+    }
+
+    /* ── UI helpers ── */
+    function showResult(msg, type) {
+      const el = document.getElementById('resultMessage');
+      el.textContent = msg;
+      el.className = 'result-message ' + type;
+    }
+    function hideResult() {
+      document.getElementById('resultMessage').className = 'result-message';
+    }
+
+    function updatePoints() {
+      const el = document.getElementById('pointsDisplay');
+      el.innerHTML = `${points.toLocaleString()} <span>pt</span>`;
+      el.classList.remove('bump');
+      void el.offsetWidth;
+      el.classList.add('bump');
+    }
+
+    /* ── Particles ── */
+    function spawnParticles() {
+      const colors = ['#6C63FF','#FF6584','#FFD93D','#6BCB77','#4ECDC4','#FF9A3C','#FF6B6B'];
+      const btn  = document.getElementById('rollBtn');
+      const rect = btn.getBoundingClientRect();
+      const cx   = rect.left + rect.width  / 2;
+      const cy   = rect.top  + rect.height / 2;
+
+      for (let i = 0; i < 28; i++) {
+        const p   = document.createElement('div');
+        p.className = 'particle';
+        const angle = (i / 28) * Math.PI * 2;
+        const dist  = 80 + Math.random() * 130;
+        const size  = 6 + Math.random() * 9;
+        const dur   = (0.55 + Math.random() * 0.6).toFixed(2) + 's';
+        p.style.cssText = `
+          left:${cx - size/2}px; top:${cy - size/2}px;
+          width:${size}px; height:${size}px;
+          background:${colors[i % colors.length]};
+          --tx:${(Math.cos(angle)*dist).toFixed(1)}px;
+          --ty:${(Math.sin(angle)*dist - 50).toFixed(1)}px;
+          --dur:${dur};
+        `;
+        document.body.appendChild(p);
+        setTimeout(() => p.remove(), 1300);
+      }
+    }
+
+    /* ── Restart ── */
+    function restartGame() {
+      points   = 1000;
+      betType  = null;
+      document.getElementById('betInput').value = 100;
+      document.getElementById('gameOver').classList.remove('show');
+      hideResult();
+      document.getElementById('betBig').classList.remove('selected');
+      document.getElementById('betSmall').classList.remove('selected');
+      for (let i = 1; i <= 6; i++) {
+        document.getElementById('numBtn' + i).classList.remove('selected');
+      }
+      updatePoints();
+      showDiceFace(1);
+    }
+
+    /* ── Boot ── */
+    initDice();
+    showDiceFace(1);
+  </script>
+</body>
+</html>
