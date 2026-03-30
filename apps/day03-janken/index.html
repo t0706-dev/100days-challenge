@@ -118,7 +118,10 @@
       gap: 6px;
       padding: 0 6px;
     }
-    .vs-text { font-size: 1rem; font-weight: 900; opacity: 0.25; letter-spacing: 1px; }
+    .vs-text {
+      font-size: 1rem; font-weight: 900; opacity: 0.25; letter-spacing: 1px;
+      transition: opacity 0.15s;
+    }
     .result-flash {
       font-size: 0.85rem;
       font-weight: 900;
@@ -135,6 +138,56 @@
     @keyframes flashIn {
       from { transform: scale(0.5); opacity: 0; }
       to   { transform: scale(1);   opacity: 1; }
+    }
+
+    /* Countdown text */
+    .countdown-text {
+      font-size: 1.5rem;
+      font-weight: 900;
+      text-align: center;
+      white-space: nowrap;
+      opacity: 0;
+      transform: scale(0.6);
+      pointer-events: none;
+      min-height: 1.8rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      text-shadow: 0 0 12px rgba(255,255,255,0.4);
+    }
+    .countdown-text.show {
+      animation: cdIn 0.18s ease-out forwards;
+    }
+    .countdown-text.hide {
+      animation: cdOut 0.14s ease-in forwards;
+    }
+    .countdown-text.pon {
+      color: #fbbf24;
+      text-shadow: 0 0 16px rgba(251,191,36,0.6);
+      font-size: 1.8rem;
+    }
+    @keyframes cdIn {
+      from { opacity: 0; transform: scale(0.5); }
+      to   { opacity: 1; transform: scale(1); }
+    }
+    @keyframes cdOut {
+      from { opacity: 1; transform: scale(1); }
+      to   { opacity: 0; transform: scale(1.2); }
+    }
+
+    /* Hand bounce during countdown */
+    .player-hand.bounce-up { animation: handUp 0.25s ease-out; }
+    .cat-hand.bounce-up    { animation: catUp  0.25s ease-out; }
+    @keyframes handUp {
+      0%   { transform: translateY(0); }
+      40%  { transform: translateY(-14px); }
+      100% { transform: translateY(0); }
+    }
+    @keyframes catUp {
+      0%   { transform: scaleX(-1) translateY(0); }
+      40%  { transform: scaleX(-1) translateY(-14px); }
+      100% { transform: scaleX(-1) translateY(0); }
     }
 
     /* ===== Cat Character ===== */
@@ -419,7 +472,8 @@
 
     <!-- VS center -->
     <div class="vs-center">
-      <div class="vs-text">VS</div>
+      <div class="vs-text" id="vsText">VS</div>
+      <div class="countdown-text" id="countdownText"></div>
       <div class="result-flash" id="resultFlash"></div>
     </div>
 
@@ -485,38 +539,90 @@
     let currentStreak = 0, bestStreak = 0;
     let isPlaying = false;
 
-    function play(playerChoice) {
+    // ── Audio ──
+    let audioCtx = null;
+    function getCtx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+    function tone(freq, type, vol, startOffset, dur, freqEnd) {
+      const ctx = getCtx();
+      const t   = ctx.currentTime + startOffset;
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t);
+      if (freqEnd) osc.frequency.exponentialRampToValueAtTime(freqEnd, t + dur);
+      gain.gain.setValueAtTime(vol, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + dur);
+      osc.start(t); osc.stop(t + dur + 0.05);
+    }
+    function soundJa()   { tone(260, 'sine', 0.28, 0, 0.45, 180); tone(130, 'sine', 0.12, 0, 0.45, 90); }
+    function soundKen()  { tone(320, 'sine', 0.28, 0, 0.45, 210); tone(160, 'sine', 0.12, 0, 0.45, 105); }
+    function soundPon()  { tone(550, 'triangle', 0.35, 0, 0.07, 280); tone(280, 'sine', 0.25, 0.04, 0.18, 140); }
+    function soundWin()  { [523,659,784,1047].forEach((f,i) => tone(f,'triangle',0.18,i*0.09,0.28)); }
+    function soundLose() { [380,280,180].forEach((f,i) => tone(f,'sawtooth',0.14,i*0.12,0.2)); }
+    function soundDraw() { tone(440,'sine',0.18,0,0.18); tone(440,'sine',0.18,0.22,0.18); }
+
+    // ── Helpers ──
+    const delay = ms => new Promise(r => setTimeout(r, ms));
+
+    function bounceHands() {
+      const ph = document.getElementById('playerHand');
+      const ch = document.getElementById('catHand');
+      ph.classList.remove('bounce-up'); ch.classList.remove('bounce-up');
+      void ph.offsetWidth;
+      ph.classList.add('bounce-up'); ch.classList.add('bounce-up');
+    }
+
+    async function showCountdownWord(word, extraClass) {
+      const el = document.getElementById('countdownText');
+      el.textContent = word;
+      el.className = 'countdown-text show' + (extraClass ? ' ' + extraClass : '');
+      bounceHands();
+      await delay(500);
+      el.classList.add('hide');
+      await delay(150);
+      el.className = 'countdown-text';
+    }
+
+    // ── Main ──
+    async function play(playerChoice) {
       if (isPlaying) return;
       isPlaying = true;
       setBtnsDisabled(true);
 
-      const catChoice   = CHOICES[Math.floor(Math.random() * 3)];
-      const playerHand  = document.getElementById('playerHand');
-      const catHand     = document.getElementById('catHand');
-      const catWrap     = document.getElementById('catWrap');
-      const resultFlash = document.getElementById('resultFlash');
+      const catChoice = CHOICES[Math.floor(Math.random() * 3)];
 
       // Reset
-      playerHand.textContent = '✊';
-      catHand.textContent    = '✊';
-      catWrap.className      = 'cat-wrap';
-      resultFlash.className  = 'result-flash';
-      resultFlash.textContent = '';
+      document.getElementById('playerHand').textContent = '✊';
+      document.getElementById('catHand').textContent    = '✊';
+      document.getElementById('catWrap').className      = 'cat-wrap';
+      document.getElementById('resultFlash').className  = 'result-flash';
+      document.getElementById('resultFlash').textContent = '';
+      document.getElementById('vsText').style.opacity   = '0';
 
-      // Shake countdown (6 ticks = 3 up/down)
-      let tick = 0;
-      const shake = setInterval(() => {
-        tick++;
-        const up = tick % 2 === 1;
-        playerHand.style.transform = up ? 'translateY(-10px)' : 'translateY(0)';
-        catHand.style.transform    = up ? 'translateY(-10px) scaleX(-1)' : 'translateY(0) scaleX(-1)';
-        if (tick >= 6) {
-          clearInterval(shake);
-          playerHand.style.transform = '';
-          catHand.style.transform    = '';
-          revealResult(playerChoice, catChoice);
-        }
-      }, 110);
+      // Countdown
+      soundJa();
+      await showCountdownWord('じゃ〜ん');
+      await delay(60);
+      soundKen();
+      await showCountdownWord('け〜ん');
+      await delay(60);
+
+      // ぽん！と同時に手を出す
+      soundPon();
+      const cdEl = document.getElementById('countdownText');
+      cdEl.textContent = 'ぽん！';
+      cdEl.className = 'countdown-text show pon';
+      bounceHands();
+      document.getElementById('vsText').style.opacity = '';
+      revealResult(playerChoice, catChoice);
+      setTimeout(() => {
+        cdEl.classList.add('hide');
+        setTimeout(() => { cdEl.className = 'countdown-text'; }, 150);
+      }, 500);
     }
 
     function revealResult(playerChoice, catChoice) {
@@ -525,62 +631,45 @@
       const catWrap     = document.getElementById('catWrap');
       const resultFlash = document.getElementById('resultFlash');
 
-      // Show chosen hands
       playerHand.textContent = HANDS[playerChoice].emoji;
       catHand.textContent    = HANDS[catChoice].emoji;
-      playerHand.classList.remove('attack');
-      catHand.classList.remove('attack');
+      playerHand.classList.remove('attack'); catHand.classList.remove('attack');
       void playerHand.offsetWidth;
-      playerHand.classList.add('attack');
-      catHand.classList.add('attack');
+      playerHand.classList.add('attack'); catHand.classList.add('attack');
 
-      // Judge
       let result;
-      if (playerChoice === catChoice) {
-        result = 'draw';
-      } else if (HANDS[playerChoice].beats === catChoice) {
-        result = 'win';
-      } else {
-        result = 'lose';
-      }
+      if (playerChoice === catChoice)              result = 'draw';
+      else if (HANDS[playerChoice].beats === catChoice) result = 'win';
+      else                                         result = 'lose';
 
-      // Stats
       if (result === 'win') {
-        wins++;
-        currentStreak++;
+        wins++; currentStreak++;
         if (currentStreak > bestStreak) bestStreak = currentStreak;
         document.getElementById('winCount').textContent = wins;
-        spawnParticles();
+        soundWin(); spawnParticles();
       } else if (result === 'lose') {
-        loses++;
-        currentStreak = 0;
+        loses++; currentStreak = 0;
         document.getElementById('loseCount').textContent = loses;
+        soundLose();
       } else {
         draws++;
         document.getElementById('drawCount').textContent = draws;
+        soundDraw();
       }
 
-      // Streak display
-      const curEl  = document.getElementById('currentStreak');
-      const bestEl = document.getElementById('bestStreak');
+      const curEl = document.getElementById('currentStreak');
       curEl.textContent  = currentStreak;
-      bestEl.textContent = bestStreak;
-      curEl.classList.remove('bump');
-      void curEl.offsetWidth;
+      document.getElementById('bestStreak').textContent = bestStreak;
+      curEl.classList.remove('bump'); void curEl.offsetWidth;
       if (result === 'win') curEl.classList.add('bump');
 
-      // Cat expression (cat wins = player loses, cat loses = player wins)
       catWrap.className = 'cat-wrap ' + (result === 'win' ? 'cat-lose' : result === 'lose' ? 'cat-win' : 'cat-draw');
 
-      // Result text
       const msgs = { win: '勝ち！🎉', lose: '負け…😿', draw: 'あいこ🐱' };
       resultFlash.textContent = msgs[result];
       resultFlash.className   = 'result-flash show ' + result;
 
-      setTimeout(() => {
-        isPlaying = false;
-        setBtnsDisabled(false);
-      }, 900);
+      setTimeout(() => { isPlaying = false; setBtnsDisabled(false); }, 900);
     }
 
     function setBtnsDisabled(val) {
@@ -591,15 +680,14 @@
 
     function spawnParticles() {
       const colors = ['#4ade80', '#fbbf24', '#60a5fa', '#f472b6', '#a78bfa'];
-      const cx = window.innerWidth / 2;
-      const cy = window.innerHeight / 2;
+      const cx = window.innerWidth / 2, cy = window.innerHeight / 2;
       for (let i = 0; i < 26; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
         const angle = (i / 26) * Math.PI * 2;
         const dist  = 60 + Math.random() * 110;
         const size  = 5 + Math.random() * 7;
-        p.style.cssText = `left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;background:${colors[i % colors.length]};--tx:${(Math.cos(angle)*dist).toFixed(1)}px;--ty:${(Math.sin(angle)*dist - 60).toFixed(1)}px;--dur:${(0.5 + Math.random() * 0.55).toFixed(2)}s`;
+        p.style.cssText = `left:${cx}px;top:${cy}px;width:${size}px;height:${size}px;background:${colors[i%colors.length]};--tx:${(Math.cos(angle)*dist).toFixed(1)}px;--ty:${(Math.sin(angle)*dist-60).toFixed(1)}px;--dur:${(0.5+Math.random()*0.55).toFixed(2)}s`;
         document.body.appendChild(p);
         setTimeout(() => p.remove(), 1150);
       }
