@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>猫キャラクター デモ</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    font-family: sans-serif;
+    color: #fff;
+    gap: 40px;
+  }
+  h1 { font-size: 1.2rem; opacity: 0.6; letter-spacing: 2px; }
+
+  .demo-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+  }
+  .label {
+    font-size: 0.9rem;
+    opacity: 0.7;
+    letter-spacing: 1px;
+  }
+
+  /* ===== 猫本体 ===== */
+  .cat {
+    width: 120px;
+    height: 130px;
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+
+  /* 耳（三角） */
+  .cat-ear {
+    position: absolute;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-left: 18px solid transparent;
+    border-right: 18px solid transparent;
+    border-bottom: 32px solid #b0b0c8;
+    z-index: 2;
+  }
+  .cat-ear-left { left: 10px; }
+  .cat-ear-right { right: 10px; }
+
+  /* 耳の内側 */
+  .cat-ear-inner {
+    position: absolute;
+    top: 8px;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid #e8a0a0;
+    z-index: 3;
+  }
+  .cat-ear-left .cat-ear-inner { left: -10px; }
+  .cat-ear-right .cat-ear-inner { right: -10px; left: auto; }
+
+  /* 顔 */
+  .cat-face {
+    position: absolute;
+    top: 20px;
+    width: 100px;
+    height: 95px;
+    background: linear-gradient(160deg, #d0d0e8 0%, #b8b8d0 100%);
+    border-radius: 50% 50% 45% 45% / 40% 40% 55% 55%;
+    overflow: visible;
+    z-index: 1;
+  }
+
+  /* 目 */
+  .cat-eyes {
+    position: absolute;
+    top: 28px;
+    left: 0; right: 0;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 16px;
+  }
+  .cat-eye {
+    width: 16px;
+    height: 18px;
+    background: #3a8a3a;
+    border-radius: 50%;
+    position: relative;
+    overflow: hidden;
+  }
+  /* 縦長の瞳孔 */
+  .cat-eye::before {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 16px;
+    background: #1a1a1a;
+    border-radius: 3px;
+    top: 1px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  /* ハイライト */
+  .cat-eye::after {
+    content: '';
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 50%;
+    top: 3px;
+    left: 3px;
+  }
+
+  /* 鼻 */
+  .cat-nose {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 7px solid #e06080;
+  }
+
+  /* 口 */
+  .cat-mouth {
+    position: absolute;
+    top: 57px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 10px;
+  }
+  .cat-mouth::before,
+  .cat-mouth::after {
+    content: '';
+    position: absolute;
+    width: 12px;
+    height: 8px;
+    border-bottom: 2.5px solid #888;
+    border-radius: 0 0 50% 50%;
+  }
+  .cat-mouth::before { left: 3px; }
+  .cat-mouth::after { right: 3px; }
+
+  /* ひげ */
+  .cat-whisker {
+    position: absolute;
+    height: 1.5px;
+    background: rgba(100, 100, 130, 0.6);
+    border-radius: 2px;
+    top: 53px;
+  }
+  .wh-l1 { width: 26px; left: 2px; transform: rotate(-8deg); }
+  .wh-l2 { width: 26px; left: 2px; top: 59px; transform: rotate(5deg); }
+  .wh-r1 { width: 26px; right: 2px; transform: rotate(8deg); }
+  .wh-r2 { width: 26px; right: 2px; top: 59px; transform: rotate(-5deg); }
+
+  /* ほっぺ */
+  .cat-cheek {
+    position: absolute;
+    width: 20px;
+    height: 12px;
+    background: rgba(255, 150, 150, 0.3);
+    border-radius: 50%;
+    top: 52px;
+  }
+  .cat-cheek-left { left: 8px; }
+  .cat-cheek-right { right: 8px; }
+
+  /* ===== 表情バリエーション ===== */
+
+  /* 勝ち：目が細くなる・大きな笑顔 */
+  .cat-win .cat-eye {
+    height: 8px;
+    border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+    background: #3a8a3a;
+  }
+  .cat-win .cat-eye::before {
+    display: none;
+  }
+  .cat-win .cat-eye::after {
+    display: none;
+  }
+  .cat-win .cat-mouth::before,
+  .cat-win .cat-mouth::after {
+    width: 16px;
+    height: 12px;
+    border-bottom-width: 3px;
+  }
+  .cat-win .cat-face {
+    background: linear-gradient(160deg, #d8d8f0 0%, #c0c0e0 100%);
+    box-shadow: 0 0 20px rgba(180, 180, 255, 0.4);
+  }
+  .cat-win .cat-cheek {
+    background: rgba(255, 120, 120, 0.5);
+  }
+  .cat-win {
+    animation: bounce 0.5s ease infinite alternate;
+  }
+
+  /* 負け：目が×・口が下がる */
+  .cat-lose .cat-eye {
+    background: transparent;
+    overflow: visible;
+  }
+  .cat-lose .cat-eye::before {
+    width: 16px;
+    height: 2.5px;
+    background: #555;
+    border-radius: 2px;
+    top: 7px;
+    left: 0;
+    transform: rotate(45deg);
+  }
+  .cat-lose .cat-eye::after {
+    width: 16px;
+    height: 2.5px;
+    background: #555;
+    border-radius: 2px;
+    top: 7px;
+    left: 0;
+    transform: rotate(-45deg);
+  }
+  .cat-lose .cat-mouth::before,
+  .cat-lose .cat-mouth::after {
+    border-bottom: none;
+    border-top: 2.5px solid #888;
+    border-radius: 50% 50% 0 0;
+    top: 4px;
+  }
+  .cat-lose .cat-face {
+    background: linear-gradient(160deg, #b8b8cc 0%, #a0a0b8 100%);
+  }
+  .cat-lose {
+    animation: droop 0.3s ease forwards;
+  }
+
+  /* あいこ：目が半開き・口まっすぐ */
+  .cat-draw .cat-eye {
+    height: 10px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  }
+  .cat-draw .cat-mouth::before,
+  .cat-draw .cat-mouth::after {
+    border-bottom: none;
+    height: 0;
+    width: 12px;
+    border-top: 2.5px solid #888;
+    border-radius: 0;
+    top: 4px;
+  }
+
+  @keyframes bounce {
+    from { transform: translateY(0); }
+    to { transform: translateY(-10px); }
+  }
+  @keyframes droop {
+    0% { transform: translateY(-4px); }
+    100% { transform: translateY(0); }
+  }
+
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  button {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    background: #2a2a4a;
+    color: #fff;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+  button:hover { background: #3a3a6a; }
+</style>
+</head>
+<body>
+  <h1>CAT CHARACTER DEMO</h1>
+
+  <div class="demo-item">
+    <div class="cat" id="cat">
+      <div class="cat-ear cat-ear-left"><div class="cat-ear-inner"></div></div>
+      <div class="cat-ear cat-ear-right"><div class="cat-ear-inner"></div></div>
+      <div class="cat-face">
+        <div class="cat-eyes">
+          <div class="cat-eye"></div>
+          <div class="cat-eye"></div>
+        </div>
+        <div class="cat-nose"></div>
+        <div class="cat-mouth"></div>
+        <div class="cat-cheek cat-cheek-left"></div>
+        <div class="cat-cheek cat-cheek-right"></div>
+        <div class="cat-whisker wh-l1"></div>
+        <div class="cat-whisker wh-l2"></div>
+        <div class="cat-whisker wh-r1"></div>
+        <div class="cat-whisker wh-r2"></div>
+      </div>
+    </div>
+    <div class="label" id="state-label">通常</div>
+  </div>
+
+  <div class="btn-row">
+    <button onclick="setState('normal')">通常</button>
+    <button onclick="setState('win')">勝ち 😄</button>
+    <button onclick="setState('lose')">負け 😢</button>
+    <button onclick="setState('draw')">あいこ 😐</button>
+  </div>
+
+  <script>
+    function setState(state) {
+      const cat = document.getElementById('cat');
+      const label = document.getElementById('state-label');
+      cat.className = 'cat';
+      if (state === 'win') { cat.classList.add('cat-win'); label.textContent = '勝ち！'; }
+      else if (state === 'lose') { cat.classList.add('cat-lose'); label.textContent = '負け…'; }
+      else if (state === 'draw') { cat.classList.add('cat-draw'); label.textContent = 'あいこ'; }
+      else { label.textContent = '通常'; }
+    }
+  </script>
+</body>
+</html>
