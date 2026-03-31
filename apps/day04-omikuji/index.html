@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>Day04 おみくじ</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      margin: 0; padding: 0; box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      background: #FDF5F0;
+      height: 100svh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 8px 16px 10px;
+      gap: 8px;
+      background-image:
+        radial-gradient(ellipse at 15% 15%, rgba(180,0,0,0.07) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 85%, rgba(180,0,0,0.07) 0%, transparent 45%),
+        radial-gradient(ellipse at 85% 15%, rgba(255,190,0,0.05) 0%, transparent 35%),
+        radial-gradient(ellipse at 15% 85%, rgba(255,190,0,0.05) 0%, transparent 35%);
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      width: 100%;
+      background: linear-gradient(135deg, #CC0000 0%, #8B0000 100%);
+      border-radius: 12px;
+      padding: 8px 16px 6px;
+      text-align: center;
+      box-shadow: 0 4px 14px rgba(150,0,0,0.35);
+      flex-shrink: 0;
+    }
+    .header-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    .header h1 {
+      color: #FFD700;
+      font-size: 20px;
+      font-weight: 900;
+      letter-spacing: 0.5em;
+      text-shadow: 0 2px 6px rgba(0,0,0,0.4);
+    }
+    .header-sub {
+      color: rgba(255,225,160,0.8);
+      font-size: 8.5px;
+      letter-spacing: 0.3em;
+      margin-top: 1px;
+    }
+
+    /* ===== MIKO AREA ===== */
+    .miko-area {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      flex-shrink: 0;
+    }
+
+    /* 吹き出し */
+    .speech-bubble {
+      background: white;
+      border: 2px solid #CC0000;
+      border-radius: 12px;
+      padding: 6px 16px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: #880000;
+      text-align: center;
+      min-width: 190px;
+      box-shadow: 0 2px 8px rgba(204,0,0,0.12);
+      position: relative;
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      bottom: -9px; left: 50%;
+      transform: translateX(-50%);
+      border: 5px solid transparent;
+      border-top-color: #CC0000;
+    }
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      bottom: -6px; left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: white;
+      z-index: 1;
+    }
+
+    /* ===== 巫女キャラ (0.8x scale) ===== */
+    .miko {
+      width: 100px;
+      height: 150px;
+      position: relative;
+      animation: idleFloat 2.5s ease-in-out infinite;
+    }
+
+    .m-kanzashi {
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      font-size: 14px;
+      z-index: 8;
+    }
+    .m-hair {
+      position: absolute;
+      width: 56px; height: 35px;
+      background: #1C0A02;
+      border-radius: 28px 28px 4px 4px;
+      top: 11px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 6;
+    }
+    .m-hair::before {
+      content: '';
+      position: absolute;
+      width: 13px; height: 27px;
+      background: #1C0A02;
+      border-radius: 7px;
+      bottom: -22px; left: -1px;
+      transform: rotate(8deg);
+    }
+    .m-hair::after {
+      content: '';
+      position: absolute;
+      width: 13px; height: 27px;
+      background: #1C0A02;
+      border-radius: 7px;
+      bottom: -22px; right: -1px;
+      transform: rotate(-8deg);
+    }
+    .m-face {
+      position: absolute;
+      width: 51px; height: 50px;
+      background: #FDDBB4;
+      border-radius: 50% 50% 46% 46%;
+      top: 27px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      border: 1px solid #F0C090;
+      overflow: visible;
+    }
+    .m-cheek-l, .m-cheek-r {
+      position: absolute;
+      width: 11px; height: 6px;
+      background: rgba(255,100,80,0.28);
+      border-radius: 50%;
+      top: 28px;
+    }
+    .m-cheek-l { left: 4px; }
+    .m-cheek-r { right: 4px; }
+    .m-eyes {
+      position: absolute;
+      top: 16px; left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-around;
+      padding: 0 10px;
+    }
+    .m-eye {
+      width: 7px; height: 7px;
+      background: #2C1A0E;
+      border-radius: 50%;
+      position: relative;
+    }
+    .m-eye::after {
+      content: '';
+      position: absolute;
+      width: 2px; height: 2px;
+      background: white;
+      border-radius: 50%;
+      top: 1px; left: 1px;
+    }
+    .m-mouth {
+      position: absolute;
+      bottom: 10px; left: 50%;
+      transform: translateX(-50%);
+      width: 14px; height: 7px;
+      border-bottom: 2px solid #C07860;
+      border-radius: 0 0 50% 50%;
+    }
+    .m-body {
+      position: absolute;
+      width: 64px; height: 46px;
+      background: white;
+      top: 70px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      border: 1px solid #DDD;
+      border-radius: 4px 4px 0 0;
+    }
+    .m-body::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      width: 0; height: 0;
+      border-left: 11px solid transparent;
+      border-right: 11px solid transparent;
+      border-top: 46px solid rgba(200,0,0,0.11);
+    }
+    .m-hakama {
+      position: absolute;
+      width: 74px; height: 37px;
+      background: linear-gradient(180deg, #CC0000 0%, #8B0000 100%);
+      top: 112px; left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      border-radius: 0 0 8px 8px;
+    }
+    .m-arm-l, .m-arm-r {
+      position: absolute;
+      width: 13px; height: 37px;
+      background: white;
+      border: 1px solid #DDD;
+      border-radius: 7px;
+      top: 72px; z-index: 3;
+    }
+    .m-arm-l { left: 8px; transform: rotate(10deg); transform-origin: top center; }
+    .m-arm-r { right: 8px; transform: rotate(-10deg); transform-origin: top center; }
+    .m-stick {
+      position: absolute;
+      display: none;
+      right: 4px; top: 80px;
+      width: 6px; height: 44px;
+      background: linear-gradient(180deg, #DAA520, #8B6914);
+      border-radius: 3px 3px 2px 2px;
+      z-index: 6;
+      transform-origin: top center;
+    }
+
+    /* ===== 表情バリエーション ===== */
+    .miko.excited .m-eye {
+      width: 9px; height: 9px;
+      background: transparent;
+    }
+    .miko.excited .m-eye::before {
+      content: '★';
+      position: absolute;
+      font-size: 9px;
+      top: -1px; left: -1px;
+      color: #FF8800;
+    }
+    .miko.excited .m-eye::after { display: none; }
+    .miko.excited .m-mouth { width: 21px; height: 10px; border-bottom-width: 2.5px; }
+
+    .miko.happy .m-eye {
+      height: 4px;
+      border-radius: 50% 50% 50% 50% / 80% 80% 20% 20%;
+    }
+    .miko.happy .m-eye::after { display: none; }
+    .miko.happy .m-mouth { width: 16px; }
+
+    .miko.smile .m-mouth { width: 13px; }
+
+    .miko.neutral .m-mouth {
+      height: 0;
+      border-bottom: 2px solid #C07860;
+      border-radius: 0;
+      width: 13px;
+    }
+    .miko.worried .m-eye {
+      width: 7px; height: 6px;
+      border-radius: 40% 40% 50% 50%;
+      transform: rotate(-10deg);
+    }
+    .miko.worried .m-eye:last-child { transform: rotate(10deg); }
+    .miko.worried .m-mouth {
+      border-bottom: none;
+      border-top: 2px solid #C07860;
+      border-radius: 50% 50% 0 0;
+      width: 15px; height: 7px;
+      bottom: 11px;
+    }
+    .miko.worried .m-face::after {
+      content: '💦';
+      position: absolute;
+      font-size: 10px;
+      top: 6px; right: -6px;
+    }
+    .miko.sad .m-eye { background: #7090C0; border-radius: 50% 50% 40% 40%; }
+    .miko.sad .m-eye::after { background: rgba(255,255,255,0.5); }
+    .miko.sad .m-mouth {
+      border-bottom: none;
+      border-top: 2px solid #C07860;
+      border-radius: 50% 50% 0 0;
+      width: 16px; height: 7px;
+      bottom: 10px;
+    }
+    .miko.sad .m-face::after {
+      content: '😢';
+      position: absolute;
+      font-size: 11px;
+      top: 24px; right: -7px;
+    }
+
+    /* ===== アニメーション ===== */
+    @keyframes idleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+    }
+    @keyframes excitedJump {
+      0%, 100% { transform: translateY(0) rotate(0deg) scale(1); }
+      20% { transform: translateY(-12px) rotate(-4deg) scale(1.05); }
+      50% { transform: translateY(-12px) rotate(4deg) scale(1.05); }
+      70% { transform: translateY(-6px) rotate(-2deg); }
+    }
+    @keyframes happyBounce {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-8px) rotate(3deg); }
+    }
+    @keyframes worriedShake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-4px) rotate(-1.5deg); }
+      75% { transform: translateX(4px) rotate(1.5deg); }
+    }
+    @keyframes sadDroop {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(3px) rotate(-1deg); }
+    }
+    @keyframes drawingShake {
+      0%, 100% { transform: rotate(0deg); }
+      20% { transform: rotate(-11deg); }
+      60% { transform: rotate(11deg); }
+    }
+    @keyframes sparkleAnim {
+      0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+      50% { opacity: 1; transform: scale(1) rotate(180deg); }
+    }
+    @keyframes slideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    @keyframes stickWave {
+      0%, 100% { transform: rotate(-6deg); }
+      50% { transform: rotate(6deg); }
+    }
+
+    .miko.excited { animation: excitedJump 0.65s ease-in-out infinite; }
+    .miko.happy   { animation: happyBounce 0.85s ease-in-out infinite; }
+    .miko.smile   { animation: idleFloat 1.8s ease-in-out infinite; }
+    .miko.neutral { animation: idleFloat 3s ease-in-out infinite; }
+    .miko.worried { animation: worriedShake 0.45s ease-in-out infinite; }
+    .miko.sad     { animation: sadDroop 2s ease-in-out infinite; }
+    .miko.drawing { animation: drawingShake 0.3s ease-in-out infinite; }
+    .miko.drawing .m-stick { display: block; animation: stickWave 0.3s ease-in-out infinite; }
+
+    .sparkles {
+      position: absolute;
+      top: -20px; left: -20px;
+      width: calc(100% + 40px);
+      height: calc(100% + 40px);
+      pointer-events: none;
+    }
+    .sparkle {
+      position: absolute;
+      font-size: 12px;
+      animation: sparkleAnim 1.2s ease-in-out infinite;
+    }
+
+    /* ===== RESULT AREA ===== */
+    .result-area {
+      flex: 1;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .draw-btn {
+      width: 100%;
+      max-width: 270px;
+      padding: 14px 0;
+      background: linear-gradient(135deg, #CC0000 0%, #8B0000 100%);
+      color: #FFD700;
+      border: none;
+      border-radius: 10px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: 0.35em;
+      cursor: pointer;
+      box-shadow: 0 5px 16px rgba(160,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.12);
+      transition: transform 0.1s, box-shadow 0.1s;
+      position: relative;
+      overflow: hidden;
+    }
+    .draw-btn::before {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 60%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.55s;
+    }
+    .draw-btn:hover::before { left: 150%; }
+    .draw-btn:active { transform: scale(0.97); box-shadow: 0 2px 8px rgba(160,0,0,0.4); }
+
+    /* ===== RESULT CARD ===== */
+    .result-card {
+      display: none;
+      width: 100%;
+      max-width: 340px;
+      background: white;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.16);
+      border: 2px solid #E5D5C0;
+    }
+    .result-card.show {
+      display: block;
+      animation: slideUp 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .rc-header {
+      padding: 10px 16px 8px;
+      text-align: center;
+      color: white;
+    }
+    .rc-subtitle {
+      font-size: 8.5px;
+      letter-spacing: 0.4em;
+      opacity: 0.85;
+      margin-bottom: 1px;
+    }
+    .rc-result {
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 0.3em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.3);
+      line-height: 1.1;
+    }
+    .rc-message {
+      font-size: 9.5px;
+      opacity: 0.88;
+      margin-top: 3px;
+    }
+
+    .rc-fortunes {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 6px;
+      padding: 8px 8px 6px;
+    }
+    .fortune-item {
+      background: #FFF8F2;
+      border-radius: 9px;
+      padding: 7px 4px;
+      text-align: center;
+      border: 1px solid #EEE2D0;
+    }
+    .fi-icon  { font-size: 15px; display: block; margin-bottom: 2px; }
+    .fi-label { font-size: 7.5px; font-weight: 900; color: #999; letter-spacing: 0.1em; display: block; margin-bottom: 3px; }
+    .fi-text  { font-size: 8.5px; color: #555; line-height: 1.45; }
+
+    /* ラッキー行（カラー + アイテム） */
+    .rc-lucky-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      padding: 0 8px 7px;
+    }
+    .lucky-cell {
+      background: #FFF8F2;
+      border: 1px solid #EEE2D0;
+      border-radius: 9px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .lucky-cell-label {
+      font-size: 7.5px;
+      font-weight: 900;
+      color: #AAA;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+    .lucky-swatch {
+      width: 18px; height: 18px;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0 0 0 1.5px #CCC;
+      flex-shrink: 0;
+    }
+    .lucky-cell-val {
+      font-size: 11px;
+      font-weight: 900;
+      color: #444;
+    }
+
+    .redraw-btn {
+      width: 100%;
+      padding: 8px 0;
+      background: transparent;
+      border: none;
+      border-top: 1.5px solid #EEE;
+      color: #CC0000;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 11.5px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .redraw-btn:hover { background: #FFF0F0; }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-row">
+      <span>⛩️</span>
+      <h1>おみくじ</h1>
+      <span>⛩️</span>
+    </div>
+    <div class="header-sub">〜 神社からのメッセージ 〜</div>
+  </div>
+
+  <div class="miko-area">
+    <div class="speech-bubble" id="speechBubble">おみくじを引いてみてね♪</div>
+    <div class="miko" id="miko">
+      <div class="sparkles" id="sparkles"></div>
+      <div class="m-kanzashi">🌸</div>
+      <div class="m-hair"></div>
+      <div class="m-face">
+        <div class="m-cheek-l"></div>
+        <div class="m-cheek-r"></div>
+        <div class="m-eyes">
+          <div class="m-eye"></div>
+          <div class="m-eye"></div>
+        </div>
+        <div class="m-mouth"></div>
+      </div>
+      <div class="m-arm-l"></div>
+      <div class="m-arm-r"></div>
+      <div class="m-body"></div>
+      <div class="m-hakama"></div>
+      <div class="m-stick"></div>
+    </div>
+  </div>
+
+  <div class="result-area">
+    <button class="draw-btn" id="drawBtn" onclick="drawOmikuji()">✦ おみくじを引く ✦</button>
+
+    <div class="result-card" id="resultCard">
+      <div class="rc-header" id="rcHeader">
+        <div class="rc-subtitle">本日の運勢</div>
+        <div class="rc-result" id="rcResult"></div>
+        <div class="rc-message" id="rcMessage"></div>
+      </div>
+      <div class="rc-fortunes">
+        <div class="fortune-item">
+          <span class="fi-icon">💕</span>
+          <span class="fi-label">恋愛運</span>
+          <span class="fi-text" id="loveTxt"></span>
+        </div>
+        <div class="fortune-item">
+          <span class="fi-icon">💼</span>
+          <span class="fi-label">仕事運</span>
+          <span class="fi-text" id="workTxt"></span>
+        </div>
+        <div class="fortune-item">
+          <span class="fi-icon">💰</span>
+          <span class="fi-label">金運</span>
+          <span class="fi-text" id="moneyTxt"></span>
+        </div>
+      </div>
+      <div class="rc-lucky-row">
+        <div class="lucky-cell">
+          <span class="lucky-cell-label">🎨 カラー</span>
+          <div class="lucky-swatch" id="luckySwatch"></div>
+          <span class="lucky-cell-val" id="luckyColor"></span>
+        </div>
+        <div class="lucky-cell">
+          <span class="lucky-cell-val" id="luckyItemIcon" style="font-size:18px"></span>
+          <div>
+            <span class="lucky-cell-label">🎁 アイテム</span>
+            <span class="lucky-cell-val" id="luckyItem" style="display:block;font-size:10px"></span>
+          </div>
+        </div>
+      </div>
+      <button class="redraw-btn" onclick="resetOmikuji()">↩ もう一度引く</button>
+    </div>
+  </div>
+
+  <script>
+    const FORTUNES = [
+      {
+        result: "大吉", weight: 10,
+        gradient: "linear-gradient(135deg, #FF4500, #CC0000)",
+        message: "最高の運勢！今日は何でもうまくいく日✨",
+        love: "素敵な出会いが！積極的に動こう",
+        work: "大チャンスをつかめる絶好日！",
+        money: "思わぬ臨時収入があるかも！",
+        luckyColor: { name: "ゴールド", color: "#FFD700" },
+        luckyItem: { icon: "🧧", name: "お守り" },
+        reaction: "excited",
+        speech: "わあ〜！大吉ですよ！✨最高の運勢！",
+        sparkles: ["✨","⭐","🌟","💫","✨","⭐","🌸"]
+      },
+      {
+        result: "中吉", weight: 25,
+        gradient: "linear-gradient(135deg, #FFA500, #E07000)",
+        message: "良い運勢です！前向きに行動しよう♪",
+        love: "穏やかな関係が続く。思いやりを大切に",
+        work: "コツコツ努力が実を結ぶでしょう",
+        money: "堅実な管理で安定した収入が！",
+        luckyColor: { name: "オレンジ", color: "#FF8C00" },
+        luckyItem: { icon: "🐱", name: "招き猫" },
+        reaction: "happy",
+        speech: "中吉ですね〜！良い一日になりそう♪",
+        sparkles: ["⭐","💛","✨","🌸","⭐"]
+      },
+      {
+        result: "小吉", weight: 30,
+        gradient: "linear-gradient(135deg, #52B052, #2E7D32)",
+        message: "まずまずの運勢。小さな幸せを大切に。",
+        love: "焦らずゆっくり関係を育んで",
+        work: "丁寧な積み重ねが大切です",
+        money: "節約を意識するといいでしょう",
+        luckyColor: { name: "グリーン", color: "#4CAF50" },
+        luckyItem: { icon: "🍀", name: "四葉のクローバー" },
+        reaction: "smile",
+        speech: "小吉ですよ。穏やかな一日を☺️",
+        sparkles: ["🌿","💚","🍀","🌿"]
+      },
+      {
+        result: "末吉", weight: 20,
+        gradient: "linear-gradient(135deg, #42A5F5, #1565C0)",
+        message: "これから運気が上がります！希望を持って。",
+        love: "今は自分磨きの時期。良縁は近い！",
+        work: "将来のための準備期間として活かして",
+        money: "将来への蓄えを意識しましょう",
+        luckyColor: { name: "ブルー", color: "#4169E1" },
+        luckyItem: { icon: "⭐", name: "流れ星" },
+        reaction: "neutral",
+        speech: "末吉ですね。これから良くなりますよ！",
+        sparkles: ["🌊","💙","⭐"]
+      },
+      {
+        result: "凶", weight: 10,
+        gradient: "linear-gradient(135deg, #9C27B0, #6A1B9A)",
+        message: "少し注意が必要な時期。慎重に行動を。",
+        love: "誤解が生じやすい時期。言葉を丁寧に",
+        work: "焦りは禁物。慎重に行動しましょう",
+        money: "衝動買いは控えて。出費に注意！",
+        luckyColor: { name: "パープル", color: "#9C27B0" },
+        luckyItem: { icon: "🔮", name: "水晶玉" },
+        reaction: "worried",
+        speech: "凶...。でも大丈夫！気をつければOK！",
+        sparkles: []
+      },
+      {
+        result: "大凶", weight: 5,
+        gradient: "linear-gradient(135deg, #607D8B, #37474F)",
+        message: "試練の時期ですが、必ず乗り越えられます！",
+        love: "一人の時間を大切に。自己成長のチャンス",
+        work: "無理をせず基礎を固める時期と思って",
+        money: "大きな出費は避けて。節約が吉！",
+        luckyColor: { name: "シルバー", color: "#C0C0C0" },
+        luckyItem: { icon: "🪶", name: "白い羽根" },
+        reaction: "sad",
+        speech: "大凶...でも神様が守ってくれています！",
+        sparkles: []
+      }
+    ];
+
+    let isDrawing = false;
+    let audioCtx = null;
+
+    function ctx() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      return audioCtx;
+    }
+
+    // ヘルパー: ノート再生（triangle波 = 明るい音色）
+    function playNote(freq, startTime, duration, vol = 0.28, type = 'triangle') {
+      const c = ctx();
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+      osc.connect(gain); gain.connect(c.destination);
+      osc.type = type;
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, startTime);
+      gain.gain.linearRampToValueAtTime(vol, startTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, startTime + duration);
+      osc.start(startTime); osc.stop(startTime + duration + 0.01);
+    }
+
+    // 鐘の音（倍音付き - より豊かに）
+    function playBell(t, baseFreq = 880, vol = 0.3) {
+      const c = ctx();
+      // 基音 + 倍音2つ
+      [[1, 0.3], [2.76, 0.12], [5.4, 0.06]].forEach(([ratio, v]) => {
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.connect(gain); gain.connect(c.destination);
+        osc.type = 'sine';
+        osc.frequency.value = baseFreq * ratio;
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(vol * v, t + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.001, t + 2.5);
+        osc.start(t); osc.stop(t + 2.6);
+      });
+    }
+
+    // ===== おみくじを引く時: 明るいペンタトニック上昇 =====
+    function playDrawingSound() {
+      const c = ctx();
+      const now = c.currentTime;
+
+      // ジャラン鐘から始まる
+      playBell(now, 830, 0.25);
+
+      // ペンタトニックスケール G: G4 A4 B4 D5 E5 G5 (392,440,494,587,659,784)
+      const scale = [392, 440, 494, 587, 659, 784];
+      scale.forEach((freq, i) => {
+        playNote(freq, now + 0.5 + i * 0.07, 0.25, 0.22, 'triangle');
+      });
+
+      // 最後に明るい高音ベル
+      playBell(now + 1.1, 1047, 0.2);
+    }
+
+    // ===== 大吉: お祭りファンファーレ =====
+    function playFanfare() {
+      const c = ctx();
+      const now = c.currentTime;
+
+      // 明るいアルペジオ: C5 E5 G5 C6 E6
+      const melody = [523, 659, 784, 1047, 1319, 1047, 1319];
+      melody.forEach((freq, i) => {
+        playNote(freq, now + i * 0.13, 0.4, 0.25, 'triangle');
+        // 2倍音で豊かさを追加
+        playNote(freq * 2, now + i * 0.13, 0.3, 0.06, 'sine');
+      });
+
+      // 最後に鐘でフィニッシュ
+      playBell(now + melody.length * 0.13, 1047, 0.3);
+      playBell(now + melody.length * 0.13 + 0.1, 1319, 0.2);
+    }
+
+    // ===== 中吉〜末吉: 明るいチャイム3音 =====
+    function playChime(baseFreq = 659) {
+      const c = ctx();
+      const now = c.currentTime;
+      // 明るい3和音
+      [baseFreq, baseFreq * 1.25, baseFreq * 1.5].forEach((freq, i) => {
+        playNote(freq, now + i * 0.18, 0.6, 0.22, 'triangle');
+        playBell(now + i * 0.18, freq, 0.15);
+      });
+    }
+
+    // ===== 凶: コミカルなドヴォルジャーク降下 =====
+    function playComicDown() {
+      const c = ctx();
+      const now = c.currentTime;
+      // 上がって一気に下がる（コミカル）
+      [523, 587, 494, 440, 392, 349].forEach((freq, i) => {
+        playNote(freq, now + (i < 2 ? i * 0.1 : 0.2 + (i - 2) * 0.08), 0.2, 0.2, 'triangle');
+      });
+      // ぼよ〜ん
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+      osc.connect(gain); gain.connect(c.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(600, now + 0.7);
+      osc.frequency.exponentialRampToValueAtTime(150, now + 1.5);
+      gain.gain.setValueAtTime(0.18, now + 0.7);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 1.5);
+      osc.start(now + 0.7); osc.stop(now + 1.6);
+    }
+
+    // ===== 大凶: もっとコミカルな落下音 =====
+    function playBigDown() {
+      const c = ctx();
+      const now = c.currentTime;
+      // ドドドド〜ン
+      [784, 698, 622, 523, 440, 392, 349, 294].forEach((freq, i) => {
+        playNote(freq, now + i * 0.09, 0.25, 0.2, 'triangle');
+      });
+      // 最後にぼよよ〜ん
+      const osc = c.createOscillator();
+      const gain = c.createGain();
+      osc.connect(gain); gain.connect(c.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, now + 0.85);
+      osc.frequency.exponentialRampToValueAtTime(60, now + 2.5);
+      gain.gain.setValueAtTime(0.2, now + 0.85);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 2.5);
+      osc.start(now + 0.85); osc.stop(now + 2.6);
+    }
+
+    // ===== メイン処理 =====
+    function drawOmikuji() {
+      if (isDrawing) return;
+      isDrawing = true;
+
+      const miko = document.getElementById('miko');
+      const drawBtn = document.getElementById('drawBtn');
+      const speechBubble = document.getElementById('speechBubble');
+
+      drawBtn.style.opacity = '0.5';
+      drawBtn.style.pointerEvents = 'none';
+
+      playDrawingSound();
+
+      miko.className = 'miko drawing';
+      speechBubble.textContent = '神様〜どうかよい運勢を🙏';
+
+      setTimeout(() => {
+        const total = FORTUNES.reduce((s, f) => s + f.weight, 0);
+        let rand = Math.random() * total;
+        let chosen = FORTUNES[FORTUNES.length - 1];
+        for (const f of FORTUNES) {
+          rand -= f.weight;
+          if (rand <= 0) { chosen = f; break; }
+        }
+        showResult(chosen);
+        isDrawing = false;
+      }, 1700);
+    }
+
+    function showResult(fortune) {
+      const miko = document.getElementById('miko');
+      const speechBubble = document.getElementById('speechBubble');
+      const resultCard = document.getElementById('resultCard');
+      const rcHeader = document.getElementById('rcHeader');
+      const sparklesDiv = document.getElementById('sparkles');
+      const drawBtn = document.getElementById('drawBtn');
+
+      miko.className = `miko ${fortune.reaction}`;
+      speechBubble.textContent = fortune.speech;
+
+      sparklesDiv.innerHTML = '';
+      fortune.sparkles.forEach((em, i) => {
+        const s = document.createElement('span');
+        s.className = 'sparkle';
+        s.textContent = em;
+        s.style.top = `${10 + Math.random() * 75}%`;
+        s.style.left = `${Math.random() * 95}%`;
+        s.style.animationDelay = `${i * 0.2}s`;
+        s.style.animationDuration = `${0.9 + Math.random() * 0.5}s`;
+        sparklesDiv.appendChild(s);
+      });
+
+      rcHeader.style.background = fortune.gradient;
+      document.getElementById('rcResult').textContent = fortune.result;
+      document.getElementById('rcMessage').textContent = fortune.message;
+      document.getElementById('loveTxt').textContent = fortune.love;
+      document.getElementById('workTxt').textContent = fortune.work;
+      document.getElementById('moneyTxt').textContent = fortune.money;
+      document.getElementById('luckySwatch').style.background = fortune.luckyColor.color;
+      document.getElementById('luckyColor').textContent = fortune.luckyColor.name;
+      document.getElementById('luckyItemIcon').textContent = fortune.luckyItem.icon;
+      document.getElementById('luckyItem').textContent = fortune.luckyItem.name;
+
+      drawBtn.style.display = 'none';
+      resultCard.classList.remove('show');
+
+      setTimeout(() => resultCard.classList.add('show'), 80);
+
+      // 結果音
+      const r = fortune.result;
+      if (r === '大吉') {
+        setTimeout(playFanfare, 200);
+      } else if (r === '中吉') {
+        setTimeout(() => playChime(784), 200);
+      } else if (r === '小吉') {
+        setTimeout(() => playChime(659), 200);
+      } else if (r === '末吉') {
+        setTimeout(() => playChime(523), 200);
+      } else if (r === '凶') {
+        setTimeout(playComicDown, 200);
+      } else {
+        setTimeout(playBigDown, 200);
+      }
+    }
+
+    function resetOmikuji() {
+      const miko = document.getElementById('miko');
+      const speechBubble = document.getElementById('speechBubble');
+      const resultCard = document.getElementById('resultCard');
+      const drawBtn = document.getElementById('drawBtn');
+      const sparklesDiv = document.getElementById('sparkles');
+
+      resultCard.classList.remove('show');
+      sparklesDiv.innerHTML = '';
+      miko.className = 'miko';
+      speechBubble.textContent = 'おみくじを引いてみてね♪';
+
+      setTimeout(() => {
+        drawBtn.style.display = '';
+        drawBtn.style.opacity = '1';
+        drawBtn.style.pointerEvents = '';
+      }, 300);
+    }
+  </script>
+</body>
+</html>
