@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Day 05 - あみだくじ</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #2d1b69;
+    --bg2: #3b1f7a;
+    --card: #ffffff18;
+    --border: #ffffff30;
+    --purple: #c084fc;
+    --purple-l: #e879f9;
+    --cyan: #22d3ee;
+    --cyan-l: #67e8f9;
+    --pink: #f472b6;
+    --yellow: #fde68a;
+    --text: #ffffff;
+    --text2: #ddd6fe;
+    --neon: 0 0 10px #e879f9, 0 0 24px #c084fc60;
+    --neon-cyan: 0 0 10px #22d3ee, 0 0 24px #22d3ee50;
+  }
+
+  html, body {
+    width: 100%; height: 100svh;
+    overflow: hidden;
+    background: linear-gradient(145deg, #4c1d95 0%, #1e1b4b 35%, #0e7490 70%, #7c3aed 100%);
+    font-family: 'M PLUS Rounded 1c', sans-serif;
+    color: var(--text);
+  }
+
+  #app {
+    width: 100%; height: 100svh;
+    display: flex; flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* ===== SCREENS ===== */
+  .screen {
+    display: none;
+    flex-direction: column;
+    height: 100svh;
+    overflow: hidden;
+  }
+  .screen.active { display: flex; }
+
+  /* ===== HEADER ===== */
+  .header {
+    flex-shrink: 0;
+    text-align: center;
+    padding: 10px 12px 6px;
+    background: linear-gradient(180deg, #1a0a3a 0%, transparent 100%);
+  }
+  .header h1 {
+    font-size: 1.3rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--purple-l), var(--cyan));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    letter-spacing: 2px;
+    text-shadow: none;
+    filter: drop-shadow(0 0 8px #a855f770);
+  }
+  .header .sub { font-size: 0.65rem; color: var(--text2); margin-top: 1px; }
+
+  /* ===== FOX ===== */
+  .fox-wrap {
+    flex-shrink: 0;
+    display: flex; flex-direction: column; align-items: center;
+    padding: 4px 0;
+  }
+  .fox { font-size: 2.8rem; line-height: 1; filter: drop-shadow(0 0 10px #fbbf2480); }
+  .fox-msg {
+    font-size: 0.72rem; font-weight: 700;
+    color: var(--yellow);
+    background: #1a1200;
+    border: 1px solid #fbbf2440;
+    border-radius: 20px;
+    padding: 3px 12px;
+    margin-top: 4px;
+    text-shadow: 0 0 8px #fbbf24;
+  }
+
+  /* ===== SETUP SCREEN ===== */
+  #setup .content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 6px 14px 10px;
+    display: flex; flex-direction: column; gap: 8px;
+  }
+
+  .label-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 3px;
+  }
+  .label-row label {
+    font-size: 0.7rem; font-weight: 700;
+    color: var(--purple-l);
+    text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  .count-ctrl {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .count-btn {
+    width: 28px; height: 28px;
+    border-radius: 50%; border: 1px solid var(--purple);
+    background: #1a0a3a;
+    color: var(--purple-l); font-size: 1.1rem;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all .2s;
+  }
+  .count-btn:active { background: var(--purple); }
+  .count-val {
+    font-size: 1.1rem; font-weight: 900;
+    color: var(--cyan); min-width: 20px; text-align: center;
+  }
+
+  .names-grid {
+    display: grid; gap: 6px;
+  }
+  .input-row {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .input-icon {
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .input-field {
+    flex: 1;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: inherit; font-size: 0.78rem;
+    padding: 6px 10px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .input-field:focus { border-color: var(--purple-l); box-shadow: var(--neon); }
+  .input-field::placeholder { color: var(--text2); }
+
+  .section-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 10px 12px;
+  }
+  .section-title {
+    font-size: 0.7rem; font-weight: 700;
+    color: var(--cyan);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .labels-grid { display: grid; gap: 5px; }
+
+  .btn-primary {
+    flex-shrink: 0;
+    width: calc(100% - 28px);
+    margin: 6px 14px;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--purple), #6d28d9);
+    border: none; border-radius: 12px;
+    color: #fff; font-family: inherit; font-size: 1rem; font-weight: 900;
+    letter-spacing: 2px;
+    cursor: pointer;
+    box-shadow: var(--neon);
+    transition: all .2s;
+  }
+  .btn-primary:active { transform: scale(0.97); opacity: .9; }
+
+  /* ===== GAME SCREEN ===== */
+  #game {
+    display: none;
+    flex-direction: column;
+    height: 100svh;
+    overflow: hidden;
+  }
+  #game.active { display: flex; }
+
+  #game .header { padding: 8px 12px 4px; }
+
+  .amida-wrap {
+    flex: 1;
+    display: flex; align-items: stretch;
+    padding: 4px 10px 4px;
+    min-height: 0;
+  }
+
+  #amidaCanvas {
+    width: 100%; height: 100%;
+    display: block;
+    border-radius: 10px;
+    background: #08082000;
+  }
+
+  .bottom-area {
+    flex-shrink: 0;
+    padding: 6px 14px 10px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+
+  .start-btn {
+    width: 100%;
+    padding: 12px;
+    background: linear-gradient(135deg, var(--cyan), #0891b2);
+    border: none; border-radius: 12px;
+    color: #fff; font-family: inherit; font-size: 1rem; font-weight: 900;
+    letter-spacing: 2px; cursor: pointer;
+    box-shadow: var(--neon-cyan);
+    transition: all .2s;
+  }
+  .start-btn:active { transform: scale(0.97); }
+  .start-btn:disabled { opacity: .5; cursor: default; }
+
+  .player-tags {
+    display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;
+  }
+  .player-tag {
+    font-size: 0.62rem; font-weight: 700;
+    padding: 3px 8px; border-radius: 20px;
+    border: 1px solid;
+  }
+
+  /* ===== RESULT SCREEN ===== */
+  #result {
+    display: none;
+    flex-direction: column;
+    height: 100svh;
+    overflow: hidden;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    gap: 6px;
+  }
+  #result.active { display: flex; }
+
+  #result h2 {
+    font-size: 1.2rem; font-weight: 900;
+    background: linear-gradient(135deg, var(--yellow), var(--pink));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 6px #fbbf2480);
+  }
+
+  .result-list {
+    width: 100%; max-width: 360px;
+    display: flex; flex-direction: column; gap: 6px;
+    overflow-y: auto;
+    max-height: 50svh;
+  }
+
+  .result-item {
+    display: flex; align-items: center; gap: 10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 8px 14px;
+    animation: popIn .4s ease both;
+  }
+  .result-item.hit {
+    border-color: var(--yellow);
+    box-shadow: 0 0 12px #fbbf2440;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(.8); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .result-num {
+    font-size: 1.3rem; font-weight: 900;
+    color: var(--purple-l);
+  }
+  .result-name {
+    flex: 1; font-size: 0.9rem; font-weight: 700;
+    color: var(--text);
+  }
+  .result-label {
+    font-size: 0.8rem; font-weight: 700;
+    padding: 3px 10px; border-radius: 20px;
+    background: #1a0a3a; border: 1px solid var(--purple);
+    color: var(--purple-l);
+  }
+  .result-item.hit .result-label {
+    background: #2a1800; border-color: var(--yellow);
+    color: var(--yellow); text-shadow: 0 0 6px #fbbf24;
+  }
+
+  .btn-row { display: flex; gap: 8px; width: 100%; max-width: 360px; }
+  .btn-secondary {
+    flex: 1; padding: 10px;
+    border-radius: 10px; border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--text2); font-family: inherit; font-size: 0.85rem; font-weight: 700;
+    cursor: pointer; transition: all .2s;
+  }
+  .btn-secondary:active { background: var(--border); }
+
+  .btn-again {
+    flex: 1; padding: 10px;
+    border-radius: 10px; border: none;
+    background: linear-gradient(135deg, var(--purple), #6d28d9);
+    color: #fff; font-family: inherit; font-size: 0.85rem; font-weight: 900;
+    cursor: pointer; letter-spacing: 1px;
+    box-shadow: var(--neon);
+    transition: all .2s;
+  }
+  .btn-again:active { transform: scale(0.97); }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  /* Stars bg */
+  #stars {
+    position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    overflow: hidden;
+  }
+  #stars span {
+    position: absolute; border-radius: 50%;
+    background: #fff; animation: twinkle 3s infinite ease-in-out alternate;
+  }
+  @keyframes twinkle { from { opacity: .1; } to { opacity: .6; } }
+  #app > * { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+<div id="stars"></div>
+<div id="app">
+
+  <!-- ===== SETUP SCREEN ===== -->
+  <div id="setup" class="screen active">
+    <div class="header">
+      <h1>🦊 あみだくじ</h1>
+      <div class="sub">AMIDA LOTTERY</div>
+    </div>
+    <div class="fox-wrap">
+      <div class="fox">🦊</div>
+      <div class="fox-msg" id="foxSetupMsg">何人で引く？</div>
+    </div>
+    <div class="content">
+      <!-- 人数 -->
+      <div class="section-card">
+        <div class="label-row">
+          <label>参加人数</label>
+          <div class="count-ctrl">
+            <button class="count-btn" id="btnMinus">－</button>
+            <div class="count-val" id="countVal">3</div>
+            <button class="count-btn" id="btnPlus">＋</button>
+          </div>
+        </div>
+        <div class="names-grid" id="namesGrid"></div>
+      </div>
+
+      <!-- 結果ラベル -->
+      <div class="section-card">
+        <div class="section-title">🏷 結果ラベル</div>
+        <div class="labels-grid" id="labelsGrid"></div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btnStart">✨ くじを作る</button>
+  </div>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <div id="game" class="screen">
+    <div class="header">
+      <h1>🦊 あみだくじ</h1>
+    </div>
+    <div class="fox-wrap" style="padding:2px 0">
+      <div class="fox" style="font-size:2rem">🦊</div>
+      <div class="fox-msg" id="foxGameMsg">どの道を辿る？</div>
+    </div>
+    <div class="amida-wrap">
+      <canvas id="amidaCanvas"></canvas>
+    </div>
+    <div class="bottom-area">
+      <div class="player-tags" id="playerTags"></div>
+      <button class="start-btn" id="btnRun">▶ スタート！</button>
+    </div>
+  </div>
+
+  <!-- ===== RESULT SCREEN ===== -->
+  <div id="result" class="screen">
+    <div class="fox-wrap">
+      <div class="fox" style="font-size:3rem">🦊</div>
+      <div class="fox-msg" id="foxResultMsg">結果発表じゃ！</div>
+    </div>
+    <h2>🎴 結 果 発 表 🎴</h2>
+    <div class="result-list" id="resultList"></div>
+    <div class="btn-row">
+      <button class="btn-secondary" id="btnReset">⚙ 設定に戻る</button>
+      <button class="btn-again" id="btnAgain">🔄 もう一度</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ===== STARS =====
+(function(){
+  const s = document.getElementById('stars');
+  for(let i=0;i<40;i++){
+    const el = document.createElement('span');
+    const sz = Math.random()*2+1;
+    el.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
+    s.appendChild(el);
+  }
+})();
+
+// ===== STATE =====
+let playerCount = 3;
+const MAX = 6; const MIN = 2;
+let playerNames = [];
+let resultLabels = [];
+let amidaData = null; // {verticals, horizontals}
+let results = []; // [{name, label, col}]
+const TAG_COLORS = [
+  {bg:'#2d1b69',border:'#7c3aed',color:'#c4b5fd'},
+  {bg:'#0c3344',border:'#06b6d4',color:'#67e8f9'},
+  {bg:'#3b0764',border:'#a855f7',color:'#e879f9'},
+  {bg:'#1e1b4b',border:'#6366f1',color:'#a5b4fc'},
+  {bg:'#0c2a1a',border:'#10b981',color:'#6ee7b7'},
+  {bg:'#2d1b0e',border:'#f59e0b',color:'#fcd34d'},
+];
+
+// ===== AUDIO =====
+const AudioCtx = window.AudioContext || window.webkitAudioContext;
+let ctx;
+function getCtx(){ if(!ctx) ctx = new AudioCtx(); return ctx; }
+
+function playBeep(freq=440, dur=0.08, type='sine', vol=0.3){
+  try {
+    const ac = getCtx();
+    const o = ac.createOscillator();
+    const g = ac.createGain();
+    o.connect(g); g.connect(ac.destination);
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, ac.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+dur);
+    o.start(); o.stop(ac.currentTime+dur);
+  } catch(e){}
+}
+
+function playTick(){ playBeep(800,0.05,'square',0.15); }
+function playTurn(){ playBeep(600,0.07,'sine',0.2); }
+function playFanfare(){
+  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playBeep(f,0.18,'sine',0.3),i*120));
+}
+function playWhoosh(){
+  try {
+    const ac = getCtx();
+    const buf = ac.createBuffer(1,ac.sampleRate*0.15,ac.sampleRate);
+    const d = buf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/d.length*8);
+    const s = ac.createBufferSource();
+    const g = ac.createGain();
+    const f = ac.createBiquadFilter();
+    f.type='bandpass'; f.frequency.value=1200; f.Q.value=1;
+    s.buffer=buf; s.connect(f); f.connect(g); g.connect(ac.destination);
+    g.gain.value=0.5; s.start();
+  } catch(e){}
+}
+
+// ===== SETUP SCREEN =====
+function buildSetup(){
+  buildNamesGrid();
+  buildLabelsGrid();
+}
+
+function buildNamesGrid(){
+  const grid = document.getElementById('namesGrid');
+  grid.innerHTML='';
+  const icons = ['🧑','👩','🧒','👦','🙋','🙍'];
+  for(let i=0;i<playerCount;i++){
+    const row = document.createElement('div');
+    row.className='input-row';
+    const ic = document.createElement('span');
+    ic.className='input-icon'; ic.textContent=icons[i]||'👤';
+    const inp = document.createElement('input');
+    inp.className='input-field';
+    inp.placeholder=`プレイヤー${i+1}`;
+    inp.value = playerNames[i]||'';
+    inp.addEventListener('input',()=>playerNames[i]=inp.value);
+    row.appendChild(ic); row.appendChild(inp);
+    grid.appendChild(row);
+  }
+}
+
+function buildLabelsGrid(){
+  const grid = document.getElementById('labelsGrid');
+  grid.innerHTML='';
+  const defaults = ['🎯 当たり','❌ ハズレ','😂 罰ゲーム','🎁 プレゼント','👑 1等','💀 大ハズレ'];
+  for(let i=0;i<playerCount;i++){
+    const inp = document.createElement('input');
+    inp.className='input-field';
+    inp.placeholder=`ラベル ${i+1}`;
+    inp.value = resultLabels[i] || (i===0 ? defaults[0] : defaults[1+((i-1)%2)]);
+    inp.addEventListener('input',()=>resultLabels[i]=inp.value);
+    resultLabels[i] = inp.value;
+    grid.appendChild(inp);
+  }
+}
+
+document.getElementById('btnMinus').addEventListener('click',()=>{
+  if(playerCount<=MIN) return;
+  playerCount--;
+  document.getElementById('countVal').textContent=playerCount;
+  playBeep(400,0.06,'sine',0.2);
+  buildSetup();
+  updateFoxSetup();
+});
+document.getElementById('btnPlus').addEventListener('click',()=>{
+  if(playerCount>=MAX) return;
+  playerCount++;
+  document.getElementById('countVal').textContent=playerCount;
+  playBeep(600,0.06,'sine',0.2);
+  buildSetup();
+  updateFoxSetup();
+});
+
+const foxSetupMsgs = ['さあ、始めよう！','何人で引く？','名前を入れてね','準備はいい？','いざ参らん！'];
+function updateFoxSetup(){
+  const msgs = ['2人勝負じゃ！','3人で決めよ！','4人で参ろう！','5人の戦い！','6人、全力じゃ！'];
+  document.getElementById('foxSetupMsg').textContent = msgs[playerCount-2]||'準備はいい？';
+}
+
+document.getElementById('btnStart').addEventListener('click',()=>{
+  // collect names
+  const inputs = document.querySelectorAll('#namesGrid .input-field');
+  playerNames = Array.from(inputs).map((el,i)=>el.value.trim()||`P${i+1}`);
+  const linputs = document.querySelectorAll('#labelsGrid .input-field');
+  resultLabels = Array.from(linputs).map((el,i)=>el.value.trim()||`賞品${i+1}`);
+  playBeep(523,0.1,'sine',0.3);
+  setTimeout(()=>playBeep(659,0.1,'sine',0.3),120);
+  showGame();
+});
+
+// ===== AMIDA GENERATION =====
+function generateAmida(n, rows){
+  // horizontals[r] = array of col indices where a horizontal bar starts (col → col+1)
+  const horizontals = [];
+  for(let r=0;r<rows;r++){
+    const row = [];
+    const available = [];
+    for(let c=0;c<n-1;c++) available.push(c);
+    // randomly pick non-adjacent cols
+    const shuffled = available.sort(()=>Math.random()-.5);
+    const chosen = [];
+    for(const c of shuffled){
+      if(!chosen.includes(c-1) && !chosen.includes(c+1) && !chosen.includes(c)){
+        if(Math.random()<0.45) chosen.push(c);
+      }
+    }
+    horizontals.push(chosen);
+  }
+  return horizontals;
+}
+
+function traceAmida(startCol, horizontals, n){
+  let c = startCol;
+  const path = [{row:-1, col:c, isH:false}];
+  for(let r=0;r<horizontals.length;r++){
+    // check if can go right
+    if(horizontals[r].includes(c)){
+      path.push({row:r, col:c, isH:true, dir:'right'});
+      c++;
+    } else if(c>0 && horizontals[r].includes(c-1)){
+      path.push({row:r, col:c, isH:true, dir:'left'});
+      c--;
+    }
+    path.push({row:r, col:c, isH:false});
+  }
+  return {endCol:c, path};
+}
+
+// ===== DRAW AMIDA =====
+const canvas = document.getElementById('amidaCanvas');
+const ctx2d = canvas.getContext('2d');
+let ROWS = 8;
+let amidaHorizontals = null;
+let tracePaths = []; // per player
+let animating = false;
+
+function resizeCanvas(){
+  const wrap = canvas.parentElement;
+  const W = wrap.clientWidth - 20;
+  const H = wrap.clientHeight - 8;
+  canvas.width = W * devicePixelRatio;
+  canvas.height = H * devicePixelRatio;
+  canvas.style.width = W+'px';
+  canvas.style.height = H+'px';
+  ctx2d.scale(devicePixelRatio, devicePixelRatio);
+  return {W, H};
+}
+
+function getLayout(){
+  const W = parseInt(canvas.style.width)||canvas.width;
+  const H = parseInt(canvas.style.height)||canvas.height;
+  const n = playerCount;
+  const padX = 32, padTop = 24, padBot = 24;
+  const colW = (W - padX*2) / (n-1);
+  const rowH = (H - padTop - padBot) / (ROWS+1);
+  const cols = Array.from({length:n},(_,i)=>padX + i*colW);
+  const yTop = padTop;
+  const yBot = H - padBot;
+  const rowY = (r)=> yTop + (r+1)*rowH;
+  return {W,H,cols,yTop,yBot,rowH,rowY,n};
+}
+
+const PLAYER_COLORS = [
+  '#c4b5fd','#67e8f9','#f0abfc','#a5b4fc','#6ee7b7','#fcd34d'
+];
+
+function drawAmida(highlightPaths=[], progressFrac=1){
+  const {W,H,cols,yTop,yBot,rowY,n} = getLayout();
+  ctx2d.clearRect(0,0,W,H);
+
+  // Grid glow
+  ctx2d.shadowColor='transparent';
+
+  // Draw verticals
+  for(let c=0;c<n;c++){
+    ctx2d.beginPath();
+    ctx2d.moveTo(cols[c], yTop);
+    ctx2d.lineTo(cols[c], yBot);
+    ctx2d.strokeStyle='#2a2a6080';
+    ctx2d.lineWidth=2;
+    ctx2d.stroke();
+  }
+
+  // Draw horizontals
+  if(amidaHorizontals){
+    for(let r=0;r<ROWS;r++){
+      for(const c of amidaHorizontals[r]){
+        const y = rowY(r);
+        ctx2d.beginPath();
+        ctx2d.moveTo(cols[c], y);
+        ctx2d.lineTo(cols[c+1], y);
+        ctx2d.strokeStyle='#4a4a9080';
+        ctx2d.lineWidth=2;
+        ctx2d.shadowColor='#7c3aed40';
+        ctx2d.shadowBlur=4;
+        ctx2d.stroke();
+        ctx2d.shadowBlur=0;
+      }
+    }
+  }
+
+  // Draw highlight paths
+  if(highlightPaths.length>0 && amidaHorizontals){
+    for(let pi=0;pi<highlightPaths.length;pi++){
+      const {path, endCol} = highlightPaths[pi];
+      const color = PLAYER_COLORS[pi % PLAYER_COLORS.length];
+      ctx2d.strokeStyle = color;
+      ctx2d.lineWidth = 3;
+      ctx2d.shadowColor = color;
+      ctx2d.shadowBlur = 10;
+
+      // Calculate total segments for this path based on progressFrac
+      // path is array of {row, col, isH, dir?}
+      // We draw segment by segment
+      // Segments: vertical from top to first row, then alternating H and V...
+      // Build segment list: list of {x1,y1,x2,y2}
+      const segs = buildSegments(path, cols, yTop, yBot, rowY, n);
+      const totalLen = segs.reduce((s,sg)=>s+sg.len,0);
+      const drawLen = totalLen * progressFrac;
+      let drawn = 0;
+
+      ctx2d.beginPath();
+      let started = false;
+      for(const seg of segs){
+        if(drawn >= drawLen) break;
+        const remain = drawLen - drawn;
+        const frac = Math.min(1, remain / seg.len);
+        const ex = seg.x1 + (seg.x2-seg.x1)*frac;
+        const ey = seg.y1 + (seg.y2-seg.y1)*frac;
+        if(!started){ ctx2d.moveTo(seg.x1,seg.y1); started=true; }
+        ctx2d.lineTo(ex, ey);
+        drawn += seg.len * frac;
+      }
+      ctx2d.stroke();
+      ctx2d.shadowBlur=0;
+
+      // Dot at current position
+      if(progressFrac<1){
+        let drawn2=0;
+        let dotX=cols[path[0]?.col||0], dotY=yTop;
+        for(const seg of segs){
+          if(drawn2>=drawLen) break;
+          const remain=drawLen-drawn2;
+          const frac=Math.min(1,remain/seg.len);
+          dotX=seg.x1+(seg.x2-seg.x1)*frac;
+          dotY=seg.y1+(seg.y2-seg.y1)*frac;
+          drawn2+=seg.len*frac;
+        }
+        ctx2d.beginPath();
+        ctx2d.arc(dotX,dotY,6,0,Math.PI*2);
+        ctx2d.fillStyle=color;
+        ctx2d.shadowColor=color; ctx2d.shadowBlur=15;
+        ctx2d.fill(); ctx2d.shadowBlur=0;
+      }
+    }
+  }
+
+  // Draw top labels (player names)
+  for(let c=0;c<n;c++){
+    const color = PLAYER_COLORS[c % PLAYER_COLORS.length];
+    ctx2d.fillStyle = color;
+    ctx2d.font = `bold ${Math.min(11, Math.max(8, 280/n))}px 'M PLUS Rounded 1c'`;
+    ctx2d.textAlign='center';
+    const name = (playerNames[c]||`P${c+1}`).slice(0,4);
+    ctx2d.shadowColor=color; ctx2d.shadowBlur=6;
+    ctx2d.fillText(name, cols[c], yTop-8);
+    ctx2d.shadowBlur=0;
+
+    // Top dot
+    ctx2d.beginPath();
+    ctx2d.arc(cols[c], yTop, 5, 0, Math.PI*2);
+    ctx2d.fillStyle=color;
+    ctx2d.fill();
+  }
+
+  // Draw bottom labels (result labels)
+  for(let c=0;c<n;c++){
+    const color = '#fbbf24';
+    ctx2d.fillStyle=color;
+    ctx2d.font=`bold ${Math.min(10,Math.max(7,260/n))}px 'M PLUS Rounded 1c'`;
+    ctx2d.textAlign='center';
+    const label=(resultLabels[c]||`${c+1}`).slice(0,5);
+    ctx2d.shadowColor='#fbbf2480'; ctx2d.shadowBlur=6;
+    ctx2d.fillText(label, cols[c], yBot+14);
+    ctx2d.shadowBlur=0;
+
+    // Bottom dot
+    ctx2d.beginPath();
+    ctx2d.arc(cols[c], yBot, 5, 0, Math.PI*2);
+    ctx2d.fillStyle='#fbbf2480';
+    ctx2d.fill();
+  }
+}
+
+function buildSegments(path, cols, yTop, yBot, rowY, n){
+  // path[0] is always {row:-1, col:startCol}
+  const segs = [];
+  // first segment: yTop → rowY(0) or yBot if no rows
+  // Actually path contains node-like entries; we derive segments between consecutive nodes
+
+  // Rebuild from trace
+  // trace: starts at top of startCol
+  // path entries: {row, col, isH, dir?}
+  // between row r-1 and row r: vertical segment
+  // at row r (isH): horizontal segment
+  // final: vertical from last row to bottom
+
+  // Simpler: just re-trace
+  const ROWS2 = amidaHorizontals.length;
+  const startCol = path[0].col;
+  let c = startCol;
+  let prevY = yTop;
+
+  for(let r=0; r<ROWS2; r++){
+    const y = rowY(r);
+    // vertical
+    segs.push({x1:cols[c],y1:prevY,x2:cols[c],y2:y, len:Math.abs(y-prevY)});
+    prevY = y;
+    // horizontal?
+    if(amidaHorizontals[r].includes(c)){
+      const nc = c+1;
+      segs.push({x1:cols[c],y1:y,x2:cols[nc],y2:y, len:Math.abs(cols[nc]-cols[c])});
+      c = nc;
+    } else if(c>0 && amidaHorizontals[r].includes(c-1)){
+      const nc = c-1;
+      segs.push({x1:cols[c],y1:y,x2:cols[nc],y2:y, len:Math.abs(cols[nc]-cols[c])});
+      c = nc;
+    }
+  }
+  // final vertical to bottom
+  segs.push({x1:cols[c],y1:prevY,x2:cols[c],y2:yBot, len:Math.abs(yBot-prevY)});
+  return segs;
+}
+
+// ===== SHOW GAME =====
+function showGame(){
+  showScreen('game');
+
+  ROWS = playerCount <= 3 ? 7 : playerCount <= 4 ? 8 : 9;
+  amidaHorizontals = generateAmida(playerCount, ROWS);
+
+  // Compute results
+  tracePaths = [];
+  results = [];
+  // Shuffle result labels → assign to end columns
+  const labelOrder = Array.from({length:playerCount},(_,i)=>i);
+  // Each player starts at col i and ends at endCol
+  const endCols = {};
+  for(let c=0;c<playerCount;c++){
+    const {endCol, path} = traceAmida(c, amidaHorizontals, playerCount);
+    tracePaths.push({path, endCol});
+    endCols[c] = endCol;
+  }
+
+  // Build results: for each player, label is resultLabels[endCol]
+  for(let i=0;i<playerCount;i++){
+    results.push({
+      name: playerNames[i],
+      col: i,
+      endCol: tracePaths[i].endCol,
+      label: resultLabels[tracePaths[i].endCol] || `賞品${tracePaths[i].endCol+1}`
+    });
+  }
+
+  // Build player tags
+  const tags = document.getElementById('playerTags');
+  tags.innerHTML='';
+  for(let i=0;i<playerCount;i++){
+    const t = document.createElement('span');
+    t.className='player-tag';
+    const col = TAG_COLORS[i % TAG_COLORS.length];
+    t.style.background=col.bg; t.style.borderColor=col.border; t.style.color=col.color;
+    t.textContent=playerNames[i]||`P${i+1}`;
+    tags.appendChild(t);
+  }
+
+  requestAnimationFrame(()=>{
+    resizeCanvas();
+    drawAmida();
+  });
+
+  document.getElementById('btnRun').disabled = false;
+  document.getElementById('foxGameMsg').textContent = 'どの道を辿る？';
+}
+
+// Animation
+let animStart = null;
+const ANIM_DUR = 2200; // ms
+
+document.getElementById('btnRun').addEventListener('click',()=>{
+  if(animating) return;
+  animating = true;
+  document.getElementById('btnRun').disabled = true;
+  document.getElementById('foxGameMsg').textContent = 'いざ、参らん！';
+  playWhoosh();
+
+  animStart = null;
+  let lastTickRow = -1;
+
+  function animate(ts){
+    if(!animStart) animStart = ts;
+    const elapsed = ts - animStart;
+    const frac = Math.min(1, elapsed / ANIM_DUR);
+
+    // Tick sound at each row boundary
+    const curRow = Math.floor(frac * (ROWS+1));
+    if(curRow !== lastTickRow){
+      lastTickRow = curRow;
+      if(curRow > 0 && curRow <= ROWS) playTick();
+    }
+
+    resizeCanvas();
+    drawAmida(tracePaths, frac);
+
+    if(frac < 1){
+      requestAnimationFrame(animate);
+    } else {
+      animating = false;
+      playFanfare();
+      setTimeout(showResult, 600);
+    }
+  }
+  requestAnimationFrame(animate);
+});
+
+// ===== RESULT SCREEN =====
+function showResult(){
+  showScreen('result');
+  const list = document.getElementById('resultList');
+  list.innerHTML='';
+
+  // Sort by endCol
+  const sorted = [...results].sort((a,b)=>a.endCol-b.endCol);
+
+  sorted.forEach((r,i)=>{
+    const item = document.createElement('div');
+    item.className='result-item' + (r.label.includes('当たり')||r.label.includes('1等')||r.label.includes('👑') ? ' hit' : '');
+    item.style.animationDelay = `${i*0.1}s`;
+
+    const num = document.createElement('div');
+    num.className='result-num';
+    num.textContent = `${r.endCol+1}`;
+
+    const name = document.createElement('div');
+    name.className='result-name';
+    name.textContent = r.name;
+
+    const label = document.createElement('div');
+    label.className='result-label';
+    label.textContent = r.label;
+
+    item.appendChild(num); item.appendChild(name); item.appendChild(label);
+    list.appendChild(item);
+  });
+
+  const msgs = ['運命は決まったぞ！','これが天の声じゃ！','受け入れるしかない！','神のご加護を！'];
+  document.getElementById('foxResultMsg').textContent = msgs[Math.floor(Math.random()*msgs.length)];
+}
+
+document.getElementById('btnAgain').addEventListener('click',()=>{
+  playBeep(523,0.08,'sine',0.25);
+  showGame();
+});
+
+document.getElementById('btnReset').addEventListener('click',()=>{
+  playBeep(400,0.08,'sine',0.2);
+  showScreen('setup');
+});
+
+// ===== UTILS =====
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>{
+    s.classList.remove('active');
+  });
+  document.getElementById(id).classList.add('active');
+}
+
+// ===== INIT =====
+buildSetup();
+updateFoxSetup();
+
+window.addEventListener('resize',()=>{
+  if(document.getElementById('game').classList.contains('active')){
+    resizeCanvas();
+    drawAmida(animating ? [] : tracePaths);
+  }
+});
+</script>
+</body>
+</html>
