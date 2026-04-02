@@ -273,6 +273,7 @@ let currentPlayer = 0;
 let selectedCols = [];     // [colIdx for P0, colIdx for P1, ...] -1=not yet
 let playerPaths = [];      // [{endCol, waypoints}] per player
 let phase = 'select';      // 'select' | 'animating' | 'between'
+let showBottomLabels = false;
 
 // Animation
 let animFrac = 0, animTs0 = null, animRaf = null, lastCrossedWp = 0;
@@ -507,12 +508,29 @@ function draw() {
     ctx2.fill(); ctx2.shadowBlur = 0;
   }
 
-  // bottom dots (labels hidden until results)
+  // bottom dots + labels (labels shown after all players done)
   for (let c = 0; c < n; c++) {
-    ctx2.beginPath(); ctx2.arc(cols[c], yBot, 4, 0, Math.PI * 2);
-    ctx2.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx2.shadowColor = 'rgba(255,255,255,0.3)'; ctx2.shadowBlur = 4;
+    // find who ended at this column
+    const pi = playerPaths.findIndex(p => p && p.endCol === c);
+    const pc = pi >= 0 ? PCOLS[pi % PCOLS.length] : null;
+    const dotColor = pc ? pc.stroke : 'rgba(255,255,255,0.4)';
+
+    ctx2.beginPath(); ctx2.arc(cols[c], yBot, 5, 0, Math.PI * 2);
+    ctx2.fillStyle = dotColor;
+    ctx2.shadowColor = pc ? pc.glow : 'rgba(255,255,255,0.3)';
+    ctx2.shadowBlur = pc ? 10 : 4;
     ctx2.fill(); ctx2.shadowBlur = 0;
+
+    if (showBottomLabels) {
+      const label = (resultLabels[c] || `賞品${c+1}`).slice(0, 6);
+      ctx2.fillStyle = pc ? pc.stroke : '#fde68a';
+      ctx2.font = `bold ${Math.min(10, Math.max(7, 260/n))}px 'M PLUS Rounded 1c'`;
+      ctx2.textAlign = 'center';
+      ctx2.shadowColor = pc ? pc.glow : '#fbbf2460';
+      ctx2.shadowBlur = 6;
+      ctx2.fillText(label, cols[c], yBot + 15);
+      ctx2.shadowBlur = 0;
+    }
   }
 }
 
@@ -540,10 +558,12 @@ function animLoop(ts) {
   } else {
     phase = 'between';
     const isLast = currentPlayer >= playerCount - 1;
+    if (isLast) showBottomLabels = true;
     const btn = document.getElementById('btnNext');
     btn.textContent = isLast ? '🎴 結果を見る！' : '次の人へ →';
     btn.classList.add('vis');
     document.getElementById('foxGame').textContent = isLast ? 'さあ、結果を見よ！' : '次の者よ、参れ！';
+    draw();
     playFanfare();
   }
 }
@@ -611,6 +631,7 @@ function startGame() {
   selectedCols = new Array(playerCount).fill(-1);
   playerPaths = new Array(playerCount).fill(null);
   phase = 'select';
+  showBottomLabels = false;
   animTs0 = null; animFrac = 0; lastCrossedWp = 0;
   if (animRaf) { cancelAnimationFrame(animRaf); animRaf = null; }
 
