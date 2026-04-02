@@ -6,936 +6,740 @@
 <title>Day 05 - あみだくじ</title>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-  :root {
-    --bg: #2d1b69;
-    --bg2: #3b1f7a;
-    --card: #ffffff18;
-    --border: #ffffff30;
-    --purple: #c084fc;
-    --purple-l: #e879f9;
-    --cyan: #22d3ee;
-    --cyan-l: #67e8f9;
-    --pink: #f472b6;
-    --yellow: #fde68a;
-    --text: #ffffff;
-    --text2: #ddd6fe;
-    --neon: 0 0 10px #e879f9, 0 0 24px #c084fc60;
-    --neon-cyan: 0 0 10px #22d3ee, 0 0 24px #22d3ee50;
-  }
+html, body {
+  width: 100%; height: 100svh; overflow: hidden;
+  background: linear-gradient(145deg, #4c1d95 0%, #1e1b4b 35%, #0e7490 70%, #7c3aed 100%);
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  color: #fff;
+}
 
-  html, body {
-    width: 100%; height: 100svh;
-    overflow: hidden;
-    background: linear-gradient(145deg, #4c1d95 0%, #1e1b4b 35%, #0e7490 70%, #7c3aed 100%);
-    font-family: 'M PLUS Rounded 1c', sans-serif;
-    color: var(--text);
-  }
+#app { width: 100%; height: 100svh; display: flex; flex-direction: column; overflow: hidden; }
 
-  #app {
-    width: 100%; height: 100svh;
-    display: flex; flex-direction: column;
-    overflow: hidden;
-  }
+.screen { display: none; flex-direction: column; height: 100svh; overflow: hidden; }
+.screen.active { display: flex; }
 
-  /* ===== SCREENS ===== */
-  .screen {
-    display: none;
-    flex-direction: column;
-    height: 100svh;
-    overflow: hidden;
-  }
-  .screen.active { display: flex; }
+/* HEADER */
+.hdr {
+  flex-shrink: 0; text-align: center; padding: 8px 12px 4px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.35) 0%, transparent 100%);
+}
+.hdr h1 {
+  font-size: 1.2rem; font-weight: 900; letter-spacing: 3px;
+  background: linear-gradient(90deg, #e879f9, #22d3ee);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 8px #e879f950);
+}
 
-  /* ===== HEADER ===== */
-  .header {
-    flex-shrink: 0;
-    text-align: center;
-    padding: 10px 12px 6px;
-    background: linear-gradient(180deg, #1a0a3a 0%, transparent 100%);
-  }
-  .header h1 {
-    font-size: 1.3rem; font-weight: 900;
-    background: linear-gradient(135deg, var(--purple-l), var(--cyan));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    letter-spacing: 2px;
-    text-shadow: none;
-    filter: drop-shadow(0 0 8px #a855f770);
-  }
-  .header .sub { font-size: 0.65rem; color: var(--text2); margin-top: 1px; }
+/* FOX ROW */
+.fox-row {
+  flex-shrink: 0; display: flex; align-items: center;
+  justify-content: center; gap: 8px; padding: 3px 12px;
+}
+.fox-icon { font-size: 1.8rem; filter: drop-shadow(0 0 6px #fbbf2460); }
+.fox-bubble {
+  background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px; padding: 4px 14px;
+  font-size: 0.72rem; font-weight: 700; color: #fde68a;
+  text-shadow: 0 0 8px #fbbf24;
+}
 
-  /* ===== FOX ===== */
-  .fox-wrap {
-    flex-shrink: 0;
-    display: flex; flex-direction: column; align-items: center;
-    padding: 4px 0;
-  }
-  .fox { font-size: 2.8rem; line-height: 1; filter: drop-shadow(0 0 10px #fbbf2480); }
-  .fox-msg {
-    font-size: 0.72rem; font-weight: 700;
-    color: var(--yellow);
-    background: #1a1200;
-    border: 1px solid #fbbf2440;
-    border-radius: 20px;
-    padding: 3px 12px;
-    margin-top: 4px;
-    text-shadow: 0 0 8px #fbbf24;
-  }
+/* SETUP */
+.setup-body { flex: 1; overflow-y: auto; padding: 5px 13px 5px; display: flex; flex-direction: column; gap: 7px; }
+.card {
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 12px; padding: 9px 12px;
+}
+.card-title { font-size: 0.67rem; font-weight: 700; color: #22d3ee; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 7px; }
+.count-row { display: flex; align-items: center; justify-content: space-between; }
+.cnt-ctrl { display: flex; align-items: center; gap: 10px; }
+.cnt-btn {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.3); background: rgba(255,255,255,0.1);
+  color: #fff; font-size: 1.1rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; transition: background .15s;
+}
+.cnt-btn:active { background: rgba(255,255,255,0.25); }
+.cnt-val { font-size: 1.2rem; font-weight: 900; color: #e879f9; min-width: 22px; text-align: center; }
+.names-grid { display: grid; gap: 5px; margin-top: 8px; }
+.inp-row { display: flex; gap: 6px; align-items: center; }
+.inp-row span { font-size: 0.95rem; }
+.inp {
+  flex: 1; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 8px; color: #fff; font-family: inherit; font-size: 0.77rem;
+  padding: 6px 10px; outline: none; transition: border-color .2s;
+}
+.inp:focus { border-color: #e879f9; box-shadow: 0 0 8px #e879f930; }
+.inp::placeholder { color: rgba(255,255,255,0.38); }
+.labels-grid { display: grid; gap: 5px; }
 
-  /* ===== SETUP SCREEN ===== */
-  #setup .content {
-    flex: 1;
-    overflow-y: auto;
-    padding: 6px 14px 10px;
-    display: flex; flex-direction: column; gap: 8px;
-  }
+.btn-main {
+  flex-shrink: 0; margin: 6px 13px 10px; padding: 12px;
+  background: linear-gradient(135deg, #7c3aed, #0891b2); border: none; border-radius: 13px;
+  color: #fff; font-family: inherit; font-size: 0.98rem; font-weight: 900;
+  letter-spacing: 2px; cursor: pointer; box-shadow: 0 0 20px #7c3aed60; transition: all .2s;
+}
+.btn-main:active { transform: scale(0.97); }
 
-  .label-row {
-    display: flex; align-items: center; justify-content: space-between;
-    margin-bottom: 3px;
-  }
-  .label-row label {
-    font-size: 0.7rem; font-weight: 700;
-    color: var(--purple-l);
-    text-transform: uppercase; letter-spacing: 1px;
-  }
+/* GAME */
+.turn-bar {
+  flex-shrink: 0; margin: 3px 13px; padding: 7px 13px;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.turn-label { font-size: 0.65rem; color: rgba(255,255,255,0.55); font-weight: 700; }
+.turn-name { font-size: 0.92rem; font-weight: 900; color: #fde68a; text-shadow: 0 0 8px #fbbf24; }
+.turn-prog { font-size: 0.65rem; color: rgba(255,255,255,0.5); }
 
-  .count-ctrl {
-    display: flex; align-items: center; gap: 8px;
-  }
-  .count-btn {
-    width: 28px; height: 28px;
-    border-radius: 50%; border: 1px solid var(--purple);
-    background: #1a0a3a;
-    color: var(--purple-l); font-size: 1.1rem;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    transition: all .2s;
-  }
-  .count-btn:active { background: var(--purple); }
-  .count-val {
-    font-size: 1.1rem; font-weight: 900;
-    color: var(--cyan); min-width: 20px; text-align: center;
-  }
+.col-btns { flex-shrink: 0; display: flex; gap: 5px; justify-content: center; padding: 3px 13px; }
+.col-btn {
+  flex: 1; max-width: 50px; height: 34px; border-radius: 8px;
+  border: 1.5px solid rgba(255,255,255,0.4); background: rgba(255,255,255,0.1);
+  color: #fff; font-family: inherit; font-size: 0.82rem; font-weight: 900;
+  cursor: pointer; transition: all .2s;
+}
+.col-btn:active:not(:disabled) { transform: scale(0.93); }
+.col-btn:disabled { opacity: 0.35; cursor: default; }
+.col-btn.taken { border-width: 2px; opacity: 0.85; }
 
-  .names-grid {
-    display: grid; gap: 6px;
-  }
-  .input-row {
-    display: flex; align-items: center; gap: 6px;
-  }
-  .input-icon {
-    font-size: 1rem; flex-shrink: 0;
-  }
-  .input-field {
-    flex: 1;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-family: inherit; font-size: 0.78rem;
-    padding: 6px 10px;
-    outline: none;
-    transition: border-color .2s;
-  }
-  .input-field:focus { border-color: var(--purple-l); box-shadow: var(--neon); }
-  .input-field::placeholder { color: var(--text2); }
+.amida-wrap { flex: 1; min-height: 0; padding: 3px 10px 3px; display: flex; }
+#amidaCanvas { width: 100%; height: 100%; display: block; border-radius: 10px; }
 
-  .section-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px 12px;
-  }
-  .section-title {
-    font-size: 0.7rem; font-weight: 700;
-    color: var(--cyan);
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-bottom: 6px;
-  }
-  .labels-grid { display: grid; gap: 5px; }
+.game-foot { flex-shrink: 0; padding: 5px 13px 10px; }
+.btn-next {
+  width: 100%; padding: 12px; display: none;
+  background: linear-gradient(135deg, #e879f9, #7c3aed); border: none; border-radius: 12px;
+  color: #fff; font-family: inherit; font-size: 0.92rem; font-weight: 900;
+  letter-spacing: 1px; cursor: pointer; box-shadow: 0 0 16px #e879f940; transition: all .2s;
+}
+.btn-next.vis { display: block; }
+.btn-next:active { transform: scale(0.97); }
 
-  .btn-primary {
-    flex-shrink: 0;
-    width: calc(100% - 28px);
-    margin: 6px 14px;
-    padding: 12px;
-    background: linear-gradient(135deg, var(--purple), #6d28d9);
-    border: none; border-radius: 12px;
-    color: #fff; font-family: inherit; font-size: 1rem; font-weight: 900;
-    letter-spacing: 2px;
-    cursor: pointer;
-    box-shadow: var(--neon);
-    transition: all .2s;
-  }
-  .btn-primary:active { transform: scale(0.97); opacity: .9; }
+/* RESULTS */
+#result { align-items: center; justify-content: center; gap: 8px; padding: 12px 15px; }
+#result h2 {
+  font-size: 1.05rem; font-weight: 900;
+  background: linear-gradient(90deg, #fde68a, #f472b6);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 0 5px #fbbf2450);
+}
+.result-list { width: 100%; max-width: 360px; display: flex; flex-direction: column; gap: 6px; overflow-y: auto; max-height: 54svh; }
+.ri {
+  display: flex; align-items: center; gap: 10px;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 11px; padding: 8px 13px;
+  animation: popIn .35s ease both;
+}
+@keyframes popIn { from { transform: scale(.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+.ri-num { font-size: 1.2rem; font-weight: 900; min-width: 26px; text-align: center; }
+.ri-name { flex: 1; font-size: 0.88rem; font-weight: 700; }
+.ri-label { font-size: 0.73rem; font-weight: 700; padding: 3px 9px; border-radius: 20px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.25); }
+.btn-row { display: flex; gap: 8px; width: 100%; max-width: 360px; }
+.btn-reset {
+  flex: 1; padding: 11px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);
+  font-family: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+}
+.btn-again {
+  flex: 1; padding: 11px; border-radius: 10px; border: none;
+  background: linear-gradient(135deg, #7c3aed, #0891b2);
+  color: #fff; font-family: inherit; font-size: 0.82rem; font-weight: 900;
+  cursor: pointer; letter-spacing: 1px; box-shadow: 0 0 10px #7c3aed40;
+}
 
-  /* ===== GAME SCREEN ===== */
-  #game {
-    display: none;
-    flex-direction: column;
-    height: 100svh;
-    overflow: hidden;
-  }
-  #game.active { display: flex; }
-
-  #game .header { padding: 8px 12px 4px; }
-
-  .amida-wrap {
-    flex: 1;
-    display: flex; align-items: stretch;
-    padding: 4px 10px 4px;
-    min-height: 0;
-  }
-
-  #amidaCanvas {
-    width: 100%; height: 100%;
-    display: block;
-    border-radius: 10px;
-    background: #08082000;
-  }
-
-  .bottom-area {
-    flex-shrink: 0;
-    padding: 6px 14px 10px;
-    display: flex; flex-direction: column; gap: 6px;
-  }
-
-  .start-btn {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, var(--cyan), #0891b2);
-    border: none; border-radius: 12px;
-    color: #fff; font-family: inherit; font-size: 1rem; font-weight: 900;
-    letter-spacing: 2px; cursor: pointer;
-    box-shadow: var(--neon-cyan);
-    transition: all .2s;
-  }
-  .start-btn:active { transform: scale(0.97); }
-  .start-btn:disabled { opacity: .5; cursor: default; }
-
-  .player-tags {
-    display: flex; gap: 5px; flex-wrap: wrap; justify-content: center;
-  }
-  .player-tag {
-    font-size: 0.62rem; font-weight: 700;
-    padding: 3px 8px; border-radius: 20px;
-    border: 1px solid;
-  }
-
-  /* ===== RESULT SCREEN ===== */
-  #result {
-    display: none;
-    flex-direction: column;
-    height: 100svh;
-    overflow: hidden;
-    align-items: center;
-    justify-content: center;
-    padding: 10px 16px;
-    gap: 6px;
-  }
-  #result.active { display: flex; }
-
-  #result h2 {
-    font-size: 1.2rem; font-weight: 900;
-    background: linear-gradient(135deg, var(--yellow), var(--pink));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 0 6px #fbbf2480);
-  }
-
-  .result-list {
-    width: 100%; max-width: 360px;
-    display: flex; flex-direction: column; gap: 6px;
-    overflow-y: auto;
-    max-height: 50svh;
-  }
-
-  .result-item {
-    display: flex; align-items: center; gap: 10px;
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 8px 14px;
-    animation: popIn .4s ease both;
-  }
-  .result-item.hit {
-    border-color: var(--yellow);
-    box-shadow: 0 0 12px #fbbf2440;
-  }
-
-  @keyframes popIn {
-    from { transform: scale(.8); opacity: 0; }
-    to   { transform: scale(1); opacity: 1; }
-  }
-
-  .result-num {
-    font-size: 1.3rem; font-weight: 900;
-    color: var(--purple-l);
-  }
-  .result-name {
-    flex: 1; font-size: 0.9rem; font-weight: 700;
-    color: var(--text);
-  }
-  .result-label {
-    font-size: 0.8rem; font-weight: 700;
-    padding: 3px 10px; border-radius: 20px;
-    background: #1a0a3a; border: 1px solid var(--purple);
-    color: var(--purple-l);
-  }
-  .result-item.hit .result-label {
-    background: #2a1800; border-color: var(--yellow);
-    color: var(--yellow); text-shadow: 0 0 6px #fbbf24;
-  }
-
-  .btn-row { display: flex; gap: 8px; width: 100%; max-width: 360px; }
-  .btn-secondary {
-    flex: 1; padding: 10px;
-    border-radius: 10px; border: 1px solid var(--border);
-    background: var(--card);
-    color: var(--text2); font-family: inherit; font-size: 0.85rem; font-weight: 700;
-    cursor: pointer; transition: all .2s;
-  }
-  .btn-secondary:active { background: var(--border); }
-
-  .btn-again {
-    flex: 1; padding: 10px;
-    border-radius: 10px; border: none;
-    background: linear-gradient(135deg, var(--purple), #6d28d9);
-    color: #fff; font-family: inherit; font-size: 0.85rem; font-weight: 900;
-    cursor: pointer; letter-spacing: 1px;
-    box-shadow: var(--neon);
-    transition: all .2s;
-  }
-  .btn-again:active { transform: scale(0.97); }
-
-  /* scrollbar */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
-
-  /* Stars bg */
-  #stars {
-    position: fixed; inset: 0; pointer-events: none; z-index: 0;
-    overflow: hidden;
-  }
-  #stars span {
-    position: absolute; border-radius: 50%;
-    background: #fff; animation: twinkle 3s infinite ease-in-out alternate;
-  }
-  @keyframes twinkle { from { opacity: .1; } to { opacity: .6; } }
-  #app > * { position: relative; z-index: 1; }
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 2px; }
 </style>
 </head>
 <body>
-<div id="stars"></div>
 <div id="app">
 
-  <!-- ===== SETUP SCREEN ===== -->
-  <div id="setup" class="screen active">
-    <div class="header">
-      <h1>🦊 あみだくじ</h1>
-      <div class="sub">AMIDA LOTTERY</div>
-    </div>
-    <div class="fox-wrap">
-      <div class="fox">🦊</div>
-      <div class="fox-msg" id="foxSetupMsg">何人で引く？</div>
-    </div>
-    <div class="content">
-      <!-- 人数 -->
-      <div class="section-card">
-        <div class="label-row">
-          <label>参加人数</label>
-          <div class="count-ctrl">
-            <button class="count-btn" id="btnMinus">－</button>
-            <div class="count-val" id="countVal">3</div>
-            <button class="count-btn" id="btnPlus">＋</button>
-          </div>
+<!-- SETUP -->
+<div id="setup" class="screen active">
+  <div class="hdr"><h1>🦊 あみだくじ</h1></div>
+  <div class="fox-row">
+    <span class="fox-icon">🦊</span>
+    <div class="fox-bubble" id="foxSetup">何人で引くかの？</div>
+  </div>
+  <div class="setup-body">
+    <div class="card">
+      <div class="count-row">
+        <div class="card-title" style="margin:0">参加人数</div>
+        <div class="cnt-ctrl">
+          <button class="cnt-btn" id="btnMinus">－</button>
+          <div class="cnt-val" id="cntVal">3</div>
+          <button class="cnt-btn" id="btnPlus">＋</button>
         </div>
-        <div class="names-grid" id="namesGrid"></div>
       </div>
-
-      <!-- 結果ラベル -->
-      <div class="section-card">
-        <div class="section-title">🏷 結果ラベル</div>
-        <div class="labels-grid" id="labelsGrid"></div>
-      </div>
+      <div class="names-grid" id="namesGrid"></div>
     </div>
-
-    <button class="btn-primary" id="btnStart">✨ くじを作る</button>
-  </div>
-
-  <!-- ===== GAME SCREEN ===== -->
-  <div id="game" class="screen">
-    <div class="header">
-      <h1>🦊 あみだくじ</h1>
-    </div>
-    <div class="fox-wrap" style="padding:2px 0">
-      <div class="fox" style="font-size:2rem">🦊</div>
-      <div class="fox-msg" id="foxGameMsg">どの道を辿る？</div>
-    </div>
-    <div class="amida-wrap">
-      <canvas id="amidaCanvas"></canvas>
-    </div>
-    <div class="bottom-area">
-      <div class="player-tags" id="playerTags"></div>
-      <button class="start-btn" id="btnRun">▶ スタート！</button>
+    <div class="card">
+      <div class="card-title">🏷 結果ラベル</div>
+      <div class="labels-grid" id="labelsGrid"></div>
     </div>
   </div>
-
-  <!-- ===== RESULT SCREEN ===== -->
-  <div id="result" class="screen">
-    <div class="fox-wrap">
-      <div class="fox" style="font-size:3rem">🦊</div>
-      <div class="fox-msg" id="foxResultMsg">結果発表じゃ！</div>
-    </div>
-    <h2>🎴 結 果 発 表 🎴</h2>
-    <div class="result-list" id="resultList"></div>
-    <div class="btn-row">
-      <button class="btn-secondary" id="btnReset">⚙ 設定に戻る</button>
-      <button class="btn-again" id="btnAgain">🔄 もう一度</button>
-    </div>
-  </div>
-
+  <button class="btn-main" id="btnToGame">✨ くじを作る</button>
 </div>
 
+<!-- GAME -->
+<div id="game" class="screen">
+  <div class="hdr"><h1>🦊 あみだくじ</h1></div>
+  <div class="fox-row">
+    <span class="fox-icon">🦊</span>
+    <div class="fox-bubble" id="foxGame">スタート位置を選ぶのじゃ！</div>
+  </div>
+  <div class="turn-bar">
+    <div>
+      <div class="turn-label">NOW SELECTING</div>
+      <div class="turn-name" id="turnName">プレイヤー1</div>
+    </div>
+    <div class="turn-prog" id="turnProg">1 / 3</div>
+  </div>
+  <div class="col-btns" id="colBtns"></div>
+  <div class="amida-wrap">
+    <canvas id="amidaCanvas"></canvas>
+  </div>
+  <div class="game-foot">
+    <button class="btn-next" id="btnNext">次の人へ →</button>
+  </div>
+</div>
+
+<!-- RESULTS -->
+<div id="result" class="screen">
+  <div class="fox-row">
+    <span class="fox-icon" style="font-size:2.4rem">🦊</span>
+    <div class="fox-bubble" id="foxResult">運命は決まったぞ！</div>
+  </div>
+  <h2>🎴 結 果 発 表 🎴</h2>
+  <div class="result-list" id="resultList"></div>
+  <div class="btn-row">
+    <button class="btn-reset" id="btnReset">⚙ 最初から</button>
+    <button class="btn-again" id="btnAgain">🔄 もう一度</button>
+  </div>
+</div>
+
+</div>
 <script>
-// ===== STARS =====
-(function(){
-  const s = document.getElementById('stars');
-  for(let i=0;i<40;i++){
-    const el = document.createElement('span');
-    const sz = Math.random()*2+1;
-    el.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
-    s.appendChild(el);
-  }
-})();
+// ===== AUDIO =====
+let actx;
+const ac = () => { if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)(); return actx; };
+function beep(freq, dur, type = 'sine', vol = 0.22) {
+  try {
+    const c = ac(), o = c.createOscillator(), g = c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.type = type; o.frequency.value = freq;
+    g.gain.setValueAtTime(vol, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+    o.start(); o.stop(c.currentTime + dur);
+  } catch (e) {}
+}
+function playTick() { beep(900, 0.04, 'square', 0.1); }
+function playTurn() { beep(440, 0.06, 'sine', 0.18); }
+function playSelect() { beep(660, 0.09, 'sine', 0.22); setTimeout(() => beep(880, 0.07, 'sine', 0.18), 90); }
+function playFanfare() { [523, 659, 784, 1047].forEach((f, i) => setTimeout(() => beep(f, 0.18, 'sine', 0.22), i * 110)); }
+function playWhoosh() {
+  try {
+    const c = ac(), buf = c.createBuffer(1, c.sampleRate * 0.14, c.sampleRate), d = buf.getChannelData(0);
+    for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / d.length * 10);
+    const s = c.createBufferSource(), g = c.createGain(), f = c.createBiquadFilter();
+    f.type = 'bandpass'; f.frequency.value = 1400; f.Q.value = 1.5;
+    s.buffer = buf; s.connect(f); f.connect(g); g.connect(c.destination);
+    g.gain.value = 0.4; s.start();
+  } catch (e) {}
+}
 
 // ===== STATE =====
 let playerCount = 3;
-const MAX = 6; const MIN = 2;
 let playerNames = [];
 let resultLabels = [];
-let amidaData = null; // {verticals, horizontals}
-let results = []; // [{name, label, col}]
-const TAG_COLORS = [
-  {bg:'#2d1b69',border:'#7c3aed',color:'#c4b5fd'},
-  {bg:'#0c3344',border:'#06b6d4',color:'#67e8f9'},
-  {bg:'#3b0764',border:'#a855f7',color:'#e879f9'},
-  {bg:'#1e1b4b',border:'#6366f1',color:'#a5b4fc'},
-  {bg:'#0c2a1a',border:'#10b981',color:'#6ee7b7'},
-  {bg:'#2d1b0e',border:'#f59e0b',color:'#fcd34d'},
-];
+let amidaBars = [];  // [{row, col, type:'h'|'d', slope:1|-1}]
+let barLookup = [];  // [col][row] = {destCol, type, slope, isOrigin} | null
+const ROWS = 10;
+const MIN_BARS = 7;
 
-// ===== AUDIO =====
-const AudioCtx = window.AudioContext || window.webkitAudioContext;
-let ctx;
-function getCtx(){ if(!ctx) ctx = new AudioCtx(); return ctx; }
-
-function playBeep(freq=440, dur=0.08, type='sine', vol=0.3){
-  try {
-    const ac = getCtx();
-    const o = ac.createOscillator();
-    const g = ac.createGain();
-    o.connect(g); g.connect(ac.destination);
-    o.type = type; o.frequency.value = freq;
-    g.gain.setValueAtTime(vol, ac.currentTime);
-    g.gain.exponentialRampToValueAtTime(0.001, ac.currentTime+dur);
-    o.start(); o.stop(ac.currentTime+dur);
-  } catch(e){}
-}
-
-function playTick(){ playBeep(800,0.05,'square',0.15); }
-function playTurn(){ playBeep(600,0.07,'sine',0.2); }
-function playFanfare(){
-  [523,659,784,1047].forEach((f,i)=>setTimeout(()=>playBeep(f,0.18,'sine',0.3),i*120));
-}
-function playWhoosh(){
-  try {
-    const ac = getCtx();
-    const buf = ac.createBuffer(1,ac.sampleRate*0.15,ac.sampleRate);
-    const d = buf.getChannelData(0);
-    for(let i=0;i<d.length;i++) d[i]=(Math.random()*2-1)*Math.exp(-i/d.length*8);
-    const s = ac.createBufferSource();
-    const g = ac.createGain();
-    const f = ac.createBiquadFilter();
-    f.type='bandpass'; f.frequency.value=1200; f.Q.value=1;
-    s.buffer=buf; s.connect(f); f.connect(g); g.connect(ac.destination);
-    g.gain.value=0.5; s.start();
-  } catch(e){}
-}
-
-// ===== SETUP SCREEN =====
-function buildSetup(){
-  buildNamesGrid();
-  buildLabelsGrid();
-}
-
-function buildNamesGrid(){
-  const grid = document.getElementById('namesGrid');
-  grid.innerHTML='';
-  const icons = ['🧑','👩','🧒','👦','🙋','🙍'];
-  for(let i=0;i<playerCount;i++){
-    const row = document.createElement('div');
-    row.className='input-row';
-    const ic = document.createElement('span');
-    ic.className='input-icon'; ic.textContent=icons[i]||'👤';
-    const inp = document.createElement('input');
-    inp.className='input-field';
-    inp.placeholder=`プレイヤー${i+1}`;
-    inp.value = playerNames[i]||'';
-    inp.addEventListener('input',()=>playerNames[i]=inp.value);
-    row.appendChild(ic); row.appendChild(inp);
-    grid.appendChild(row);
-  }
-}
-
-function buildLabelsGrid(){
-  const grid = document.getElementById('labelsGrid');
-  grid.innerHTML='';
-  const defaults = ['🎯 当たり','❌ ハズレ','😂 罰ゲーム','🎁 プレゼント','👑 1等','💀 大ハズレ'];
-  for(let i=0;i<playerCount;i++){
-    const inp = document.createElement('input');
-    inp.className='input-field';
-    inp.placeholder=`ラベル ${i+1}`;
-    inp.value = resultLabels[i] || (i===0 ? defaults[0] : defaults[1+((i-1)%2)]);
-    inp.addEventListener('input',()=>resultLabels[i]=inp.value);
-    resultLabels[i] = inp.value;
-    grid.appendChild(inp);
-  }
-}
-
-document.getElementById('btnMinus').addEventListener('click',()=>{
-  if(playerCount<=MIN) return;
-  playerCount--;
-  document.getElementById('countVal').textContent=playerCount;
-  playBeep(400,0.06,'sine',0.2);
-  buildSetup();
-  updateFoxSetup();
-});
-document.getElementById('btnPlus').addEventListener('click',()=>{
-  if(playerCount>=MAX) return;
-  playerCount++;
-  document.getElementById('countVal').textContent=playerCount;
-  playBeep(600,0.06,'sine',0.2);
-  buildSetup();
-  updateFoxSetup();
-});
-
-const foxSetupMsgs = ['さあ、始めよう！','何人で引く？','名前を入れてね','準備はいい？','いざ参らん！'];
-function updateFoxSetup(){
-  const msgs = ['2人勝負じゃ！','3人で決めよ！','4人で参ろう！','5人の戦い！','6人、全力じゃ！'];
-  document.getElementById('foxSetupMsg').textContent = msgs[playerCount-2]||'準備はいい？';
-}
-
-document.getElementById('btnStart').addEventListener('click',()=>{
-  // collect names
-  const inputs = document.querySelectorAll('#namesGrid .input-field');
-  playerNames = Array.from(inputs).map((el,i)=>el.value.trim()||`P${i+1}`);
-  const linputs = document.querySelectorAll('#labelsGrid .input-field');
-  resultLabels = Array.from(linputs).map((el,i)=>el.value.trim()||`賞品${i+1}`);
-  playBeep(523,0.1,'sine',0.3);
-  setTimeout(()=>playBeep(659,0.1,'sine',0.3),120);
-  showGame();
-});
-
-// ===== AMIDA GENERATION =====
-function generateAmida(n, rows){
-  // horizontals[r] = array of col indices where a horizontal bar starts (col → col+1)
-  const horizontals = [];
-  for(let r=0;r<rows;r++){
-    const row = [];
-    const available = [];
-    for(let c=0;c<n-1;c++) available.push(c);
-    // randomly pick non-adjacent cols
-    const shuffled = available.sort(()=>Math.random()-.5);
-    const chosen = [];
-    for(const c of shuffled){
-      if(!chosen.includes(c-1) && !chosen.includes(c+1) && !chosen.includes(c)){
-        if(Math.random()<0.45) chosen.push(c);
-      }
-    }
-    horizontals.push(chosen);
-  }
-  return horizontals;
-}
-
-function traceAmida(startCol, horizontals, n){
-  let c = startCol;
-  const path = [{row:-1, col:c, isH:false}];
-  for(let r=0;r<horizontals.length;r++){
-    // check if can go right
-    if(horizontals[r].includes(c)){
-      path.push({row:r, col:c, isH:true, dir:'right'});
-      c++;
-    } else if(c>0 && horizontals[r].includes(c-1)){
-      path.push({row:r, col:c, isH:true, dir:'left'});
-      c--;
-    }
-    path.push({row:r, col:c, isH:false});
-  }
-  return {endCol:c, path};
-}
-
-// ===== DRAW AMIDA =====
-const canvas = document.getElementById('amidaCanvas');
-const ctx2d = canvas.getContext('2d');
-let ROWS = 8;
-let amidaHorizontals = null;
-let tracePaths = []; // per player
-let animating = false;
-
-function resizeCanvas(){
-  const wrap = canvas.parentElement;
-  const W = wrap.clientWidth - 20;
-  const H = wrap.clientHeight - 8;
-  canvas.width = W * devicePixelRatio;
-  canvas.height = H * devicePixelRatio;
-  canvas.style.width = W+'px';
-  canvas.style.height = H+'px';
-  ctx2d.scale(devicePixelRatio, devicePixelRatio);
-  return {W, H};
-}
-
-function getLayout(){
-  const W = parseInt(canvas.style.width)||canvas.width;
-  const H = parseInt(canvas.style.height)||canvas.height;
-  const n = playerCount;
-  const padX = 32, padTop = 24, padBot = 24;
-  const colW = (W - padX*2) / (n-1);
-  const rowH = (H - padTop - padBot) / (ROWS+1);
-  const cols = Array.from({length:n},(_,i)=>padX + i*colW);
-  const yTop = padTop;
-  const yBot = H - padBot;
-  const rowY = (r)=> yTop + (r+1)*rowH;
-  return {W,H,cols,yTop,yBot,rowH,rowY,n};
-}
-
-const PLAYER_COLORS = [
-  '#c4b5fd','#67e8f9','#f0abfc','#a5b4fc','#6ee7b7','#fcd34d'
-];
-
-function drawAmida(highlightPaths=[], progressFrac=1){
-  const {W,H,cols,yTop,yBot,rowY,n} = getLayout();
-  ctx2d.clearRect(0,0,W,H);
-
-  // Grid glow
-  ctx2d.shadowColor='transparent';
-
-  // Draw verticals
-  for(let c=0;c<n;c++){
-    ctx2d.beginPath();
-    ctx2d.moveTo(cols[c], yTop);
-    ctx2d.lineTo(cols[c], yBot);
-    ctx2d.strokeStyle='#2a2a6080';
-    ctx2d.lineWidth=2;
-    ctx2d.stroke();
-  }
-
-  // Draw horizontals
-  if(amidaHorizontals){
-    for(let r=0;r<ROWS;r++){
-      for(const c of amidaHorizontals[r]){
-        const y = rowY(r);
-        ctx2d.beginPath();
-        ctx2d.moveTo(cols[c], y);
-        ctx2d.lineTo(cols[c+1], y);
-        ctx2d.strokeStyle='#4a4a9080';
-        ctx2d.lineWidth=2;
-        ctx2d.shadowColor='#7c3aed40';
-        ctx2d.shadowBlur=4;
-        ctx2d.stroke();
-        ctx2d.shadowBlur=0;
-      }
-    }
-  }
-
-  // Draw highlight paths
-  if(highlightPaths.length>0 && amidaHorizontals){
-    for(let pi=0;pi<highlightPaths.length;pi++){
-      const {path, endCol} = highlightPaths[pi];
-      const color = PLAYER_COLORS[pi % PLAYER_COLORS.length];
-      ctx2d.strokeStyle = color;
-      ctx2d.lineWidth = 3;
-      ctx2d.shadowColor = color;
-      ctx2d.shadowBlur = 10;
-
-      // Calculate total segments for this path based on progressFrac
-      // path is array of {row, col, isH, dir?}
-      // We draw segment by segment
-      // Segments: vertical from top to first row, then alternating H and V...
-      // Build segment list: list of {x1,y1,x2,y2}
-      const segs = buildSegments(path, cols, yTop, yBot, rowY, n);
-      const totalLen = segs.reduce((s,sg)=>s+sg.len,0);
-      const drawLen = totalLen * progressFrac;
-      let drawn = 0;
-
-      ctx2d.beginPath();
-      let started = false;
-      for(const seg of segs){
-        if(drawn >= drawLen) break;
-        const remain = drawLen - drawn;
-        const frac = Math.min(1, remain / seg.len);
-        const ex = seg.x1 + (seg.x2-seg.x1)*frac;
-        const ey = seg.y1 + (seg.y2-seg.y1)*frac;
-        if(!started){ ctx2d.moveTo(seg.x1,seg.y1); started=true; }
-        ctx2d.lineTo(ex, ey);
-        drawn += seg.len * frac;
-      }
-      ctx2d.stroke();
-      ctx2d.shadowBlur=0;
-
-      // Dot at current position
-      if(progressFrac<1){
-        let drawn2=0;
-        let dotX=cols[path[0]?.col||0], dotY=yTop;
-        for(const seg of segs){
-          if(drawn2>=drawLen) break;
-          const remain=drawLen-drawn2;
-          const frac=Math.min(1,remain/seg.len);
-          dotX=seg.x1+(seg.x2-seg.x1)*frac;
-          dotY=seg.y1+(seg.y2-seg.y1)*frac;
-          drawn2+=seg.len*frac;
-        }
-        ctx2d.beginPath();
-        ctx2d.arc(dotX,dotY,6,0,Math.PI*2);
-        ctx2d.fillStyle=color;
-        ctx2d.shadowColor=color; ctx2d.shadowBlur=15;
-        ctx2d.fill(); ctx2d.shadowBlur=0;
-      }
-    }
-  }
-
-  // Draw top labels (player names)
-  for(let c=0;c<n;c++){
-    const color = PLAYER_COLORS[c % PLAYER_COLORS.length];
-    ctx2d.fillStyle = color;
-    ctx2d.font = `bold ${Math.min(11, Math.max(8, 280/n))}px 'M PLUS Rounded 1c'`;
-    ctx2d.textAlign='center';
-    const name = (playerNames[c]||`P${c+1}`).slice(0,4);
-    ctx2d.shadowColor=color; ctx2d.shadowBlur=6;
-    ctx2d.fillText(name, cols[c], yTop-8);
-    ctx2d.shadowBlur=0;
-
-    // Top dot
-    ctx2d.beginPath();
-    ctx2d.arc(cols[c], yTop, 5, 0, Math.PI*2);
-    ctx2d.fillStyle=color;
-    ctx2d.fill();
-  }
-
-  // Draw bottom labels (result labels)
-  for(let c=0;c<n;c++){
-    const color = '#fbbf24';
-    ctx2d.fillStyle=color;
-    ctx2d.font=`bold ${Math.min(10,Math.max(7,260/n))}px 'M PLUS Rounded 1c'`;
-    ctx2d.textAlign='center';
-    const label=(resultLabels[c]||`${c+1}`).slice(0,5);
-    ctx2d.shadowColor='#fbbf2480'; ctx2d.shadowBlur=6;
-    ctx2d.fillText(label, cols[c], yBot+14);
-    ctx2d.shadowBlur=0;
-
-    // Bottom dot
-    ctx2d.beginPath();
-    ctx2d.arc(cols[c], yBot, 5, 0, Math.PI*2);
-    ctx2d.fillStyle='#fbbf2480';
-    ctx2d.fill();
-  }
-}
-
-function buildSegments(path, cols, yTop, yBot, rowY, n){
-  // path[0] is always {row:-1, col:startCol}
-  const segs = [];
-  // first segment: yTop → rowY(0) or yBot if no rows
-  // Actually path contains node-like entries; we derive segments between consecutive nodes
-
-  // Rebuild from trace
-  // trace: starts at top of startCol
-  // path entries: {row, col, isH, dir?}
-  // between row r-1 and row r: vertical segment
-  // at row r (isH): horizontal segment
-  // final: vertical from last row to bottom
-
-  // Simpler: just re-trace
-  const ROWS2 = amidaHorizontals.length;
-  const startCol = path[0].col;
-  let c = startCol;
-  let prevY = yTop;
-
-  for(let r=0; r<ROWS2; r++){
-    const y = rowY(r);
-    // vertical
-    segs.push({x1:cols[c],y1:prevY,x2:cols[c],y2:y, len:Math.abs(y-prevY)});
-    prevY = y;
-    // horizontal?
-    if(amidaHorizontals[r].includes(c)){
-      const nc = c+1;
-      segs.push({x1:cols[c],y1:y,x2:cols[nc],y2:y, len:Math.abs(cols[nc]-cols[c])});
-      c = nc;
-    } else if(c>0 && amidaHorizontals[r].includes(c-1)){
-      const nc = c-1;
-      segs.push({x1:cols[c],y1:y,x2:cols[nc],y2:y, len:Math.abs(cols[nc]-cols[c])});
-      c = nc;
-    }
-  }
-  // final vertical to bottom
-  segs.push({x1:cols[c],y1:prevY,x2:cols[c],y2:yBot, len:Math.abs(yBot-prevY)});
-  return segs;
-}
-
-// ===== SHOW GAME =====
-function showGame(){
-  showScreen('game');
-
-  ROWS = playerCount <= 3 ? 7 : playerCount <= 4 ? 8 : 9;
-  amidaHorizontals = generateAmida(playerCount, ROWS);
-
-  // Compute results
-  tracePaths = [];
-  results = [];
-  // Shuffle result labels → assign to end columns
-  const labelOrder = Array.from({length:playerCount},(_,i)=>i);
-  // Each player starts at col i and ends at endCol
-  const endCols = {};
-  for(let c=0;c<playerCount;c++){
-    const {endCol, path} = traceAmida(c, amidaHorizontals, playerCount);
-    tracePaths.push({path, endCol});
-    endCols[c] = endCol;
-  }
-
-  // Build results: for each player, label is resultLabels[endCol]
-  for(let i=0;i<playerCount;i++){
-    results.push({
-      name: playerNames[i],
-      col: i,
-      endCol: tracePaths[i].endCol,
-      label: resultLabels[tracePaths[i].endCol] || `賞品${tracePaths[i].endCol+1}`
-    });
-  }
-
-  // Build player tags
-  const tags = document.getElementById('playerTags');
-  tags.innerHTML='';
-  for(let i=0;i<playerCount;i++){
-    const t = document.createElement('span');
-    t.className='player-tag';
-    const col = TAG_COLORS[i % TAG_COLORS.length];
-    t.style.background=col.bg; t.style.borderColor=col.border; t.style.color=col.color;
-    t.textContent=playerNames[i]||`P${i+1}`;
-    tags.appendChild(t);
-  }
-
-  requestAnimationFrame(()=>{
-    resizeCanvas();
-    drawAmida();
-  });
-
-  document.getElementById('btnRun').disabled = false;
-  document.getElementById('foxGameMsg').textContent = 'どの道を辿る？';
-}
+let currentPlayer = 0;
+let selectedCols = [];     // [colIdx for P0, colIdx for P1, ...] -1=not yet
+let playerPaths = [];      // [{endCol, waypoints}] per player
+let phase = 'select';      // 'select' | 'animating' | 'between'
 
 // Animation
-let animStart = null;
-const ANIM_DUR = 2200; // ms
+let animFrac = 0, animTs0 = null, animRaf = null, lastCrossedWp = 0;
+const ANIM_DUR = 2400;
 
-document.getElementById('btnRun').addEventListener('click',()=>{
-  if(animating) return;
-  animating = true;
-  document.getElementById('btnRun').disabled = true;
-  document.getElementById('foxGameMsg').textContent = 'いざ、参らん！';
-  playWhoosh();
+// Player colors
+const PCOLS = [
+  { stroke: '#f472b6', glow: '#f472b680' },
+  { stroke: '#22d3ee', glow: '#22d3ee80' },
+  { stroke: '#fbbf24', glow: '#fbbf2480' },
+  { stroke: '#4ade80', glow: '#4ade8080' },
+  { stroke: '#a78bfa', glow: '#a78bfa80' },
+  { stroke: '#fb923c', glow: '#fb923c80' },
+];
 
-  animStart = null;
-  let lastTickRow = -1;
+// ===== CANVAS =====
+const canvas = document.getElementById('amidaCanvas');
+const ctx2 = canvas.getContext('2d');
+const DPR = window.devicePixelRatio || 1;
 
-  function animate(ts){
-    if(!animStart) animStart = ts;
-    const elapsed = ts - animStart;
-    const frac = Math.min(1, elapsed / ANIM_DUR);
-
-    // Tick sound at each row boundary
-    const curRow = Math.floor(frac * (ROWS+1));
-    if(curRow !== lastTickRow){
-      lastTickRow = curRow;
-      if(curRow > 0 && curRow <= ROWS) playTick();
-    }
-
-    resizeCanvas();
-    drawAmida(tracePaths, frac);
-
-    if(frac < 1){
-      requestAnimationFrame(animate);
-    } else {
-      animating = false;
-      playFanfare();
-      setTimeout(showResult, 600);
-    }
-  }
-  requestAnimationFrame(animate);
-});
-
-// ===== RESULT SCREEN =====
-function showResult(){
-  showScreen('result');
-  const list = document.getElementById('resultList');
-  list.innerHTML='';
-
-  // Sort by endCol
-  const sorted = [...results].sort((a,b)=>a.endCol-b.endCol);
-
-  sorted.forEach((r,i)=>{
-    const item = document.createElement('div');
-    item.className='result-item' + (r.label.includes('当たり')||r.label.includes('1等')||r.label.includes('👑') ? ' hit' : '');
-    item.style.animationDelay = `${i*0.1}s`;
-
-    const num = document.createElement('div');
-    num.className='result-num';
-    num.textContent = `${r.endCol+1}`;
-
-    const name = document.createElement('div');
-    name.className='result-name';
-    name.textContent = r.name;
-
-    const label = document.createElement('div');
-    label.className='result-label';
-    label.textContent = r.label;
-
-    item.appendChild(num); item.appendChild(name); item.appendChild(label);
-    list.appendChild(item);
-  });
-
-  const msgs = ['運命は決まったぞ！','これが天の声じゃ！','受け入れるしかない！','神のご加護を！'];
-  document.getElementById('foxResultMsg').textContent = msgs[Math.floor(Math.random()*msgs.length)];
+function resizeCanvas() {
+  const wrap = canvas.parentElement;
+  const W = wrap.clientWidth - 20;
+  const H = wrap.clientHeight - 6;
+  canvas.width = Math.round(W * DPR);
+  canvas.height = Math.round(H * DPR);
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  ctx2.setTransform(DPR, 0, 0, DPR, 0, 0);
 }
 
-document.getElementById('btnAgain').addEventListener('click',()=>{
-  playBeep(523,0.08,'sine',0.25);
-  showGame();
-});
+function getLayout() {
+  const W = parseFloat(canvas.style.width) || 300;
+  const H = parseFloat(canvas.style.height) || 400;
+  const n = playerCount;
+  const padX = 28, padTop = 22, padBot = 18;
+  const colW = n > 1 ? (W - padX * 2) / (n - 1) : 0;
+  const rowH = (H - padTop - padBot) / (ROWS + 1);
+  const cols = Array.from({ length: n }, (_, i) => padX + i * colW);
+  const yTop = padTop, yBot = H - padBot;
+  const rowY = r => yTop + (r + 1) * rowH;
+  return { W, H, n, cols, yTop, yBot, rowH, rowY };
+}
 
-document.getElementById('btnReset').addEventListener('click',()=>{
-  playBeep(400,0.08,'sine',0.2);
-  showScreen('setup');
-});
+// ===== GENERATE AMIDA =====
+function generateAmida(n) {
+  let bars, lookup, tries = 0;
+  do {
+    bars = [];
+    lookup = Array.from({ length: n }, () => Array(ROWS).fill(null));
+    for (let r = 0; r < ROWS; r++) {
+      // shuffle columns for this row
+      const order = Array.from({ length: n - 1 }, (_, i) => i).sort(() => Math.random() - .5);
+      for (const c of order) {
+        if (!lookup[c][r] && !lookup[c + 1][r] && Math.random() < 0.65) {
+          // 30% chance diagonal
+          const type = Math.random() < 0.3 ? 'd' : 'h';
+          const slope = Math.random() < 0.5 ? 1 : -1;
+          lookup[c][r] = { destCol: c + 1, type, slope, isOrigin: true };
+          lookup[c + 1][r] = { destCol: c, type, slope, isOrigin: false };
+          bars.push({ row: r, col: c, type, slope });
+        }
+      }
+    }
+    tries++;
+  } while (bars.length < MIN_BARS && tries < 100);
+  amidaBars = bars;
+  barLookup = lookup;
+}
+
+// ===== TRACE PATH =====
+// Returns {endCol, waypoints:[{x,y}]}
+function tracePath(startCol) {
+  const { cols, yTop, yBot, rowH, rowY } = getLayout();
+  const dy = rowH * 0.3;
+  let c = startCol;
+  const wps = [{ x: cols[c], y: yTop }];
+
+  for (let r = 0; r < ROWS; r++) {
+    const e = barLookup[c]?.[r];
+    if (e) {
+      let yHere, yThere;
+      if (e.type === 'h') {
+        yHere = yThere = rowY(r);
+      } else if (e.isOrigin) {
+        // going right: left end is y - slope*dy, right end is y + slope*dy
+        yHere  = rowY(r) - e.slope * dy;
+        yThere = rowY(r) + e.slope * dy;
+      } else {
+        // going left: this col is the right end, dest is left end
+        yHere  = rowY(r) + e.slope * dy;
+        yThere = rowY(r) - e.slope * dy;
+      }
+      wps.push({ x: cols[c], y: yHere });
+      wps.push({ x: cols[e.destCol], y: yThere });
+      c = e.destCol;
+    }
+  }
+  wps.push({ x: cols[c], y: yBot });
+  return { endCol: c, waypoints: wps };
+}
+
+function wpTotalLen(wps) {
+  let len = 0;
+  for (let i = 1; i < wps.length; i++)
+    len += Math.hypot(wps[i].x - wps[i-1].x, wps[i].y - wps[i-1].y);
+  return len;
+}
+
+// ===== DRAW =====
+function draw() {
+  const { W, H, n, cols, yTop, yBot, rowH, rowY } = getLayout();
+  const dy = rowH * 0.3;
+  ctx2.clearRect(0, 0, W, H);
+
+  // vertical lines — bright white for visibility
+  for (let c = 0; c < n; c++) {
+    ctx2.beginPath();
+    ctx2.moveTo(cols[c], yTop);
+    ctx2.lineTo(cols[c], yBot);
+    ctx2.strokeStyle = 'rgba(255,255,255,0.55)';
+    ctx2.lineWidth = 2.5;
+    ctx2.shadowColor = 'rgba(255,255,255,0.3)';
+    ctx2.shadowBlur = 4;
+    ctx2.stroke();
+    ctx2.shadowBlur = 0;
+  }
+
+  // bars (horizontal + diagonal) — bright white
+  for (const bar of amidaBars) {
+    const { row: r, col, type, slope } = bar;
+    let x1 = cols[col], y1, x2 = cols[col + 1], y2;
+    const y = rowY(r);
+    if (type === 'h') { y1 = y2 = y; }
+    else { y1 = y - slope * dy; y2 = y + slope * dy; }
+
+    ctx2.beginPath();
+    ctx2.moveTo(x1, y1); ctx2.lineTo(x2, y2);
+    ctx2.strokeStyle = '#ffffff';
+    ctx2.lineWidth = 3;
+    ctx2.shadowColor = 'rgba(255,255,255,0.7)';
+    ctx2.shadowBlur = 8;
+    ctx2.lineCap = 'round';
+    ctx2.stroke();
+    ctx2.shadowBlur = 0;
+  }
+
+  // completed player paths (static, slightly faded)
+  for (let pi = 0; pi < playerPaths.length; pi++) {
+    if (!playerPaths[pi]) continue;
+    const pc = PCOLS[pi % PCOLS.length];
+    const wps = playerPaths[pi].waypoints;
+    ctx2.beginPath();
+    ctx2.moveTo(wps[0].x, wps[0].y);
+    for (let i = 1; i < wps.length; i++) ctx2.lineTo(wps[i].x, wps[i].y);
+    ctx2.strokeStyle = pc.stroke;
+    ctx2.lineWidth = 3.5;
+    ctx2.globalAlpha = 0.65;
+    ctx2.shadowColor = pc.glow; ctx2.shadowBlur = 8;
+    ctx2.lineJoin = 'round'; ctx2.lineCap = 'round';
+    ctx2.stroke();
+    ctx2.globalAlpha = 1; ctx2.shadowBlur = 0;
+
+    // endpoint dot
+    const endWp = wps[wps.length - 1];
+    ctx2.beginPath(); ctx2.arc(endWp.x, endWp.y, 5, 0, Math.PI * 2);
+    ctx2.fillStyle = pc.stroke;
+    ctx2.shadowColor = pc.glow; ctx2.shadowBlur = 10;
+    ctx2.fill(); ctx2.shadowBlur = 0;
+  }
+
+  // current animating path (partial)
+  if (phase === 'animating' && animTs0 !== null) {
+    const pi = currentPlayer;
+    if (playerPaths[pi]) {
+      const pc = PCOLS[pi % PCOLS.length];
+      const wps = playerPaths[pi].waypoints;
+      const totalLen = wpTotalLen(wps);
+      const drawLen = totalLen * animFrac;
+      let drawn = 0;
+      let dotX = wps[0].x, dotY = wps[0].y;
+
+      ctx2.beginPath();
+      ctx2.moveTo(wps[0].x, wps[0].y);
+      for (let i = 1; i < wps.length; i++) {
+        const dx = wps[i].x - wps[i-1].x, dy2 = wps[i].y - wps[i-1].y;
+        const segLen = Math.hypot(dx, dy2);
+        const remain = drawLen - drawn;
+        if (remain <= 0) break;
+        if (remain >= segLen) {
+          ctx2.lineTo(wps[i].x, wps[i].y);
+          dotX = wps[i].x; dotY = wps[i].y;
+          drawn += segLen;
+        } else {
+          const t = remain / segLen;
+          dotX = wps[i-1].x + dx * t; dotY = wps[i-1].y + dy2 * t;
+          ctx2.lineTo(dotX, dotY);
+          break;
+        }
+      }
+      ctx2.strokeStyle = pc.stroke;
+      ctx2.lineWidth = 4;
+      ctx2.shadowColor = pc.glow; ctx2.shadowBlur = 14;
+      ctx2.lineJoin = 'round'; ctx2.lineCap = 'round';
+      ctx2.stroke(); ctx2.shadowBlur = 0;
+
+      // glowing leading dot
+      ctx2.beginPath(); ctx2.arc(dotX, dotY, 7, 0, Math.PI * 2);
+      ctx2.fillStyle = pc.stroke;
+      ctx2.shadowColor = pc.glow; ctx2.shadowBlur = 18;
+      ctx2.fill(); ctx2.shadowBlur = 0;
+    }
+  }
+
+  // top column labels / dots
+  for (let c = 0; c < n; c++) {
+    const pi = selectedCols.indexOf(c);
+    const pc = pi >= 0 ? PCOLS[pi % PCOLS.length] : null;
+    const color = pc ? pc.stroke : 'rgba(255,255,255,0.55)';
+    const label = pi >= 0 ? (playerNames[pi] || `P${pi+1}`).slice(0, 4) : `${c+1}`;
+
+    ctx2.fillStyle = color;
+    ctx2.font = `bold ${Math.min(11, Math.max(7, 280 / n))}px 'M PLUS Rounded 1c'`;
+    ctx2.textAlign = 'center';
+    ctx2.shadowColor = color; ctx2.shadowBlur = pc ? 7 : 0;
+    ctx2.fillText(label, cols[c], yTop - 7);
+    ctx2.shadowBlur = 0;
+
+    ctx2.beginPath(); ctx2.arc(cols[c], yTop, 5, 0, Math.PI * 2);
+    ctx2.fillStyle = color;
+    ctx2.shadowColor = pc ? pc.glow : 'transparent'; ctx2.shadowBlur = pc ? 10 : 0;
+    ctx2.fill(); ctx2.shadowBlur = 0;
+  }
+
+  // bottom dots (labels hidden until results)
+  for (let c = 0; c < n; c++) {
+    ctx2.beginPath(); ctx2.arc(cols[c], yBot, 4, 0, Math.PI * 2);
+    ctx2.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx2.shadowColor = 'rgba(255,255,255,0.3)'; ctx2.shadowBlur = 4;
+    ctx2.fill(); ctx2.shadowBlur = 0;
+  }
+}
+
+// ===== ANIMATION LOOP =====
+function animLoop(ts) {
+  if (!animTs0) animTs0 = ts;
+  animFrac = Math.min(1, (ts - animTs0) / ANIM_DUR);
+
+  // tick sounds at waypoint crossings
+  if (playerPaths[currentPlayer]) {
+    const wps = playerPaths[currentPlayer].waypoints;
+    const totalLen = wpTotalLen(wps);
+    const drawLen = totalLen * animFrac;
+    let acc = 0;
+    for (let i = 1; i < wps.length; i++) {
+      acc += Math.hypot(wps[i].x - wps[i-1].x, wps[i].y - wps[i-1].y);
+      if (i > lastCrossedWp && drawLen >= acc) { playTick(); lastCrossedWp = i; }
+    }
+  }
+
+  draw();
+
+  if (animFrac < 1) {
+    animRaf = requestAnimationFrame(animLoop);
+  } else {
+    phase = 'between';
+    const isLast = currentPlayer >= playerCount - 1;
+    const btn = document.getElementById('btnNext');
+    btn.textContent = isLast ? '🎴 結果を見る！' : '次の人へ →';
+    btn.classList.add('vis');
+    document.getElementById('foxGame').textContent = isLast ? 'さあ、結果を見よ！' : '次の者よ、参れ！';
+    playFanfare();
+  }
+}
+
+// ===== SETUP =====
+function buildSetup() {
+  buildNames(); buildLabels();
+}
+
+const icons = ['🧑','👩','🧒','👦','🙋','🙍'];
+function buildNames() {
+  const g = document.getElementById('namesGrid');
+  g.innerHTML = '';
+  for (let i = 0; i < playerCount; i++) {
+    const row = document.createElement('div'); row.className = 'inp-row';
+    const ic = document.createElement('span'); ic.textContent = icons[i] || '👤';
+    const inp = document.createElement('input'); inp.className = 'inp';
+    inp.placeholder = `プレイヤー${i+1}`; inp.value = playerNames[i] || '';
+    inp.oninput = () => playerNames[i] = inp.value;
+    row.appendChild(ic); row.appendChild(inp); g.appendChild(row);
+  }
+}
+
+const defLabels = ['🎯 当たり','❌ ハズレ','😂 罰ゲーム','🎁 プレゼント','👑 1等','💀 大ハズレ'];
+function buildLabels() {
+  const g = document.getElementById('labelsGrid');
+  g.innerHTML = '';
+  for (let i = 0; i < playerCount; i++) {
+    const inp = document.createElement('input'); inp.className = 'inp';
+    inp.placeholder = `ラベル ${i+1}`;
+    inp.value = resultLabels[i] || defLabels[i % defLabels.length];
+    inp.oninput = () => resultLabels[i] = inp.value;
+    resultLabels[i] = inp.value;
+    g.appendChild(inp);
+  }
+}
+
+const foxSetupMsg = ['2人で決めよ！','3人の運命じゃ！','4人で参ろう！','5人の挑戦！','6人、いざ！'];
+document.getElementById('btnMinus').onclick = () => {
+  if (playerCount <= 2) return;
+  playerCount--;
+  document.getElementById('cntVal').textContent = playerCount;
+  document.getElementById('foxSetup').textContent = foxSetupMsg[playerCount - 2];
+  beep(400, 0.06, 'sine', 0.18); buildSetup();
+};
+document.getElementById('btnPlus').onclick = () => {
+  if (playerCount >= 6) return;
+  playerCount++;
+  document.getElementById('cntVal').textContent = playerCount;
+  document.getElementById('foxSetup').textContent = foxSetupMsg[playerCount - 2];
+  beep(600, 0.06, 'sine', 0.18); buildSetup();
+};
+document.getElementById('btnToGame').onclick = () => {
+  const ni = document.querySelectorAll('#namesGrid .inp');
+  playerNames = Array.from(ni).map((el, i) => el.value.trim() || `P${i+1}`);
+  const li = document.querySelectorAll('#labelsGrid .inp');
+  resultLabels = Array.from(li).map((el, i) => el.value.trim() || `賞品${i+1}`);
+  beep(523, 0.1, 'sine', 0.25); setTimeout(() => beep(659, 0.1, 'sine', 0.22), 110);
+  startGame();
+};
+
+// ===== GAME =====
+function startGame() {
+  currentPlayer = 0;
+  selectedCols = new Array(playerCount).fill(-1);
+  playerPaths = new Array(playerCount).fill(null);
+  phase = 'select';
+  animTs0 = null; animFrac = 0; lastCrossedWp = 0;
+  if (animRaf) { cancelAnimationFrame(animRaf); animRaf = null; }
+
+  generateAmida(playerCount);
+  showScreen('game');
+
+  requestAnimationFrame(() => {
+    resizeCanvas();
+    updateTurnBar();
+    buildColBtns();
+    draw();
+  });
+
+  document.getElementById('btnNext').classList.remove('vis');
+  document.getElementById('foxGame').textContent = 'スタート位置を選ぶのじゃ！';
+}
+
+function updateTurnBar() {
+  document.getElementById('turnName').textContent = playerNames[currentPlayer] || `P${currentPlayer+1}`;
+  document.getElementById('turnProg').textContent = `${currentPlayer+1} / ${playerCount}`;
+  // color the turn bar border to match player
+  const pc = PCOLS[currentPlayer % PCOLS.length];
+  document.querySelector('.turn-bar').style.borderColor = pc.stroke + '80';
+}
+
+function buildColBtns() {
+  const container = document.getElementById('colBtns');
+  container.innerHTML = '';
+  for (let c = 0; c < playerCount; c++) {
+    const btn = document.createElement('button');
+    btn.className = 'col-btn';
+    btn.textContent = `${c+1}`;
+    const takenBy = selectedCols.indexOf(c);
+    if (takenBy >= 0) {
+      btn.classList.add('taken');
+      btn.disabled = true;
+      const pc = PCOLS[takenBy % PCOLS.length];
+      btn.style.borderColor = pc.stroke;
+      btn.style.color = pc.stroke;
+      btn.style.background = pc.stroke + '22';
+    } else if (phase !== 'select') {
+      btn.disabled = true;
+    } else {
+      const pc = PCOLS[currentPlayer % PCOLS.length];
+      btn.style.borderColor = 'rgba(255,255,255,0.5)';
+      btn.onclick = () => selectCol(c);
+      btn.onmouseenter = () => { btn.style.borderColor = pc.stroke; btn.style.background = pc.stroke + '22'; };
+      btn.onmouseleave = () => { btn.style.borderColor = 'rgba(255,255,255,0.5)'; btn.style.background = 'rgba(255,255,255,0.1)'; };
+    }
+    container.appendChild(btn);
+  }
+}
+
+function selectCol(col) {
+  if (phase !== 'select') return;
+  if (selectedCols.includes(col)) return;
+  playSelect();
+  selectedCols[currentPlayer] = col;
+  phase = 'animating';
+  animTs0 = null; animFrac = 0; lastCrossedWp = 0;
+
+  // Compute path now (canvas already sized)
+  playerPaths[currentPlayer] = tracePath(col);
+
+  buildColBtns();
+  document.getElementById('btnNext').classList.remove('vis');
+  document.getElementById('foxGame').textContent = 'いざ、参らん！';
+  playWhoosh();
+
+  animRaf = requestAnimationFrame(animLoop);
+}
+
+document.getElementById('btnNext').onclick = () => {
+  document.getElementById('btnNext').classList.remove('vis');
+  const isLast = currentPlayer >= playerCount - 1;
+  if (isLast) {
+    showResults();
+  } else {
+    currentPlayer++;
+    phase = 'select';
+    animTs0 = null; animFrac = 0; lastCrossedWp = 0;
+    updateTurnBar();
+    buildColBtns();
+    document.getElementById('foxGame').textContent = 'スタート位置を選ぶのじゃ！';
+    playTurn();
+    resizeCanvas(); draw();
+  }
+};
+
+// ===== RESULTS =====
+function showResults() {
+  showScreen('result');
+  const list = document.getElementById('resultList');
+  list.innerHTML = '';
+
+  const items = playerPaths.map((p, pi) => ({ pi, endCol: p.endCol, name: playerNames[pi] }))
+    .sort((a, b) => a.endCol - b.endCol);
+
+  items.forEach((item, i) => {
+    const pc = PCOLS[item.pi % PCOLS.length];
+    const el = document.createElement('div'); el.className = 'ri';
+    el.style.animationDelay = `${i * 0.08}s`;
+    el.style.borderColor = pc.stroke + '50';
+
+    const num = document.createElement('div'); num.className = 'ri-num';
+    num.textContent = `${item.endCol + 1}`; num.style.color = pc.stroke;
+
+    const name = document.createElement('div'); name.className = 'ri-name';
+    name.textContent = item.name;
+
+    const lbl = document.createElement('div'); lbl.className = 'ri-label';
+    lbl.textContent = resultLabels[item.endCol] || `賞品${item.endCol+1}`;
+    lbl.style.borderColor = pc.stroke + '60'; lbl.style.color = pc.stroke;
+
+    el.appendChild(num); el.appendChild(name); el.appendChild(lbl);
+    list.appendChild(el);
+  });
+
+  const msgs = ['運命は決まったぞ！','これが天の声じゃ！','受け入れるがよい！'];
+  document.getElementById('foxResult').textContent = msgs[Math.floor(Math.random() * msgs.length)];
+  setTimeout(playFanfare, 200);
+}
+
+document.getElementById('btnAgain').onclick = () => { beep(523, 0.08, 'sine', 0.2); startGame(); };
+document.getElementById('btnReset').onclick = () => { beep(400, 0.08, 'sine', 0.18); showScreen('setup'); };
 
 // ===== UTILS =====
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>{
-    s.classList.remove('active');
-  });
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
-// ===== INIT =====
-buildSetup();
-updateFoxSetup();
-
-window.addEventListener('resize',()=>{
-  if(document.getElementById('game').classList.contains('active')){
-    resizeCanvas();
-    drawAmida(animating ? [] : tracePaths);
+window.addEventListener('resize', () => {
+  if (document.getElementById('game').classList.contains('active')) {
+    resizeCanvas(); draw();
   }
 });
+
+// INIT
+buildSetup();
 </script>
 </body>
 </html>
