@@ -107,18 +107,24 @@ html, body {
 .col-btn:disabled { opacity: 0.35; cursor: default; }
 .col-btn.taken { border-width: 2px; opacity: 0.85; }
 
-.amida-wrap { flex: 1; min-height: 0; padding: 3px 10px 3px; display: flex; }
+.amida-wrap { flex: 1; min-height: 0; padding: 3px 10px 3px; display: flex; overflow: hidden; }
 #amidaCanvas { width: 100%; height: 100%; display: block; border-radius: 10px; }
 
-.game-foot { flex-shrink: 0; padding: 5px 13px max(10px, env(safe-area-inset-bottom)); }
+.game-foot {
+  flex-shrink: 0;
+  padding: 5px 13px max(10px, env(safe-area-inset-bottom));
+  min-height: 54px;
+}
 .btn-next {
-  width: 100%; padding: 12px; display: none;
+  width: 100%; padding: 12px;
+  visibility: hidden; opacity: 0; pointer-events: none;
   background: linear-gradient(135deg, #e879f9, #7c3aed); border: none; border-radius: 12px;
   color: #fff; font-family: inherit; font-size: 0.92rem; font-weight: 900;
-  letter-spacing: 1px; cursor: pointer; box-shadow: 0 0 16px #e879f940; transition: all .2s;
+  letter-spacing: 1px; cursor: pointer; box-shadow: 0 0 16px #e879f940;
+  transition: opacity .3s;
   touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
-.btn-next.vis { display: block; }
+.btn-next.vis { visibility: visible; opacity: 1; pointer-events: auto; }
 .btn-next:active { transform: scale(0.97); }
 
 /* RESULTS */
