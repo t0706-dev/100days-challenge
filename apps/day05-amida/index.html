@@ -2,7 +2,7 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -10,6 +10,7 @@
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+button { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
 
 html, body {
   width: 100%; height: 100svh; overflow: hidden;
@@ -109,18 +110,19 @@ html, body {
 .amida-wrap { flex: 1; min-height: 0; padding: 3px 10px 3px; display: flex; }
 #amidaCanvas { width: 100%; height: 100%; display: block; border-radius: 10px; }
 
-.game-foot { flex-shrink: 0; padding: 5px 13px 10px; }
+.game-foot { flex-shrink: 0; padding: 5px 13px max(10px, env(safe-area-inset-bottom)); }
 .btn-next {
   width: 100%; padding: 12px; display: none;
   background: linear-gradient(135deg, #e879f9, #7c3aed); border: none; border-radius: 12px;
   color: #fff; font-family: inherit; font-size: 0.92rem; font-weight: 900;
   letter-spacing: 1px; cursor: pointer; box-shadow: 0 0 16px #e879f940; transition: all .2s;
+  touch-action: manipulation; -webkit-tap-highlight-color: transparent;
 }
 .btn-next.vis { display: block; }
 .btn-next:active { transform: scale(0.97); }
 
 /* RESULTS */
-#result { align-items: center; justify-content: center; gap: 8px; padding: 12px 15px; }
+#result { align-items: center; justify-content: center; gap: 8px; padding: 12px 15px max(12px, env(safe-area-inset-bottom)); }
 #result h2 {
   font-size: 1.05rem; font-weight: 900;
   background: linear-gradient(90deg, #fde68a, #f472b6);
