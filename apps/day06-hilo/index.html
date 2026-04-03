@@ -7,7 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -17,10 +16,6 @@
       color: #00ffcc;
       height: 100svh;
       overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
       position: relative;
     }
 
@@ -30,236 +25,276 @@
       position: fixed;
       inset: 0;
       background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,0,0,0.08) 2px,
-        rgba(0,0,0,0.08) 4px
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.07) 2px, rgba(0,0,0,0.07) 4px
       );
       pointer-events: none;
       z-index: 999;
     }
 
     /* Stars */
-    .stars {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 0;
-      overflow: hidden;
-    }
+    .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
     .star {
-      position: absolute;
-      background: #fff;
-      border-radius: 50%;
+      position: absolute; background: #fff; border-radius: 50%;
       animation: twinkle var(--dur) ease-in-out infinite;
     }
     @keyframes twinkle {
-      0%, 100% { opacity: var(--lo); }
+      0%,100% { opacity: var(--lo); }
       50% { opacity: var(--hi); }
     }
 
+    /* ── Layout ── */
     .container {
       width: 100%;
       max-width: 390px;
+      margin: 0 auto;
       height: 100svh;
       display: flex;
       flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px 18px;
+      padding: 12px 16px 0;
       position: relative;
       z-index: 1;
+      gap: 10px;
     }
 
     /* Header */
-    .header { text-align: center; width: 100%; }
+    .header { text-align: center; flex-shrink: 0; }
     .title {
-      font-size: 20px;
-      font-weight: 900;
+      font-size: 19px; font-weight: 900; letter-spacing: 4px;
       color: #00ffcc;
-      text-shadow: 0 0 10px #00ffcc, 0 0 24px rgba(0,255,204,0.4);
-      letter-spacing: 4px;
+      text-shadow: 0 0 10px #00ffcc, 0 0 22px rgba(0,255,204,0.35);
     }
-    .subtitle {
-      font-size: 10px;
-      color: #336677;
-      letter-spacing: 3px;
-      margin-top: 2px;
-    }
+    .subtitle { font-size: 9px; color: #335566; letter-spacing: 3px; margin-top: 1px; }
 
-    /* Robot container */
-    .robot-area {
+    /* ── Robot row (horizontal) ── */
+    .robot-row {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 0;
+      gap: 10px;
       flex-shrink: 0;
     }
 
     .speech-bubble {
-      background: rgba(0, 16, 32, 0.92);
+      flex: 1;
+      background: rgba(0,14,28,0.92);
       border: 1.5px solid #00ffcc;
-      border-radius: 14px;
-      padding: 8px 14px;
+      border-radius: 12px;
+      padding: 8px 12px;
       font-size: 12px;
       font-weight: 700;
       color: #00ffcc;
-      text-shadow: 0 0 6px rgba(0,255,204,0.6);
-      max-width: 270px;
-      text-align: center;
+      text-shadow: 0 0 5px rgba(0,255,204,0.5);
       line-height: 1.5;
-      box-shadow: 0 0 12px rgba(0,255,204,0.15), inset 0 0 8px rgba(0,255,204,0.05);
+      box-shadow: 0 0 10px rgba(0,255,204,0.12);
       position: relative;
-      margin-bottom: 6px;
-      min-height: 38px;
+      min-height: 44px;
       display: flex;
       align-items: center;
-      justify-content: center;
     }
+    /* Arrow pointing right toward robot */
     .speech-bubble::after {
       content: '';
       position: absolute;
-      bottom: -8px;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 8px solid transparent;
-      border-top-color: #00ffcc;
-      border-bottom: none;
+      right: -8px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 7px solid transparent;
+      border-left-color: #00ffcc;
+      border-right: none;
     }
     .speech-bubble::before {
       content: '';
       position: absolute;
-      bottom: -6px;
-      left: 50%;
-      transform: translateX(-50%);
-      border: 6px solid transparent;
-      border-top-color: #060f1e;
-      border-bottom: none;
+      right: -5px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: 5px solid transparent;
+      border-left-color: #060d1a;
+      border-right: none;
       z-index: 1;
     }
 
-    /* Robot SVG */
     .robot {
-      width: 88px;
-      height: 96px;
-      filter: drop-shadow(0 0 10px rgba(0,255,204,0.45));
-      transition: transform 0.3s;
+      width: 64px;
+      height: 70px;
+      flex-shrink: 0;
+      filter: drop-shadow(0 0 8px rgba(0,255,204,0.4));
     }
     .robot.bounce { animation: rBounce 0.5s ease; }
     .robot.shake  { animation: rShake 0.45s ease; }
     .robot.spin   { animation: rSpin 0.65s ease; }
     @keyframes rBounce {
       0%,100% { transform: translateY(0); }
-      35% { transform: translateY(-14px); }
-      65% { transform: translateY(-6px); }
+      35% { transform: translateY(-10px); }
+      65% { transform: translateY(-4px); }
     }
     @keyframes rShake {
       0%,100% { transform: translateX(0); }
-      20% { transform: translateX(-7px); }
-      40% { transform: translateX(7px); }
-      60% { transform: translateX(-5px); }
-      80% { transform: translateX(5px); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
     }
     @keyframes rSpin {
       0% { transform: rotate(0) scale(1); }
-      50% { transform: rotate(180deg) scale(1.15); }
+      50% { transform: rotate(180deg) scale(1.1); }
       100% { transform: rotate(360deg) scale(1); }
     }
 
+    /* ── Middle content ── */
+    .mid {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
     /* Screens */
-    .screen { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .screen { display: flex; flex-direction: column; align-items: center; gap: 9px; width: 100%; }
     .screen.hidden { display: none; }
 
     /* Difficulty */
-    .diff-label-text {
-      font-size: 11px;
-      color: #335566;
-      letter-spacing: 3px;
-    }
-    .diff-buttons { display: flex; gap: 10px; width: 100%; }
+    .diff-label-text { font-size: 10px; color: #334455; letter-spacing: 3px; }
+    .diff-buttons { display: flex; gap: 8px; width: 100%; }
     .diff-btn {
       flex: 1;
-      padding: 11px 4px;
+      padding: 10px 4px;
       border: 2px solid;
       border-radius: 12px;
       background: transparent;
       font-family: 'M PLUS Rounded 1c', sans-serif;
       font-weight: 900;
-      font-size: 13px;
       cursor: pointer;
-      letter-spacing: 1px;
       transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+    }
+    .diff-btn .d-name { font-size: 13px; }
+    .diff-btn .d-info { font-size: 9px; font-weight: 400; opacity: 0.75; }
+    .diff-btn.easy   { border-color: #00ff88; color: #00ff88; }
+    .diff-btn.easy:active   { background: rgba(0,255,136,0.12); box-shadow: 0 0 12px rgba(0,255,136,0.3); }
+    .diff-btn.normal { border-color: #00ccff; color: #00ccff; }
+    .diff-btn.normal:active { background: rgba(0,204,255,0.12); box-shadow: 0 0 12px rgba(0,204,255,0.3); }
+    .diff-btn.hard   { border-color: #ff4466; color: #ff4466; }
+    .diff-btn.hard:active   { background: rgba(255,68,102,0.12); box-shadow: 0 0 12px rgba(255,68,102,0.3); }
+
+    /* Game info */
+    .game-info {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      padding: 7px 10px;
+      background: rgba(0,14,28,0.75);
+      border: 1px solid rgba(0,255,204,0.2);
+      border-radius: 10px;
+    }
+    .info-item { display: flex; flex-direction: column; align-items: center; gap: 1px; }
+    .info-lbl { font-size: 8px; color: #334455; letter-spacing: 2px; }
+    .info-val { font-size: 14px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 7px rgba(0,255,204,0.6); }
+
+    /* Bar */
+    .bar-wrap { width: 100%; height: 6px; background: rgba(255,255,255,0.07); border-radius: 3px; overflow: hidden; }
+    .bar-fill {
+      height: 100%; border-radius: 3px;
+      transition: width 0.35s ease, background 0.35s;
+      background: #00ffcc; box-shadow: 0 0 5px #00ffcc;
+    }
+
+    /* History */
+    .history {
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      justify-content: center;
+      align-content: flex-start;
+      max-height: 56px;
+      overflow: hidden;
+    }
+    .h-item {
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1.5px solid;
+    }
+    .h-item.hi { border-color: #ff5577; color: #ff5577; background: rgba(255,68,102,0.08); }
+    .h-item.lo { border-color: #4499ff; color: #4499ff; background: rgba(68,136,255,0.08); }
+
+    /* Result */
+    .result-box {
+      width: 100%;
+      padding: 14px;
+      background: rgba(0,14,28,0.88);
+      border: 2px solid;
+      border-radius: 14px;
+      text-align: center;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 3px;
     }
-    .diff-btn .d-name { font-size: 14px; }
-    .diff-btn .d-info { font-size: 10px; font-weight: 400; opacity: 0.75; letter-spacing: 0; }
-    .diff-btn.easy   { border-color: #00ff88; color: #00ff88; }
-    .diff-btn.easy:active,
-    .diff-btn.easy:hover { background: rgba(0,255,136,0.12); box-shadow: 0 0 14px rgba(0,255,136,0.35); }
-    .diff-btn.normal { border-color: #00ccff; color: #00ccff; }
-    .diff-btn.normal:active,
-    .diff-btn.normal:hover { background: rgba(0,204,255,0.12); box-shadow: 0 0 14px rgba(0,204,255,0.35); }
-    .diff-btn.hard   { border-color: #ff4466; color: #ff4466; }
-    .diff-btn.hard:active,
-    .diff-btn.hard:hover { background: rgba(255,68,102,0.12); box-shadow: 0 0 14px rgba(255,68,102,0.35); }
-
-    /* Game info bar */
-    .game-info {
-      display: flex;
-      justify-content: space-around;
-      width: 100%;
-      padding: 8px 10px;
-      background: rgba(0,16,32,0.75);
-      border: 1px solid rgba(0,255,204,0.25);
-      border-radius: 12px;
-    }
-    .info-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .info-lbl { font-size: 9px; color: #335566; letter-spacing: 2px; }
-    .info-val { font-size: 15px; font-weight: 900; color: #00ffcc; text-shadow: 0 0 8px rgba(0,255,204,0.7); }
-
-    /* Attempts bar */
-    .bar-wrap {
-      width: 100%;
-      height: 7px;
-      background: rgba(255,255,255,0.08);
-      border-radius: 4px;
-      overflow: hidden;
-    }
-    .bar-fill {
-      height: 100%;
-      border-radius: 4px;
-      transition: width 0.35s ease, background 0.35s;
-      background: #00ffcc;
-      box-shadow: 0 0 6px #00ffcc;
-    }
-
-    /* Input */
-    .input-row { display: flex; gap: 8px; width: 100%; }
-    .num-input {
-      flex: 1;
-      background: rgba(0,16,32,0.8);
-      border: 2px solid rgba(0,255,204,0.4);
-      border-radius: 12px;
+    .result-box.win  { border-color: #00ffcc; box-shadow: 0 0 20px rgba(0,255,204,0.2); }
+    .result-box.lose { border-color: #ff4466; box-shadow: 0 0 20px rgba(255,68,102,0.15); }
+    .res-title { font-size: 22px; font-weight: 900; letter-spacing: 3px; }
+    .result-box.win  .res-title { color: #00ffcc; text-shadow: 0 0 12px #00ffcc; }
+    .result-box.lose .res-title { color: #ff4466; text-shadow: 0 0 12px #ff4466; }
+    .score-lbl { font-size: 9px; color: #334455; letter-spacing: 3px; margin-top: 4px; }
+    .score-num { font-size: 40px; font-weight: 900; color: #ffd700; text-shadow: 0 0 12px rgba(255,215,0,0.6); line-height: 1; }
+    .res-detail { font-size: 11px; color: #4488aa; line-height: 1.5; }
+    .retry-btn {
+      margin-top: 8px;
+      background: transparent;
+      border: 2px solid #00ffcc;
+      border-radius: 10px;
       color: #00ffcc;
       font-family: 'M PLUS Rounded 1c', sans-serif;
-      font-size: 26px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 7px 26px;
+      cursor: pointer;
+      letter-spacing: 2px;
+      transition: all 0.2s;
+    }
+    .retry-btn:active { background: rgba(0,255,204,0.14); }
+
+    /* ── Bottom input bar (fixed) ── */
+    .bottom-bar {
+      flex-shrink: 0;
+      width: 100%;
+      padding: 10px 0 max(16px, env(safe-area-inset-bottom));
+      display: flex;
+      gap: 8px;
+    }
+    .bottom-bar.hidden { visibility: hidden; pointer-events: none; }
+
+    .num-input {
+      flex: 1;
+      background: rgba(0,14,28,0.85);
+      border: 2px solid rgba(0,255,204,0.45);
+      border-radius: 12px;
+      color: #00ffcc;
+      caret-color: #00ffcc;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 24px;
       font-weight: 900;
       text-align: center;
-      padding: 8px;
+      padding: 10px 8px;
       outline: none;
-      text-shadow: 0 0 10px rgba(0,255,204,0.6);
+      text-shadow: 0 0 8px rgba(0,255,204,0.5);
       -webkit-appearance: none;
       transition: border-color 0.2s, box-shadow 0.2s;
     }
     .num-input:focus {
       border-color: #00ffcc;
-      box-shadow: 0 0 14px rgba(0,255,204,0.35);
+      box-shadow: 0 0 12px rgba(0,255,204,0.3);
     }
-    .num-input::placeholder { color: rgba(0,255,204,0.25); }
+    .num-input::placeholder { color: rgba(0,255,204,0.2); }
+
     .go-btn {
       background: rgba(0,255,204,0.1);
       border: 2px solid #00ffcc;
@@ -268,126 +303,42 @@
       font-family: 'M PLUS Rounded 1c', sans-serif;
       font-size: 15px;
       font-weight: 900;
-      padding: 8px 18px;
+      padding: 10px 20px;
       cursor: pointer;
-      text-shadow: 0 0 8px rgba(0,255,204,0.6);
-      box-shadow: 0 0 10px rgba(0,255,204,0.15);
-      transition: all 0.2s;
+      text-shadow: 0 0 7px rgba(0,255,204,0.5);
       letter-spacing: 2px;
+      transition: all 0.15s;
+      white-space: nowrap;
     }
-    .go-btn:active,
-    .go-btn:hover:not(:disabled) {
-      background: rgba(0,255,204,0.22);
-      box-shadow: 0 0 18px rgba(0,255,204,0.5);
-    }
-    .go-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+    .go-btn:active:not(:disabled) { background: rgba(0,255,204,0.22); box-shadow: 0 0 16px rgba(0,255,204,0.45); }
+    .go-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
-    /* History */
-    .history {
-      width: 100%;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      justify-content: center;
-      min-height: 28px;
-      align-content: flex-start;
-    }
-    .h-item {
-      padding: 3px 9px;
-      border-radius: 7px;
-      font-size: 11px;
-      font-weight: 700;
-      border: 1.5px solid;
-    }
-    .h-item.hi { border-color: #ff5577; color: #ff5577; background: rgba(255,68,102,0.1); }
-    .h-item.lo { border-color: #4499ff; color: #4499ff; background: rgba(68,136,255,0.1); }
-
-    /* Result */
-    .result-box {
-      width: 100%;
-      padding: 16px 14px;
-      background: rgba(0,16,32,0.85);
-      border: 2px solid;
-      border-radius: 16px;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-    .result-box.win  { border-color: #00ffcc; box-shadow: 0 0 24px rgba(0,255,204,0.25); }
-    .result-box.lose { border-color: #ff4466; box-shadow: 0 0 24px rgba(255,68,102,0.2); }
-    .res-title {
-      font-size: 24px;
-      font-weight: 900;
-      letter-spacing: 3px;
-      line-height: 1.2;
-    }
-    .result-box.win  .res-title { color: #00ffcc; text-shadow: 0 0 14px #00ffcc; }
-    .result-box.lose .res-title { color: #ff4466; text-shadow: 0 0 14px #ff4466; }
-    .score-lbl { font-size: 10px; color: #335566; letter-spacing: 3px; margin-top: 4px; }
-    .score-num {
-      font-size: 42px;
-      font-weight: 900;
-      color: #ffd700;
-      text-shadow: 0 0 14px rgba(255,215,0,0.7);
-      line-height: 1;
-    }
-    .res-detail { font-size: 11px; color: #4488aa; margin-top: 4px; line-height: 1.5; }
-    .retry-btn {
-      margin-top: 10px;
-      background: transparent;
-      border: 2px solid #00ffcc;
-      border-radius: 10px;
-      color: #00ffcc;
-      font-family: 'M PLUS Rounded 1c', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
-      padding: 8px 28px;
-      cursor: pointer;
-      letter-spacing: 2px;
-      transition: all 0.2s;
-    }
-    .retry-btn:active,
-    .retry-btn:hover { background: rgba(0,255,204,0.14); box-shadow: 0 0 14px rgba(0,255,204,0.4); }
-
-    /* Hint flash overlay */
+    /* Hint flash */
     .hint-flash {
       position: fixed;
-      top: 45%;
+      top: 42%;
       left: 50%;
       transform: translate(-50%, -50%);
-      font-size: 44px;
+      font-size: 40px;
       font-weight: 900;
       letter-spacing: 3px;
       pointer-events: none;
       opacity: 0;
       z-index: 200;
     }
-    .hint-flash.up {
-      color: #ff5577;
-      text-shadow: 0 0 20px #ff5577;
-      animation: hfAnim 0.75s ease forwards;
-    }
-    .hint-flash.down {
-      color: #4499ff;
-      text-shadow: 0 0 20px #4499ff;
-      animation: hfAnim 0.75s ease forwards;
-    }
-    @keyframes hfAnim {
-      0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-      25%  { opacity: 1; transform: translate(-50%, -50%) scale(1.1); }
-      70%  { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-      100% { opacity: 0; transform: translate(-50%, -65%) scale(0.85); }
+    .hint-flash.up   { color: #ff5577; text-shadow: 0 0 18px #ff5577; animation: hf 0.75s ease forwards; }
+    .hint-flash.down { color: #4499ff; text-shadow: 0 0 18px #4499ff; animation: hf 0.75s ease forwards; }
+    @keyframes hf {
+      0%   { opacity: 0; transform: translate(-50%,-50%) scale(0.5); }
+      25%  { opacity: 1; transform: translate(-50%,-50%) scale(1.1); }
+      70%  { opacity: 1; transform: translate(-50%,-50%) scale(1); }
+      100% { opacity: 0; transform: translate(-50%,-65%) scale(0.85); }
     }
 
     /* Particles */
     .particles { position: fixed; inset: 0; pointer-events: none; z-index: 100; }
     .pt {
-      position: absolute;
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
+      position: absolute; width: 6px; height: 6px; border-radius: 50%;
       animation: ptFly 0.9s ease-out forwards;
     }
     @keyframes ptFly {
@@ -410,24 +361,19 @@
     <div class="subtitle">HI-LO CHALLENGE · DAY 06</div>
   </div>
 
-  <!-- Robot -->
-  <div class="robot-area">
+  <!-- Robot row (横並び) -->
+  <div class="robot-row">
     <div class="speech-bubble" id="speech">難易度を選んでね！ぼくと勝負しよ♪</div>
     <svg class="robot" id="robot" viewBox="0 0 88 96" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <filter id="g1"><feGaussianBlur stdDeviation="1.8" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
         <filter id="g2"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
       </defs>
-      <!-- Antenna -->
       <line x1="44" y1="4" x2="44" y2="16" stroke="#00ffcc" stroke-width="2.5" stroke-linecap="round"/>
       <circle cx="44" cy="4" r="4.5" fill="#00ffcc" filter="url(#g2)"/>
-      <!-- Head -->
       <rect x="14" y="16" width="60" height="38" rx="11" fill="#071525" stroke="#00ffcc" stroke-width="2"/>
-      <!-- Cheeks -->
       <ellipse cx="19" cy="42" rx="5" ry="4" fill="rgba(255,100,160,0.35)"/>
       <ellipse cx="69" cy="42" rx="5" ry="4" fill="rgba(255,100,160,0.35)"/>
-
-      <!-- Eyes: normal -->
       <g id="e-normal">
         <rect x="23" y="26" width="14" height="12" rx="4" fill="#00ffcc" filter="url(#g1)"/>
         <rect x="51" y="26" width="14" height="12" rx="4" fill="#00ffcc" filter="url(#g1)"/>
@@ -436,332 +382,303 @@
         <circle cx="29" cy="30" r="1" fill="rgba(255,255,255,0.7)"/>
         <circle cx="57" cy="30" r="1" fill="rgba(255,255,255,0.7)"/>
       </g>
-      <!-- Eyes: happy (arc) -->
       <g id="e-happy" display="none">
         <path d="M23 34 Q30 26 37 34" stroke="#00ffcc" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#g1)"/>
         <path d="M51 34 Q58 26 65 34" stroke="#00ffcc" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#g1)"/>
       </g>
-      <!-- Eyes: sad -->
       <g id="e-sad" display="none">
         <path d="M23 28 Q30 36 37 28" stroke="#00ffcc" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#g1)"/>
         <path d="M51 28 Q58 36 65 28" stroke="#00ffcc" stroke-width="3" fill="none" stroke-linecap="round" filter="url(#g1)"/>
       </g>
-      <!-- Eyes: thinking (squint) -->
       <g id="e-think" display="none">
         <rect x="23" y="29" width="14" height="5" rx="2.5" fill="#00ffcc" filter="url(#g1)"/>
         <rect x="51" y="29" width="14" height="5" rx="2.5" fill="#00ffcc" filter="url(#g1)"/>
         <circle cx="26" cy="31" r="1" fill="#071525"/>
         <circle cx="54" cy="31" r="1" fill="#071525"/>
       </g>
-
-      <!-- Mouth: normal -->
       <rect id="m-normal" x="30" y="46" width="28" height="4" rx="2" fill="#00ffcc" filter="url(#g1)"/>
-      <!-- Mouth: happy -->
       <path id="m-happy" d="M29 44 Q44 56 59 44" stroke="#00ffcc" stroke-width="2.5" fill="none" stroke-linecap="round" filter="url(#g1)" display="none"/>
-      <!-- Mouth: sad -->
       <path id="m-sad" d="M29 52 Q44 43 59 52" stroke="#00ffcc" stroke-width="2.5" fill="none" stroke-linecap="round" filter="url(#g1)" display="none"/>
-
-      <!-- Body -->
       <rect x="18" y="56" width="52" height="30" rx="9" fill="#071525" stroke="#00ffcc" stroke-width="2"/>
-      <!-- Body lights -->
       <circle cx="32" cy="67" r="5" fill="#ff4466" filter="url(#g1)"/>
       <circle cx="44" cy="67" r="5" fill="#ffd700" filter="url(#g1)"/>
       <circle cx="56" cy="67" r="5" fill="#00ff88" filter="url(#g1)"/>
-      <!-- Panel -->
-      <rect x="26" y="74" width="36" height="7" rx="3.5" fill="rgba(0,255,204,0.1)" stroke="rgba(0,255,204,0.35)" stroke-width="1.2"/>
+      <rect x="26" y="74" width="36" height="7" rx="3.5" fill="rgba(0,255,204,0.1)" stroke="rgba(0,255,204,0.3)" stroke-width="1.2"/>
       <rect x="30" y="76.5" width="8" height="2" rx="1" fill="rgba(0,255,204,0.4)"/>
-      <rect x="40" y="76.5" width="4" height="2" rx="1" fill="rgba(0,255,204,0.3)"/>
       <rect x="46" y="76.5" width="10" height="2" rx="1" fill="rgba(0,255,204,0.4)"/>
-
-      <!-- Arms -->
       <rect x="3"  y="60" width="14" height="9" rx="4.5" fill="#071525" stroke="#00ffcc" stroke-width="2"/>
       <rect x="71" y="60" width="14" height="9" rx="4.5" fill="#071525" stroke="#00ffcc" stroke-width="2"/>
-      <!-- Hands -->
       <circle cx="6"  cy="72" r="4" fill="#071525" stroke="#00ffcc" stroke-width="1.5"/>
       <circle cx="82" cy="72" r="4" fill="#071525" stroke="#00ffcc" stroke-width="1.5"/>
-      <!-- Legs -->
       <rect x="25" y="86" width="13" height="10" rx="5" fill="#071525" stroke="#00ffcc" stroke-width="2"/>
       <rect x="50" y="86" width="13" height="10" rx="5" fill="#071525" stroke="#00ffcc" stroke-width="2"/>
     </svg>
   </div>
 
-  <!-- DIFFICULTY SCREEN -->
-  <div class="screen" id="diffScreen">
-    <div class="diff-label-text">── SELECT DIFFICULTY ──</div>
-    <div class="diff-buttons">
-      <button class="diff-btn easy" onclick="startGame('easy')">
-        <span class="d-name">EASY</span>
-        <span class="d-info">1〜50</span>
-        <span class="d-info">10回</span>
-      </button>
-      <button class="diff-btn normal" onclick="startGame('normal')">
-        <span class="d-name">NORMAL</span>
-        <span class="d-info">1〜100</span>
-        <span class="d-info">7回</span>
-      </button>
-      <button class="diff-btn hard" onclick="startGame('hard')">
-        <span class="d-name">HARD</span>
-        <span class="d-info">1〜100</span>
-        <span class="d-info">5回</span>
-      </button>
-    </div>
-  </div>
+  <!-- Middle: screens -->
+  <div class="mid">
 
-  <!-- GAME SCREEN -->
-  <div class="screen hidden" id="gameScreen">
-    <div class="game-info">
-      <div class="info-item">
-        <div class="info-lbl">RANGE</div>
-        <div class="info-val" id="rangeVal">1-100</div>
-      </div>
-      <div class="info-item">
-        <div class="info-lbl">REMAINING</div>
-        <div class="info-val" id="remVal">7</div>
-      </div>
-      <div class="info-item">
-        <div class="info-lbl">DIFF</div>
-        <div class="info-val" id="diffVal">NORMAL</div>
+    <!-- DIFFICULTY -->
+    <div class="screen" id="diffScreen">
+      <div class="diff-label-text">── SELECT DIFFICULTY ──</div>
+      <div class="diff-buttons">
+        <button class="diff-btn easy" onclick="startGame('easy')">
+          <span class="d-name">EASY</span>
+          <span class="d-info">1〜50</span>
+          <span class="d-info">10回</span>
+        </button>
+        <button class="diff-btn normal" onclick="startGame('normal')">
+          <span class="d-name">NORMAL</span>
+          <span class="d-info">1〜100</span>
+          <span class="d-info">7回</span>
+        </button>
+        <button class="diff-btn hard" onclick="startGame('hard')">
+          <span class="d-name">HARD</span>
+          <span class="d-info">1〜100</span>
+          <span class="d-info">5回</span>
+        </button>
       </div>
     </div>
-    <div class="bar-wrap">
-      <div class="bar-fill" id="barFill" style="width:100%"></div>
+
+    <!-- GAME -->
+    <div class="screen hidden" id="gameScreen">
+      <div class="game-info">
+        <div class="info-item">
+          <div class="info-lbl">RANGE</div>
+          <div class="info-val" id="rangeVal">1-100</div>
+        </div>
+        <div class="info-item">
+          <div class="info-lbl">REMAINING</div>
+          <div class="info-val" id="remVal">7</div>
+        </div>
+        <div class="info-item">
+          <div class="info-lbl">DIFF</div>
+          <div class="info-val" id="diffVal">NORMAL</div>
+        </div>
+      </div>
+      <div class="bar-wrap">
+        <div class="bar-fill" id="barFill" style="width:100%"></div>
+      </div>
+      <div class="history" id="history"></div>
     </div>
-    <div class="input-row">
-      <input type="text" inputmode="numeric" pattern="[0-9]*" class="num-input" id="numInput" placeholder="?">
-      <button class="go-btn" id="goBtn" onclick="guess()">GO!</button>
+
+    <!-- RESULT -->
+    <div class="screen hidden" id="resultScreen">
+      <div class="result-box" id="resultBox">
+        <div class="res-title" id="resTitle">CLEAR!</div>
+        <div class="score-lbl">SCORE</div>
+        <div class="score-num" id="scoreNum">0</div>
+        <div class="res-detail" id="resDetail"></div>
+        <button class="retry-btn" onclick="goTitle()">RETRY</button>
+      </div>
     </div>
-    <div class="history" id="history"></div>
+
+  </div><!-- /mid -->
+
+  <!-- Bottom input bar -->
+  <div class="bottom-bar hidden" id="bottomBar">
+    <input type="text" inputmode="numeric" pattern="[0-9]*"
+           class="num-input" id="numInput" placeholder="?">
+    <button class="go-btn" id="goBtn" onclick="guess()">GO!</button>
   </div>
 
-  <!-- RESULT SCREEN -->
-  <div class="screen hidden" id="resultScreen">
-    <div class="result-box" id="resultBox">
-      <div class="res-title" id="resTitle">CLEAR!</div>
-      <div class="score-lbl">SCORE</div>
-      <div class="score-num" id="scoreNum">0</div>
-      <div class="res-detail" id="resDetail"></div>
-      <button class="retry-btn" onclick="goTitle()">RETRY</button>
-    </div>
-  </div>
-
-</div>
+</div><!-- /container -->
 
 <script>
-// ── Stars ──
-(function() {
-  const wrap = document.getElementById('stars');
-  for (let i = 0; i < 60; i++) {
-    const s = document.createElement('div');
-    s.className = 'star';
-    const sz = Math.random() * 2 + 0.5;
-    s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--lo:${(Math.random()*0.2+0.1).toFixed(2)};--hi:${(Math.random()*0.5+0.4).toFixed(2)};--dur:${(Math.random()*3+2).toFixed(1)}s;animation-delay:${(Math.random()*4).toFixed(1)}s`;
-    wrap.appendChild(s);
+// Stars
+(function(){
+  const w = document.getElementById('stars');
+  for(let i=0;i<50;i++){
+    const s=document.createElement('div'); s.className='star';
+    const sz=Math.random()*2+0.5;
+    s.style.cssText=`width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;--lo:${(Math.random()*0.2+0.1).toFixed(2)};--hi:${(Math.random()*0.5+0.4).toFixed(2)};--dur:${(Math.random()*3+2).toFixed(1)}s;animation-delay:${(Math.random()*4).toFixed(1)}s`;
+    w.appendChild(s);
   }
 })();
 
-// ── Audio ──
-let ctx = null;
-function ac() { if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)(); return ctx; }
-
-function snd(type) {
-  try {
-    const c = ac();
-    const play = (freq, start, dur, endFreq) => {
-      const o = c.createOscillator(), g = c.createGain();
-      o.connect(g); g.connect(c.destination);
-      o.frequency.setValueAtTime(freq, c.currentTime + start);
-      if (endFreq) o.frequency.linearRampToValueAtTime(endFreq, c.currentTime + start + dur);
-      g.gain.setValueAtTime(0.18, c.currentTime + start);
-      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + start + dur + 0.02);
-      o.start(c.currentTime + start);
-      o.stop(c.currentTime + start + dur + 0.05);
+// Audio
+let ctx=null;
+function ac(){if(!ctx)ctx=new(window.AudioContext||window.webkitAudioContext)();return ctx;}
+function snd(type){
+  try{
+    const c=ac();
+    const p=(freq,start,dur,ef)=>{
+      const o=c.createOscillator(),g=c.createGain();
+      o.connect(g);g.connect(c.destination);
+      o.frequency.setValueAtTime(freq,c.currentTime+start);
+      if(ef)o.frequency.linearRampToValueAtTime(ef,c.currentTime+start+dur);
+      g.gain.setValueAtTime(0.16,c.currentTime+start);
+      g.gain.exponentialRampToValueAtTime(0.001,c.currentTime+start+dur+0.02);
+      o.start(c.currentTime+start);o.stop(c.currentTime+start+dur+0.05);
     };
-    if (type === 'click') play(700, 0, 0.08);
-    else if (type === 'hi')   play(280, 0, 0.18, 480);
-    else if (type === 'lo')   play(480, 0, 0.18, 280);
-    else if (type === 'win')  [523,659,784,1047].forEach((f,i) => play(f, i*0.11, 0.13));
-    else if (type === 'lose') [380,320,260,200].forEach((f,i) => play(f, i*0.14, 0.16));
-  } catch(e) {}
+    if(type==='click') p(700,0,0.08);
+    else if(type==='hi')   p(280,0,0.18,480);
+    else if(type==='lo')   p(480,0,0.18,280);
+    else if(type==='win')  [523,659,784,1047].forEach((f,i)=>p(f,i*0.11,0.13));
+    else if(type==='lose') [380,320,260,200].forEach((f,i)=>p(f,i*0.14,0.16));
+  }catch(e){}
 }
 
-// ── Robot helpers ──
-const FACES = ['normal','happy','sad','think'];
-function face(f) {
-  FACES.forEach(x => {
-    const e = document.getElementById(`e-${x}`);
-    if (e) e.setAttribute('display', x === f ? '' : 'none');
+// Robot
+const FACES=['normal','happy','sad','think'];
+function face(f){
+  FACES.forEach(x=>{
+    const e=document.getElementById(`e-${x}`);
+    if(e)e.setAttribute('display',x===f?'':'none');
   });
-  document.getElementById('m-normal').setAttribute('display', (f === 'normal' || f === 'think') ? '' : 'none');
-  document.getElementById('m-happy').setAttribute('display', f === 'happy' ? '' : 'none');
-  document.getElementById('m-sad').setAttribute('display', f === 'sad' ? '' : 'none');
+  document.getElementById('m-normal').setAttribute('display',(f==='normal'||f==='think')?'':'none');
+  document.getElementById('m-happy').setAttribute('display',f==='happy'?'':'none');
+  document.getElementById('m-sad').setAttribute('display',f==='sad'?'':'none');
 }
-function anim(a) {
-  const r = document.getElementById('robot');
+function anim(a){
+  const r=document.getElementById('robot');
   r.classList.remove('bounce','shake','spin');
-  void r.offsetWidth;
-  r.classList.add(a);
-  setTimeout(() => r.classList.remove(a), 700);
+  void r.offsetWidth; r.classList.add(a);
+  setTimeout(()=>r.classList.remove(a),700);
 }
-function say(t) { document.getElementById('speech').textContent = t; }
+function say(t){document.getElementById('speech').textContent=t;}
 
-// ── Hint flash ──
-function flash(txt, dir) {
-  const el = document.getElementById('hintFlash');
-  el.textContent = txt;
-  el.className = `hint-flash ${dir}`;
-  setTimeout(() => { el.className = 'hint-flash'; }, 750);
+// Hint flash
+function flash(txt,dir){
+  const el=document.getElementById('hintFlash');
+  el.textContent=txt; el.className=`hint-flash ${dir}`;
+  setTimeout(()=>{el.className='hint-flash';},750);
 }
 
-// ── Particles ──
-function burst(x, y, color) {
-  const wrap = document.getElementById('particles');
-  for (let i = 0; i < 24; i++) {
-    const p = document.createElement('div');
-    p.className = 'pt';
-    p.style.left = x + 'px'; p.style.top = y + 'px';
-    p.style.background = color;
-    p.style.boxShadow = `0 0 5px ${color}`;
-    const a = Math.random() * Math.PI * 2, d = 50 + Math.random() * 90;
-    p.style.setProperty('--tx', `${Math.cos(a)*d}px`);
-    p.style.setProperty('--ty', `${Math.sin(a)*d}px`);
-    p.style.animationDelay = (Math.random() * 0.1) + 's';
-    wrap.appendChild(p);
-    setTimeout(() => p.remove(), 1000);
+// Particles
+function burst(x,y,color){
+  const w=document.getElementById('particles');
+  for(let i=0;i<20;i++){
+    const pt=document.createElement('div'); pt.className='pt';
+    pt.style.left=x+'px'; pt.style.top=y+'px';
+    pt.style.background=color; pt.style.boxShadow=`0 0 4px ${color}`;
+    const a=Math.random()*Math.PI*2,d=50+Math.random()*80;
+    pt.style.setProperty('--tx',`${Math.cos(a)*d}px`);
+    pt.style.setProperty('--ty',`${Math.sin(a)*d}px`);
+    w.appendChild(pt); setTimeout(()=>pt.remove(),1000);
   }
 }
 
-// ── Game state ──
-let answer, maxAtt, attLeft, maxRange, diff, active;
-const SETTINGS = {
-  easy:   { range: 50,  att: 10, mul: 1 },
-  normal: { range: 100, att: 7,  mul: 2 },
-  hard:   { range: 100, att: 5,  mul: 4 },
-};
-const SPEECHES = {
-  easy:   (n) => `1〜50の中に隠れてるよ！${n}回チャンスをあげる♪`,
-  normal: (n) => `1〜100の数字を考えたよ！${n}回以内に当ててね！`,
-  hard:   (n) => `ふふ…たった${n}回しかないよ？本気でかかってきな！`,
+// Game
+let answer,maxAtt,attLeft,maxRange,diff,active;
+const SETTINGS={
+  easy:  {range:50, att:10,mul:1},
+  normal:{range:100,att:7, mul:2},
+  hard:  {range:100,att:5, mul:4},
 };
 
-function startGame(d) {
-  snd('click');
-  diff = d;
-  const s = SETTINGS[d];
-  maxRange = s.range; maxAtt = s.att; attLeft = s.att;
-  answer = Math.floor(Math.random() * maxRange) + 1;
-  active = true;
+function startGame(d){
+  snd('click'); diff=d;
+  const s=SETTINGS[d];
+  maxRange=s.range; maxAtt=s.att; attLeft=s.att;
+  answer=Math.floor(Math.random()*maxRange)+1;
+  active=true;
 
   document.getElementById('diffScreen').classList.add('hidden');
   document.getElementById('resultScreen').classList.add('hidden');
   document.getElementById('gameScreen').classList.remove('hidden');
+  document.getElementById('bottomBar').classList.remove('hidden');
 
-  document.getElementById('rangeVal').textContent = `1-${maxRange}`;
-  document.getElementById('remVal').textContent = attLeft;
-  document.getElementById('diffVal').textContent = d.toUpperCase();
-  document.getElementById('numInput').max = maxRange;
-  document.getElementById('numInput').value = '';
-  document.getElementById('goBtn').disabled = false;
-  document.getElementById('history').innerHTML = '';
+  document.getElementById('rangeVal').textContent=`1-${maxRange}`;
+  document.getElementById('remVal').textContent=attLeft;
+  document.getElementById('diffVal').textContent=d.toUpperCase();
+  document.getElementById('numInput').value='';
+  document.getElementById('goBtn').disabled=false;
+  document.getElementById('history').innerHTML='';
   setBar(1);
 
-  say(SPEECHES[d](maxAtt));
-  face('normal'); anim('bounce');
-  setTimeout(() => document.getElementById('numInput').focus(), 300);
+  const msgs={easy:`1〜50！チャンスは${maxAtt}回だよ♪`,normal:`1〜100！${maxAtt}回以内に当ててね！`,hard:`ふふ…${maxAtt}回だけ？本気でかかってきな！`};
+  say(msgs[d]); face('normal'); anim('bounce');
 }
 
-function setBar(ratio) {
-  const f = document.getElementById('barFill');
-  f.style.width = (ratio * 100) + '%';
-  if (ratio > 0.5)       { f.style.background = '#00ffcc'; f.style.boxShadow = '0 0 6px #00ffcc'; }
-  else if (ratio > 0.25) { f.style.background = '#ffd700'; f.style.boxShadow = '0 0 6px #ffd700'; }
-  else                   { f.style.background = '#ff4466'; f.style.boxShadow = '0 0 6px #ff4466'; }
+function setBar(r){
+  const f=document.getElementById('barFill');
+  f.style.width=(r*100)+'%';
+  if(r>0.5){f.style.background='#00ffcc';f.style.boxShadow='0 0 5px #00ffcc';}
+  else if(r>0.25){f.style.background='#ffd700';f.style.boxShadow='0 0 5px #ffd700';}
+  else{f.style.background='#ff4466';f.style.boxShadow='0 0 5px #ff4466';}
 }
 
-function guess() {
-  if (!active) return;
-  const inp = document.getElementById('numInput');
-  const v = parseInt(inp.value);
-  if (isNaN(v) || v < 1 || v > maxRange) {
+function guess(){
+  if(!active)return;
+  const inp=document.getElementById('numInput');
+  const v=parseInt(inp.value);
+  if(isNaN(v)||v<1||v>maxRange){
     say(`1〜${maxRange}の数字を入れてね！`);
-    face('sad'); anim('shake'); return;
+    face('sad');anim('shake');return;
   }
   snd('click');
   attLeft--;
-  document.getElementById('remVal').textContent = attLeft;
-  setBar(attLeft / maxAtt);
+  document.getElementById('remVal').textContent=attLeft;
+  setBar(attLeft/maxAtt);
 
-  if (v === answer) {
-    active = false;
-    document.getElementById('goBtn').disabled = true;
-    snd('win'); face('happy'); anim('spin');
+  if(v===answer){
+    active=false;
+    document.getElementById('goBtn').disabled=true;
+    snd('win');face('happy');anim('spin');
     say(`正解！！${v}だよ！すごい！！`);
-    const r = inp.getBoundingClientRect();
-    const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-    burst(cx, cy, '#00ffcc'); burst(cx, cy, '#ffd700');
-    setTimeout(() => showResult(true), 900);
-  } else if (attLeft === 0) {
-    active = false;
-    document.getElementById('goBtn').disabled = true;
-    addHistory(v, v > answer ? 'hi' : 'lo');
-    snd('lose'); face('sad'); anim('shake');
+    const r=inp.getBoundingClientRect();
+    burst(r.left+r.width/2,r.top+r.height/2,'#00ffcc');
+    burst(r.left+r.width/2,r.top+r.height/2,'#ffd700');
+    setTimeout(()=>showResult(true),900);
+  }else if(attLeft===0){
+    active=false;
+    document.getElementById('goBtn').disabled=true;
+    addH(v,v>answer?'hi':'lo');
+    snd('lose');face('sad');anim('shake');
     say(`残念…正解は ${answer} だったよ…`);
-    setTimeout(() => showResult(false), 900);
-  } else {
-    if (v > answer) {
-      snd('lo'); face('think'); anim('bounce');
-      say(`${v} は大きすぎ！もっと小さい数字！`);
-      flash('▼ LOWER', 'down');
-      addHistory(v, 'hi');
-    } else {
-      snd('hi'); face('think'); anim('bounce');
-      say(`${v} はまだ小さい！もっと大きい数字！`);
-      flash('▲ HIGHER', 'up');
-      addHistory(v, 'lo');
+    setTimeout(()=>showResult(false),900);
+  }else{
+    if(v>answer){
+      snd('lo');face('think');anim('bounce');
+      say(`${v} は大きすぎ！もっと小さく！`);
+      flash('▼ LOWER','down');addH(v,'hi');
+    }else{
+      snd('hi');face('think');anim('bounce');
+      say(`${v} はまだ小さい！もっと大きく！`);
+      flash('▲ HIGHER','up');addH(v,'lo');
     }
   }
-  inp.select();
-  inp.focus();
 }
 
-function addHistory(v, type) {
-  const h = document.getElementById('history');
-  const d = document.createElement('div');
-  d.className = `h-item ${type}`;
-  d.textContent = type === 'hi' ? `${v}▼` : `${v}▲`;
+function addH(v,type){
+  const h=document.getElementById('history');
+  const d=document.createElement('div');
+  d.className=`h-item ${type}`;
+  d.textContent=type==='hi'?`${v}▼`:`${v}▲`;
   h.appendChild(d);
 }
 
-function calcScore() {
-  const used = maxAtt - attLeft;
-  const base = Math.max(100, 1000 - (used - 1) * 90);
-  return base * SETTINGS[diff].mul;
+function calcScore(){
+  const used=maxAtt-attLeft;
+  return Math.max(100,(1000-(used-1)*90))*SETTINGS[diff].mul;
 }
 
-function showResult(win) {
+function showResult(win){
   document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('bottomBar').classList.add('hidden');
   document.getElementById('resultScreen').classList.remove('hidden');
-  const box = document.getElementById('resultBox');
-  box.className = `result-box ${win ? 'win' : 'lose'}`;
-  document.getElementById('resTitle').textContent = win ? 'MISSION\nCLEAR!' : 'GAME\nOVER';
-  const score = win ? calcScore() : 0;
-  document.getElementById('scoreNum').textContent = win ? score.toLocaleString() : '---';
-  const used = maxAtt - attLeft;
-  document.getElementById('resDetail').textContent = win
-    ? `${used}回目で正解！ ${diff.toUpperCase()} × ${SETTINGS[diff].mul}倍ボーナス`
-    : `正解は ${answer} でした…もう一度挑戦しよう！`;
+  const box=document.getElementById('resultBox');
+  box.className=`result-box ${win?'win':'lose'}`;
+  document.getElementById('resTitle').textContent=win?'MISSION CLEAR!':'GAME OVER';
+  const score=win?calcScore():0;
+  document.getElementById('scoreNum').textContent=win?score.toLocaleString():'---';
+  const used=maxAtt-attLeft;
+  document.getElementById('resDetail').textContent=win
+    ?`${used}回目で正解！${diff.toUpperCase()} × ${SETTINGS[diff].mul}倍ボーナス`
+    :`正解は ${answer} でした…もう一度挑戦しよう！`;
 }
 
-function goTitle() {
+function goTitle(){
   snd('click');
   document.getElementById('resultScreen').classList.add('hidden');
   document.getElementById('gameScreen').classList.add('hidden');
+  document.getElementById('bottomBar').classList.add('hidden');
   document.getElementById('diffScreen').classList.remove('hidden');
-  face('normal'); say('難易度を選んでね！ぼくと勝負しよ♪'); anim('bounce');
+  face('normal');say('難易度を選んでね！ぼくと勝負しよ♪');anim('bounce');
 }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Enter' && active) guess();
-});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&active)guess();});
 </script>
 </body>
 </html>
