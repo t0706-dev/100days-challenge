@@ -517,10 +517,10 @@
   <!-- Bottom input bar -->
   <div class="bottom-bar hidden" id="bottomBar">
     <div class="input-row">
-      <button class="pm-btn" id="minusBtn" onclick="stepVal(-1)">－</button>
+      <button class="pm-btn" id="minusBtn">－</button>
       <input type="text" inputmode="numeric" pattern="[0-9]*"
              class="num-input" id="numInput" placeholder="?">
-      <button class="pm-btn" id="plusBtn" onclick="stepVal(1)">＋</button>
+      <button class="pm-btn" id="plusBtn">＋</button>
     </div>
     <button class="go-btn" id="goBtn" onclick="guess()">GO !</button>
   </div>
@@ -581,7 +581,7 @@ function anim(a){
 }
 function say(t){document.getElementById('speech').textContent=t;}
 
-// ±ボタン
+// ±ボタン（1回押し）
 function stepVal(delta){
   if(!active)return;
   const inp=document.getElementById('numInput');
@@ -589,6 +589,35 @@ function stepVal(delta){
   const next=Math.min(maxRange,Math.max(1,cur+delta));
   inp.value=next;
 }
+
+// 長押し連続入力
+let holdTimer=null, holdInterval=null;
+function startHold(delta){
+  if(!active)return;
+  stepVal(delta); // 即1回
+  holdTimer=setTimeout(()=>{
+    holdInterval=setInterval(()=>stepVal(delta),80);
+  },400); // 400ms後に連続開始
+}
+function stopHold(){
+  clearTimeout(holdTimer);
+  clearInterval(holdInterval);
+  holdTimer=holdInterval=null;
+}
+
+// イベント登録（DOM読み込み後）
+document.addEventListener('DOMContentLoaded',()=>{
+  [['minusBtn',-1],['plusBtn',1]].forEach(([id,d])=>{
+    const btn=document.getElementById(id);
+    // マウス
+    btn.addEventListener('mousedown',e=>{e.preventDefault();startHold(d);});
+    document.addEventListener('mouseup',stopHold);
+    // タッチ
+    btn.addEventListener('touchstart',e=>{e.preventDefault();startHold(d);},{passive:false});
+    btn.addEventListener('touchend',stopHold);
+    btn.addEventListener('touchcancel',stopHold);
+  });
+});
 
 // Hint flash
 function flash(txt,dir){
