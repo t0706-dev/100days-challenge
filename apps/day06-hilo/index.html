@@ -267,12 +267,43 @@
       flex-shrink: 0;
       padding: 10px 0 max(16px, env(safe-area-inset-bottom));
       display: flex;
-      flex-direction: row;
-      align-items: stretch;
+      flex-direction: column;
       gap: 8px;
       overflow: hidden;
     }
     .bottom-bar.hidden { visibility: hidden; pointer-events: none; }
+
+    /* 上段: − / input / + */
+    .input-row {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+
+    .pm-btn {
+      flex: 0 0 48px;
+      background: rgba(0,255,204,0.07);
+      border: 2px solid rgba(0,255,204,0.45);
+      border-radius: 12px;
+      color: #00ffcc;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 22px;
+      font-weight: 900;
+      cursor: pointer;
+      text-shadow: 0 0 6px rgba(0,255,204,0.5);
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .pm-btn:active:not(:disabled) {
+      background: rgba(0,255,204,0.2);
+      border-color: #00ffcc;
+      box-shadow: 0 0 12px rgba(0,255,204,0.4);
+    }
+    .pm-btn:disabled { opacity: 0.3; cursor: not-allowed; }
 
     .num-input {
       flex: 1 1 0%;
@@ -300,9 +331,9 @@
     }
     .num-input::placeholder { color: rgba(0,255,204,0.2); }
 
+    /* 下段: GO! ボタン（全幅） */
     .go-btn {
-      flex: 0 0 auto;
-      width: 72px;
+      width: 100%;
       background: rgba(0,255,204,0.1);
       border: 2px solid #00ffcc;
       border-radius: 12px;
@@ -313,9 +344,8 @@
       padding: 10px 0;
       cursor: pointer;
       text-shadow: 0 0 7px rgba(0,255,204,0.5);
-      letter-spacing: 2px;
+      letter-spacing: 3px;
       transition: all 0.15s;
-      white-space: nowrap;
     }
     .go-btn:active:not(:disabled) { background: rgba(0,255,204,0.22); box-shadow: 0 0 16px rgba(0,255,204,0.45); }
     .go-btn:disabled { opacity: 0.3; cursor: not-allowed; }
@@ -484,9 +514,13 @@
 
   <!-- Bottom input bar -->
   <div class="bottom-bar hidden" id="bottomBar">
-    <input type="text" inputmode="numeric" pattern="[0-9]*"
-           class="num-input" id="numInput" placeholder="?">
-    <button class="go-btn" id="goBtn" onclick="guess()">GO!</button>
+    <div class="input-row">
+      <button class="pm-btn" id="minusBtn" onclick="stepVal(-1)">－</button>
+      <input type="text" inputmode="numeric" pattern="[0-9]*"
+             class="num-input" id="numInput" placeholder="?">
+      <button class="pm-btn" id="plusBtn" onclick="stepVal(1)">＋</button>
+    </div>
+    <button class="go-btn" id="goBtn" onclick="guess()">GO !</button>
   </div>
 
 </div><!-- /container -->
@@ -545,6 +579,15 @@ function anim(a){
 }
 function say(t){document.getElementById('speech').textContent=t;}
 
+// ±ボタン
+function stepVal(delta){
+  if(!active)return;
+  const inp=document.getElementById('numInput');
+  const cur=parseInt(inp.value)||0;
+  const next=Math.min(maxRange,Math.max(1,cur+delta));
+  inp.value=next;
+}
+
 // Hint flash
 function flash(txt,dir){
   const el=document.getElementById('hintFlash');
@@ -591,6 +634,8 @@ function startGame(d){
   document.getElementById('diffVal').textContent=d.toUpperCase();
   document.getElementById('numInput').value='';
   document.getElementById('goBtn').disabled=false;
+  document.getElementById('minusBtn').disabled=false;
+  document.getElementById('plusBtn').disabled=false;
   document.getElementById('history').innerHTML='';
   setBar(1);
 
@@ -622,6 +667,8 @@ function guess(){
   if(v===answer){
     active=false;
     document.getElementById('goBtn').disabled=true;
+    document.getElementById('minusBtn').disabled=true;
+    document.getElementById('plusBtn').disabled=true;
     snd('win');face('happy');anim('spin');
     say(`正解！！${v}だよ！すごい！！`);
     const r=inp.getBoundingClientRect();
@@ -631,6 +678,8 @@ function guess(){
   }else if(attLeft===0){
     active=false;
     document.getElementById('goBtn').disabled=true;
+    document.getElementById('minusBtn').disabled=true;
+    document.getElementById('plusBtn').disabled=true;
     addH(v,v>answer?'hi':'lo');
     snd('lose');face('sad');anim('shake');
     say(`残念…正解は ${answer} だったよ…`);
