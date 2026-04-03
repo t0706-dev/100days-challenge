@@ -141,6 +141,40 @@
       100% { transform: rotate(360deg) scale(1); }
     }
 
+    /* ── Score bar ── */
+    .score-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .score-bar.hidden { visibility: hidden; }
+    .score-bar-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      padding: 5px 18px;
+      background: rgba(0,14,28,0.7);
+      border: 1px solid rgba(0,255,204,0.2);
+      border-radius: 10px;
+    }
+    .score-bar-lbl { font-size: 9px; color: #335566; letter-spacing: 2px; }
+    .score-bar-val {
+      font-size: 20px;
+      font-weight: 900;
+      color: #ffd700;
+      text-shadow: 0 0 10px rgba(255,215,0,0.6);
+      line-height: 1;
+    }
+    .score-bar-diff {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      opacity: 0.8;
+    }
+
     /* ── Middle content ── */
     .mid {
       flex: 1;
@@ -454,6 +488,18 @@
     </svg>
   </div>
 
+  <!-- Score bar -->
+  <div class="score-bar hidden" id="scoreBar">
+    <div class="score-bar-item">
+      <div class="score-bar-lbl">NOW SCORE</div>
+      <div class="score-bar-val" id="nowScore">1000</div>
+    </div>
+    <div class="score-bar-item">
+      <div class="score-bar-lbl">DIFFICULTY</div>
+      <div class="score-bar-val score-bar-diff" id="diffColor">NORMAL</div>
+    </div>
+  </div>
+
   <!-- Middle: screens -->
   <div class="mid">
 
@@ -669,6 +715,7 @@ function startGame(d){
   document.getElementById('plusBtn').disabled=false;
   document.getElementById('history').innerHTML='';
   setBar(1);
+  updateScoreBar();
 
   const msgs={easy:`1〜50！チャンスは${maxAtt}回だよ♪`,normal:`1〜100！${maxAtt}回以内に当ててね！`,hard:`ふふ…${maxAtt}回だけ？本気でかかってきな！`};
   say(msgs[d]); face('normal'); anim('bounce');
@@ -680,6 +727,20 @@ function setBar(r){
   if(r>0.5){f.style.background='#00ffcc';f.style.boxShadow='0 0 5px #00ffcc';}
   else if(r>0.25){f.style.background='#ffd700';f.style.boxShadow='0 0 5px #ffd700';}
   else{f.style.background='#ff4466';f.style.boxShadow='0 0 5px #ff4466';}
+}
+
+function updateScoreBar(){
+  const bar=document.getElementById('scoreBar');
+  bar.classList.remove('hidden');
+  // 現時点で正解した場合のスコアを表示
+  const used=maxAtt-attLeft;
+  const score=Math.max(100,(1000-used*90))*SETTINGS[diff].mul;
+  document.getElementById('nowScore').textContent=score.toLocaleString();
+  const diffEl=document.getElementById('diffColor');
+  diffEl.textContent=diff.toUpperCase();
+  const colors={easy:'#00ff88',normal:'#00ccff',hard:'#ff4466'};
+  diffEl.style.color=colors[diff];
+  diffEl.style.textShadow=`0 0 8px ${colors[diff]}`;
 }
 
 function guess(){
@@ -694,6 +755,7 @@ function guess(){
   attLeft--;
   document.getElementById('remVal').textContent=attLeft;
   setBar(attLeft/maxAtt);
+  updateScoreBar();
 
   if(v===answer){
     active=false;
@@ -761,6 +823,7 @@ function goTitle(){
   document.getElementById('resultScreen').classList.add('hidden');
   document.getElementById('gameScreen').classList.add('hidden');
   document.getElementById('bottomBar').classList.add('hidden');
+  document.getElementById('scoreBar').classList.add('hidden');
   document.getElementById('diffScreen').classList.remove('hidden');
   face('normal');say('難易度を選んでね！ぼくと勝負しよ♪');anim('bounce');
 }
