@@ -262,32 +262,37 @@
     }
     .retry-btn:active { background: rgba(0,255,204,0.14); }
 
-    /* ── Bottom input bar (fixed) ── */
+    /* ── Bottom input bar ── */
     .bottom-bar {
       flex-shrink: 0;
-      width: 100%;
       padding: 10px 0 max(16px, env(safe-area-inset-bottom));
       display: flex;
+      flex-direction: row;
+      align-items: stretch;
       gap: 8px;
+      overflow: hidden;
     }
     .bottom-bar.hidden { visibility: hidden; pointer-events: none; }
 
     .num-input {
-      flex: 1;
+      flex: 1 1 0%;
+      min-width: 0;
+      width: 0;
       background: rgba(0,14,28,0.85);
       border: 2px solid rgba(0,255,204,0.45);
       border-radius: 12px;
       color: #00ffcc;
       caret-color: #00ffcc;
       font-family: 'M PLUS Rounded 1c', sans-serif;
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 900;
       text-align: center;
-      padding: 10px 8px;
+      padding: 10px 4px;
       outline: none;
       text-shadow: 0 0 8px rgba(0,255,204,0.5);
       -webkit-appearance: none;
       transition: border-color 0.2s, box-shadow 0.2s;
+      display: block;
     }
     .num-input:focus {
       border-color: #00ffcc;
@@ -296,6 +301,8 @@
     .num-input::placeholder { color: rgba(0,255,204,0.2); }
 
     .go-btn {
+      flex: 0 0 auto;
+      width: 72px;
       background: rgba(0,255,204,0.1);
       border: 2px solid #00ffcc;
       border-radius: 12px;
@@ -303,7 +310,7 @@
       font-family: 'M PLUS Rounded 1c', sans-serif;
       font-size: 15px;
       font-weight: 900;
-      padding: 10px 20px;
+      padding: 10px 0;
       cursor: pointer;
       text-shadow: 0 0 7px rgba(0,255,204,0.5);
       letter-spacing: 2px;
