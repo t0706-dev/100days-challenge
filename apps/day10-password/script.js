@@ -24,7 +24,7 @@ const strengthFill      = document.getElementById('strength-fill');
 const strengthLabel     = document.getElementById('strength-label');
 
 const lengthSlider      = document.getElementById('length-slider');
-const lengthDisplay     = document.getElementById('length-display');
+const lengthInput       = document.getElementById('length-input');
 const useLower          = document.getElementById('use-lower');
 const useUpper          = document.getElementById('use-upper');
 const useNumber         = document.getElementById('use-number');
@@ -85,7 +85,7 @@ function shuffleArray(arr) {
  * @returns {string | null} 生成されたパスワード。文字種未選択なら null。
  */
 function generatePassword() {
-  const length = parseInt(lengthSlider.value, 10);
+  const length = parseInt(lengthSlider.value, 10); // スライダーを正とする
   const result = buildCharPool();
 
   if (!result) return null;
@@ -244,9 +244,38 @@ function handleGenerate() {
 // 生成ボタン
 generateBtn.addEventListener('click', handleGenerate);
 
-// スライダー ↔ 数値表示の連動
+// スライダー → 数値入力欄を同期
 lengthSlider.addEventListener('input', () => {
-  lengthDisplay.textContent = lengthSlider.value;
+  lengthInput.value = lengthSlider.value;
+  lengthInput.classList.remove('error');
+  showMessage('');
+});
+
+// 数値入力欄 → スライダーを同期（入力中はバリデーションしない）
+lengthInput.addEventListener('input', () => {
+  const val = parseInt(lengthInput.value, 10);
+  if (!isNaN(val) && val >= 8 && val <= 64) {
+    lengthSlider.value = val;
+    lengthInput.classList.remove('error');
+    showMessage('');
+  }
+});
+
+// フォーカスを外したときにバリデーション
+lengthInput.addEventListener('blur', () => {
+  const raw = lengthInput.value.trim();
+  const val = parseInt(raw, 10);
+
+  if (raw === '' || isNaN(val) || val < 8 || val > 64) {
+    lengthInput.classList.add('error');
+    showMessage('文字数は8〜64の整数で入力してください', true);
+    // 入力欄をスライダーの現在値に戻す
+    lengthInput.value = lengthSlider.value;
+    lengthInput.classList.remove('error');
+  } else {
+    lengthSlider.value = val;
+    lengthInput.value  = val;
+  }
 });
 
 // コピーボタン
