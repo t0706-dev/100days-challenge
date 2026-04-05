@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>カラーパレット生成 | Day 9</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+
+    <!-- ヘッダー -->
+    <header class="app-header">
+      <h1>🎨 カラーパレット生成</h1>
+      <p class="subtitle">ペルソナとベースカラーを選んで、Webデザイン向けの配色を提案します</p>
+    </header>
+
+    <!-- 入力エリア -->
+    <section class="input-section">
+      <!-- ペルソナ選択 -->
+      <div class="input-group">
+        <label class="input-label">ペルソナ</label>
+        <div class="persona-grid" id="personaGrid">
+          <button class="persona-btn active" data-persona="business">
+            <span class="persona-icon">💼</span>
+            <span>ビジネス</span>
+          </button>
+          <button class="persona-btn" data-persona="kids">
+            <span class="persona-icon">🎈</span>
+            <span>子ども向け</span>
+          </button>
+          <button class="persona-btn" data-persona="luxury">
+            <span class="persona-icon">✨</span>
+            <span>高級感</span>
+          </button>
+          <button class="persona-btn" data-persona="simple">
+            <span class="persona-icon">◻</span>
+            <span>シンプル</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- ベースカラー選択 -->
+      <div class="input-group input-group--color">
+        <label class="input-label" for="baseColor">ベースカラー</label>
+        <div class="color-input-wrapper">
+          <input type="color" id="baseColor" value="#4a90e2">
+          <span class="color-hex-display" id="colorHexDisplay">#4a90e2</span>
+        </div>
+      </div>
+
+      <!-- 提案ボタン -->
+      <button class="generate-btn" id="generateBtn">提案する</button>
+    </section>
+
+    <!-- 出力エリア（JS で動的生成） -->
+    <section class="output-section" id="outputSection" aria-live="polite"></section>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
