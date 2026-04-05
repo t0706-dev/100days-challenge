@@ -141,10 +141,25 @@
 
       <!-- ベースカラー選択 -->
       <div class="input-group input-group--color">
-        <label class="input-label" for="baseColor">ベースカラー</label>
-        <div class="color-input-wrapper">
-          <input type="color" id="baseColor" value="#4a90e2">
-          <span class="color-hex-display" id="colorHexDisplay">#4a90e2</span>
+        <label class="input-label">ベースカラー</label>
+        <div class="color-picker">
+          <!-- プレビュー / ネイティブピッカー / HEX直入力 -->
+          <div class="color-picker-top">
+            <input type="color" id="baseColor" value="#4a90e2" title="クリックしてスペクトラムを開く">
+            <span class="hex-hash">#</span>
+            <input type="text" id="hexInput" class="hex-text-input"
+                   value="4a90e2" maxlength="6" spellcheck="false" placeholder="4a90e2">
+          </div>
+          <!-- 色相スライダー -->
+          <div class="color-picker-row">
+            <span class="color-sub-label">色相</span>
+            <input type="range" id="hueSlider" min="0" max="360" value="214" class="hue-slider">
+          </div>
+          <!-- プリセットカラー -->
+          <div class="color-picker-row">
+            <span class="color-sub-label">プリセット</span>
+            <div class="color-preset-grid" id="colorPresetGrid"></div>
+          </div>
         </div>
       </div>
 

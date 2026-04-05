@@ -374,20 +374,33 @@ body {
 }
 
 /* ---- カラーピッカー ---- */
-.color-input-wrapper {
+.input-group--color {
+  flex: 0 0 auto;
+  min-width: 260px;
+}
+
+.color-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* 1行目：ネイティブピッカー + HEX入力 */
+.color-picker-top {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 6px;
 }
 
 input[type="color"] {
-  width: 54px;
-  height: 48px;
-  padding: 3px;
+  width: 44px;
+  height: 38px;
+  padding: 2px;
   border: 2px solid var(--border);
   border-radius: 8px;
   cursor: pointer;
   background: none;
+  flex-shrink: 0;
   transition: border-color 0.18s;
 }
 
@@ -395,12 +408,108 @@ input[type="color"]:hover {
   border-color: var(--primary);
 }
 
-.color-hex-display {
-  font-size: 0.95rem;
-  font-weight: 500;
-  color: var(--text);
+.hex-hash {
   font-family: 'Courier New', monospace;
-  letter-spacing: 0.04em;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+
+.hex-text-input {
+  width: 90px;
+  padding: 6px 8px;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  font-family: 'Courier New', monospace;
+  font-size: 0.88rem;
+  color: var(--text);
+  background: var(--bg);
+  transition: border-color 0.18s;
+  letter-spacing: 0.05em;
+}
+
+.hex-text-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+/* 行レイアウト（ラベル + コントロール） */
+.color-picker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.color-sub-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  white-space: nowrap;
+  min-width: 3.5em;
+}
+
+/* 色相スライダー */
+.hue-slider {
+  flex: 1;
+  height: 12px;
+  border-radius: 6px;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+  background: linear-gradient(to right,
+    hsl(0,75%,55%), hsl(30,75%,55%), hsl(60,75%,55%),
+    hsl(90,75%,55%), hsl(120,75%,55%), hsl(150,75%,55%),
+    hsl(180,75%,55%), hsl(210,75%,55%), hsl(240,75%,55%),
+    hsl(270,75%,55%), hsl(300,75%,55%), hsl(330,75%,55%),
+    hsl(360,75%,55%));
+}
+
+.hue-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(0,0,0,0.25);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  cursor: pointer;
+}
+
+.hue-slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  border: 2px solid rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+/* プリセットカラーグリッド */
+.color-preset-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.color-preset-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  padding: 0;
+  transition: transform 0.12s, border-color 0.12s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+
+.color-preset-btn:hover {
+  transform: scale(1.2);
+}
+
+.color-preset-btn.active {
+  border-color: var(--text);
+  transform: scale(1.15);
 }
 
 /* ---- 提案ボタン ---- */
@@ -603,6 +712,43 @@ input[type="color"]:hover {
 /* WordPress 用 CSS（横幅を広めに取る） */
 .wp-css-section {
   flex: 1 1 320px;
+}
+
+/* コードブロックのヘッダー（タイトル + コピーボタン） */
+.code-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.code-block-header h4 {
+  margin-bottom: 0; /* 上書き */
+}
+
+/* コードブロック横のコピーボタン */
+.code-copy-btn {
+  padding: 3px 10px;
+  background: transparent;
+  border: 1.5px solid #3a4460;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 0.72rem;
+  font-weight: 500;
+  cursor: pointer;
+  color: #8899bb;
+  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  white-space: nowrap;
+}
+
+.code-copy-btn:hover {
+  border-color: #a8d8ea;
+  color: #a8d8ea;
+}
+
+.code-copy-btn.copied {
+  border-color: #34a853;
+  color: #34a853;
 }
 
 /* コードブロック共通 */

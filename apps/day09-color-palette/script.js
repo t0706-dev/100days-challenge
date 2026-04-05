@@ -447,13 +447,9 @@ function renderPatternCard(palette, index) {
 
   return `
     <div class="pattern-card">
-      <!-- カードヘッダー：タイトル + コピーボタン 2 つ -->
+      <!-- カードヘッダー -->
       <div class="pattern-card-header">
         <div class="pattern-title">${palette.label}</div>
-        <div class="copy-btn-group">
-          <button class="copy-btn" data-index="${index}" data-type="vars">変数CSS をコピー</button>
-          <button class="copy-btn" data-index="${index}" data-type="wp">WordPress用CSS をコピー</button>
-        </div>
       </div>
       <!-- カードボディ -->
       <div class="pattern-card-body">
@@ -473,11 +469,17 @@ function renderPatternCard(palette, index) {
         <!-- 下段：CSS 変数 + WordPress 用 CSS -->
         <div class="card-code-row">
           <div class="css-section">
-            <h4>CSS 変数</h4>
+            <div class="code-block-header">
+              <h4>CSS 変数</h4>
+              <button class="code-copy-btn" data-index="${index}" data-type="vars">コピー</button>
+            </div>
             <div class="css-code">${escapeHtml(cssVars)}</div>
           </div>
           <div class="wp-css-section">
-            <h4>WordPress 用 CSS <span class="section-note">（追加CSSに貼って使用）</span></h4>
+            <div class="code-block-header">
+              <h4>WordPress 用 CSS <span class="section-note">（追加CSSに貼って使用）</span></h4>
+              <button class="code-copy-btn" data-index="${index}" data-type="wp">コピー</button>
+            </div>
             <div class="css-code css-code--wp">${escapeHtml(wpCss)}</div>
           </div>
         </div>
@@ -498,16 +500,11 @@ function renderOutput(palettes) {
   const section = document.getElementById('outputSection');
   section.innerHTML = palettes.map((p, i) => renderPatternCard(p, i)).join('');
 
-  // コピーボタンにクリックイベントを設定（data-type で種類を切り替え）
-  section.querySelectorAll('.copy-btn').forEach((btn) => {
-    // ボタンの元のラベルを記憶しておく
-    const originalLabel = btn.textContent;
-
+  // コードブロック横のコピーボタン（.code-copy-btn）にイベントを設定
+  section.querySelectorAll('.code-copy-btn').forEach((btn) => {
     btn.addEventListener('click', () => {
-      const index = parseInt(btn.dataset.index, 10);
-      const type  = btn.dataset.type; // 'vars' | 'wp'
-
-      // コピーするテキストをタイプで切り替え
+      const index   = parseInt(btn.dataset.index, 10);
+      const type    = btn.dataset.type; // 'vars' | 'wp'
       const cssText = (type === 'wp')
         ? buildWordPressCss(currentPalettes[index])
         : buildCssVariables(currentPalettes[index]);
@@ -516,15 +513,111 @@ function renderOutput(palettes) {
         btn.textContent = 'コピーしました！';
         btn.classList.add('copied');
         setTimeout(() => {
-          btn.textContent = originalLabel;
+          btn.textContent = 'コピー';
           btn.classList.remove('copied');
         }, 2000);
       }).catch(() => {
-        // Clipboard API が使えない環境へのフォールバック
         alert('コピーできませんでした。ブラウザの設定をご確認ください。');
       });
     });
   });
+}
+
+
+// ============================================================
+// カラーピッカー
+// ============================================================
+
+/**
+ * プリセットカラー一覧（主要色相を12色でカバー）
+ */
+const PRESET_COLORS = [
+  '#e53e3e', // 赤
+  '#ed8936', // オレンジ
+  '#ecc94b', // 黄
+  '#48bb78', // 緑
+  '#38b2ac', // ティール
+  '#4299e1', // 青
+  '#667eea', // インディゴ
+  '#9f7aea', // 紫
+  '#ed64a6', // ピンク
+  '#a0aec0', // グレー
+  '#2d3748', // ダークグレー
+  '#744210', // ブラウン
+];
+
+/**
+ * 全カラー入力ウィジェットを指定HEXで同期する
+ * @param {string} hex         - "#rrggbb" 形式
+ * @param {boolean} updateSlider - hueSlider も更新するか
+ */
+function syncColor(hex, updateSlider = true) {
+  document.getElementById('baseColor').value = hex;
+  document.getElementById('hexInput').value  = hex.slice(1).toLowerCase();
+
+  if (updateSlider) {
+    const { h } = hexToHsl(hex);
+    document.getElementById('hueSlider').value = h;
+  }
+
+  // プリセットボタンの active 状態を更新
+  document.querySelectorAll('.color-preset-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.color === hex.toLowerCase());
+  });
+}
+
+/**
+ * カラーピッカーの初期化
+ * ネイティブピッカー / HEXテキスト / 色相スライダー / プリセット を相互同期する
+ */
+function initColorPicker() {
+  const colorInput = document.getElementById('baseColor');
+  const hexInput   = document.getElementById('hexInput');
+  const hueSlider  = document.getElementById('hueSlider');
+  const presetGrid = document.getElementById('colorPresetGrid');
+
+  // プリセットカラーボタンを動的生成
+  PRESET_COLORS.forEach((color) => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'color-preset-btn';
+    btn.style.background = color;
+    btn.dataset.color = color;
+    btn.title = color;
+    btn.addEventListener('click', () => syncColor(color));
+    presetGrid.appendChild(btn);
+  });
+
+  // ネイティブカラーピッカー変更時
+  colorInput.addEventListener('input', () => {
+    syncColor(colorInput.value);
+  });
+
+  // HEX テキスト入力（6文字揃ったら同期）
+  hexInput.addEventListener('input', () => {
+    const clean = hexInput.value.replace(/[^0-9a-fA-F]/g, '');
+    if (clean.length === 6) {
+      syncColor('#' + clean);
+    }
+  });
+
+  // HEX 入力からフォーカスが外れたとき、不完全な値をリセット
+  hexInput.addEventListener('blur', () => {
+    hexInput.value = colorInput.value.slice(1).toLowerCase();
+  });
+
+  // 色相スライダー変更時（S/Lは現在の値を保持して H だけ変える）
+  hueSlider.addEventListener('input', () => {
+    const { s, l } = hexToHsl(colorInput.value);
+    // 極端に彩度・明度が低い場合は見やすい値に補正
+    const newS = s < 20 ? 60 : s;
+    const newL = l < 20 ? 50 : l > 85 ? 55 : l;
+    const newHex = hslToHex(parseInt(hueSlider.value), newS, newL);
+    syncColor(newHex, false); // スライダー自体は更新しない（ループ防止）
+  });
+
+  // 初期状態を同期
+  syncColor(colorInput.value);
 }
 
 
@@ -592,12 +685,8 @@ function init() {
     if (btn) selectPersona(btn.dataset.persona);
   });
 
-  // カラーピッカーの変更 → HEX テキスト表示を同期
-  const colorInput  = document.getElementById('baseColor');
-  const hexDisplay  = document.getElementById('colorHexDisplay');
-  colorInput.addEventListener('input', () => {
-    hexDisplay.textContent = colorInput.value;
-  });
+  // カラーピッカー（Hueスライダー / プリセット / HEX入力 / ネイティブ）を初期化
+  initColorPicker();
 
   // 提案ボタン
   document.getElementById('generateBtn').addEventListener('click', generate);
