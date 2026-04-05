@@ -560,21 +560,19 @@ function generate() {
 // ============================================================
 
 /**
- * モーダルを開く
+ * モーダルを開く（.is-open クラスを付与して表示）
  */
 function openModal() {
-  const overlay = document.getElementById('modalOverlay');
-  overlay.hidden = false;
+  document.getElementById('modalOverlay').classList.add('is-open');
   // フォーカスを閉じるボタンに当てる（アクセシビリティ）
   document.getElementById('modalClose').focus();
 }
 
 /**
- * モーダルを閉じる
+ * モーダルを閉じる（.is-open クラスを除去して非表示）
  */
 function closeModal() {
-  const overlay = document.getElementById('modalOverlay');
-  overlay.hidden = true;
+  document.getElementById('modalOverlay').classList.remove('is-open');
   // フォーカスを使い方ボタンに戻す
   document.getElementById('helpBtn').focus();
 }
