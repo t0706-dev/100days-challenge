@@ -428,43 +428,54 @@
       transform: rotateY(180deg);
     }
 
-    .card-front-inner,
-    .answer-display {
-      text-align: center;
+    /* ===== Formula (furigana-style layout) ===== */
+    .formula {
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 5px;
+      padding: 0 10px;
     }
-    .yomi-text {
-      font-size: 12px;
-      font-weight: 700;
+    .num-block {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .num-yomi {
+      font-size: 11px;
+      font-weight: 800;
       color: var(--text-light);
+      height: 14px;
+      line-height: 1;
+      white-space: nowrap;
       letter-spacing: 0.5px;
-      min-height: 1.3em;
     }
-    .yomi-ans {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--lavender);
-      letter-spacing: 0.5px;
-      min-height: 1.3em;
-      margin-top: 2px;
-    }
-    .question-text {
+    .num-main {
       font-size: 40px;
-      font-weight: 900;
-      color: var(--text);
-      letter-spacing: 2px;
-    }
-    .answer-num {
-      font-size: 56px;
       font-weight: 900;
       color: var(--text);
       line-height: 1;
     }
-    .answer-eq {
-      font-size: 15px;
-      font-weight: 700;
-      color: var(--text-light);
-      margin-top: 6px;
+    .op-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
     }
+    .op-spacer { height: 14px; }
+    .op-sym {
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text-light);
+      line-height: 1;
+      padding-bottom: 3px;
+    }
+    /* 答え面：数字を少し小さくして全式が収まるように */
+    .formula-ans .num-main  { font-size: 34px; }
+    .formula-ans .op-sym    { font-size: 24px; padding-bottom: 2px; }
+    .formula-ans .num-yomi  { font-size: 10px; }
+    .formula-ans .op-spacer { height: 13px; }
 
     /* Study buttons */
     .study-buttons {
@@ -720,18 +731,50 @@
 
   <div class="card-area">
     <div class="card" id="study-card">
+      <!-- 表面：問題 -->
       <div class="card-face card-front">
-        <div class="card-front-inner">
-          <div class="yomi-text" id="question-yomi"></div>
-          <div class="question-text" id="question-text">2 × 3 = ?</div>
+        <div class="formula" id="formula-q">
+          <div class="num-block">
+            <span class="num-yomi" id="q-ra"></span>
+            <span class="num-main" id="q-na">2</span>
+          </div>
+          <div class="op-wrap">
+            <span class="op-spacer"></span>
+            <span class="op-sym">×</span>
+          </div>
+          <div class="num-block">
+            <span class="num-yomi" id="q-rb"></span>
+            <span class="num-main" id="q-nb">3</span>
+          </div>
+          <div class="op-wrap">
+            <span class="op-spacer"></span>
+            <span class="op-sym">= ?</span>
+          </div>
         </div>
       </div>
+      <!-- 裏面：答え -->
       <div class="card-face card-back">
-        <div class="answer-display">
-          <div class="yomi-text" id="answer-yomi-q"></div>
-          <div class="yomi-ans"  id="answer-yomi-a"></div>
-          <div class="answer-num" id="answer-num">6</div>
-          <div class="answer-eq"  id="answer-eq">2 × 3 = 6</div>
+        <div class="formula formula-ans" id="formula-a">
+          <div class="num-block">
+            <span class="num-yomi" id="a-ra"></span>
+            <span class="num-main" id="a-na"></span>
+          </div>
+          <div class="op-wrap">
+            <span class="op-spacer"></span>
+            <span class="op-sym">×</span>
+          </div>
+          <div class="num-block">
+            <span class="num-yomi" id="a-rb"></span>
+            <span class="num-main" id="a-nb"></span>
+          </div>
+          <div class="op-wrap">
+            <span class="op-spacer"></span>
+            <span class="op-sym">=</span>
+          </div>
+          <div class="num-block">
+            <span class="num-yomi" id="a-rans"></span>
+            <span class="num-main" id="a-nans"></span>
+          </div>
         </div>
       </div>
     </div>
@@ -807,43 +850,44 @@ const BUNNY_SVG = `
   document.getElementById(id).innerHTML = BUNNY_SVG;
 });
 
-/* ========== 九九読み方テーブル { q:問題読み, a:答え読み } ========== */
+/* ========== 九九読み方テーブル { ra:左数字読み, rb:右数字読み, rans:答え読み } ========== */
 const KUKU_YOMI = {
-  '1x1':{ q:'いんいち が',  a:'いち'         }, '1x2':{ q:'いんに が',   a:'に'           }, '1x3':{ q:'いんさん が',  a:'さん'         },
-  '1x4':{ q:'いんし が',   a:'し'           }, '1x5':{ q:'いんご が',   a:'ご'           }, '1x6':{ q:'いんろく が',  a:'ろく'         },
-  '1x7':{ q:'いんしち が',  a:'しち'         }, '1x8':{ q:'いんはち が',  a:'はち'         }, '1x9':{ q:'いんく が',   a:'く'           },
-
-  '2x1':{ q:'に いち が',  a:'に'           }, '2x2':{ q:'に にん が',  a:'し'           }, '2x3':{ q:'に さん が',  a:'ろく'         },
-  '2x4':{ q:'に し が',   a:'はち'         }, '2x5':{ q:'に ご',      a:'じゅう'        }, '2x6':{ q:'にろく',     a:'じゅうに'      },
-  '2x7':{ q:'にしち',     a:'じゅうし'      }, '2x8':{ q:'にはち',     a:'じゅうろく'     }, '2x9':{ q:'にく',      a:'じゅうはち'     },
-
-  '3x1':{ q:'さんいち が',  a:'さん'         }, '3x2':{ q:'さんに が',   a:'ろく'         }, '3x3':{ q:'さ ざん が',  a:'く'           },
-  '3x4':{ q:'さんし',     a:'じゅうに'      }, '3x5':{ q:'さんご',     a:'じゅうご'      }, '3x6':{ q:'さぶろく',    a:'じゅうはち'     },
-  '3x7':{ q:'さんしち',    a:'にじゅういち'   }, '3x8':{ q:'さんぱ',     a:'にじゅうし'     }, '3x9':{ q:'さんく',     a:'にじゅうしち'   },
-
-  '4x1':{ q:'し いち が',  a:'し'           }, '4x2':{ q:'し に が',   a:'はち'         }, '4x3':{ q:'しさん',     a:'じゅうに'      },
-  '4x4':{ q:'し し',     a:'じゅうろく'     }, '4x5':{ q:'し ご',      a:'にじゅう'      }, '4x6':{ q:'しろく',     a:'にじゅうし'     },
-  '4x7':{ q:'ししち',     a:'にじゅうはち'   }, '4x8':{ q:'しは',      a:'さんじゅうに'   }, '4x9':{ q:'しく',      a:'さんじゅうろく'  },
-
-  '5x1':{ q:'ご いち が',  a:'ご'           }, '5x2':{ q:'ご に',      a:'じゅう'        }, '5x3':{ q:'ごさん',     a:'じゅうご'      },
-  '5x4':{ q:'ごし',      a:'にじゅう'      }, '5x5':{ q:'ごご',      a:'にじゅうご'     }, '5x6':{ q:'ごろく',     a:'さんじゅう'     },
-  '5x7':{ q:'ごしち',     a:'さんじゅうご'   }, '5x8':{ q:'ごは',      a:'しじゅう'      }, '5x9':{ q:'ごく',      a:'しじゅうご'     },
-
-  '6x1':{ q:'ろくいち が',  a:'ろく'         }, '6x2':{ q:'ろくに',     a:'じゅうに'      }, '6x3':{ q:'ろくさん',    a:'じゅうはち'     },
-  '6x4':{ q:'ろくし',     a:'にじゅうし'     }, '6x5':{ q:'ろくご',     a:'さんじゅう'     }, '6x6':{ q:'ろくろく',    a:'さんじゅうろく'  },
-  '6x7':{ q:'ろくしち',    a:'しじゅうに'     }, '6x8':{ q:'ろくは',     a:'しじゅうはち'   }, '6x9':{ q:'ろっく',     a:'ごじゅうし'     },
-
-  '7x1':{ q:'しちいち が',  a:'しち'         }, '7x2':{ q:'しちに',     a:'じゅうし'      }, '7x3':{ q:'しちさん',    a:'にじゅういち'   },
-  '7x4':{ q:'しちし',     a:'にじゅうはち'   }, '7x5':{ q:'しちご',     a:'さんじゅうご'   }, '7x6':{ q:'しちろく',    a:'しじゅうに'     },
-  '7x7':{ q:'しちしち',    a:'しじゅうく'     }, '7x8':{ q:'しちは',     a:'ごじゅうろく'   }, '7x9':{ q:'しちく',     a:'ろくじゅうさん'  },
-
-  '8x1':{ q:'はちいち が',  a:'はち'         }, '8x2':{ q:'はちに',     a:'じゅうろく'     }, '8x3':{ q:'はちさん',    a:'にじゅうし'     },
-  '8x4':{ q:'はっし',     a:'さんじゅうに'   }, '8x5':{ q:'はちご',     a:'しじゅう'      }, '8x6':{ q:'はちろく',    a:'しじゅうはち'   },
-  '8x7':{ q:'はちしち',    a:'ごじゅうろく'   }, '8x8':{ q:'はっぱ',     a:'ろくじゅうし'   }, '8x9':{ q:'はっく',     a:'しちじゅうに'   },
-
-  '9x1':{ q:'くいち が',   a:'く'           }, '9x2':{ q:'くに',      a:'じゅうはち'     }, '9x3':{ q:'くさん',     a:'にじゅうしち'   },
-  '9x4':{ q:'くし',      a:'さんじゅうろく'  }, '9x5':{ q:'くご',      a:'しじゅうご'     }, '9x6':{ q:'くろく',     a:'ごじゅうし'     },
-  '9x7':{ q:'くしち',     a:'ろくじゅうさん'  }, '9x8':{ q:'くは',      a:'しちじゅうに'   }, '9x9':{ q:'くく',      a:'はちじゅういち'  },
+  // 1の段
+  '1x1':{ ra:'いん', rb:'いち が', rans:'いち'         }, '1x2':{ ra:'いん', rb:'に が',    rans:'に'           }, '1x3':{ ra:'いん', rb:'さん が',  rans:'さん'         },
+  '1x4':{ ra:'いん', rb:'し が',   rans:'し'           }, '1x5':{ ra:'いん', rb:'ご が',    rans:'ご'           }, '1x6':{ ra:'いん', rb:'ろく が',  rans:'ろく'         },
+  '1x7':{ ra:'いん', rb:'しち が', rans:'しち'         }, '1x8':{ ra:'いん', rb:'はち が',  rans:'はち'         }, '1x9':{ ra:'いん', rb:'く が',    rans:'く'           },
+  // 2の段
+  '2x1':{ ra:'に',   rb:'いち が', rans:'に'           }, '2x2':{ ra:'に',   rb:'にん が',  rans:'し'           }, '2x3':{ ra:'に',   rb:'さん が',  rans:'ろく'         },
+  '2x4':{ ra:'に',   rb:'し が',   rans:'はち'         }, '2x5':{ ra:'に',   rb:'ご',       rans:'じゅう'        }, '2x6':{ ra:'に',   rb:'ろく',     rans:'じゅうに'      },
+  '2x7':{ ra:'に',   rb:'しち',    rans:'じゅうし'      }, '2x8':{ ra:'に',   rb:'はち',     rans:'じゅうろく'     }, '2x9':{ ra:'に',   rb:'く',       rans:'じゅうはち'     },
+  // 3の段
+  '3x1':{ ra:'さん', rb:'いち が', rans:'さん'         }, '3x2':{ ra:'さん', rb:'に が',    rans:'ろく'         }, '3x3':{ ra:'さ',   rb:'ざん が',  rans:'く'           },
+  '3x4':{ ra:'さん', rb:'し',      rans:'じゅうに'      }, '3x5':{ ra:'さん', rb:'ご',       rans:'じゅうご'      }, '3x6':{ ra:'さぶ', rb:'ろく',     rans:'じゅうはち'     },
+  '3x7':{ ra:'さん', rb:'しち',    rans:'にじゅういち'   }, '3x8':{ ra:'さん', rb:'ぱ',       rans:'にじゅうし'     }, '3x9':{ ra:'さん', rb:'く',       rans:'にじゅうしち'   },
+  // 4の段
+  '4x1':{ ra:'し',   rb:'いち が', rans:'し'           }, '4x2':{ ra:'し',   rb:'に が',    rans:'はち'         }, '4x3':{ ra:'し',   rb:'さん',     rans:'じゅうに'      },
+  '4x4':{ ra:'し',   rb:'し',      rans:'じゅうろく'     }, '4x5':{ ra:'し',   rb:'ご',       rans:'にじゅう'      }, '4x6':{ ra:'し',   rb:'ろく',     rans:'にじゅうし'     },
+  '4x7':{ ra:'し',   rb:'しち',    rans:'にじゅうはち'   }, '4x8':{ ra:'し',   rb:'は',       rans:'さんじゅうに'   }, '4x9':{ ra:'し',   rb:'く',       rans:'さんじゅうろく'  },
+  // 5の段
+  '5x1':{ ra:'ご',   rb:'いち が', rans:'ご'           }, '5x2':{ ra:'ご',   rb:'に',       rans:'じゅう'        }, '5x3':{ ra:'ご',   rb:'さん',     rans:'じゅうご'      },
+  '5x4':{ ra:'ご',   rb:'し',      rans:'にじゅう'      }, '5x5':{ ra:'ご',   rb:'ご',       rans:'にじゅうご'     }, '5x6':{ ra:'ご',   rb:'ろく',     rans:'さんじゅう'     },
+  '5x7':{ ra:'ご',   rb:'しち',    rans:'さんじゅうご'   }, '5x8':{ ra:'ご',   rb:'は',       rans:'しじゅう'      }, '5x9':{ ra:'ご',   rb:'く',       rans:'しじゅうご'     },
+  // 6の段
+  '6x1':{ ra:'ろく', rb:'いち が', rans:'ろく'         }, '6x2':{ ra:'ろく', rb:'に',       rans:'じゅうに'      }, '6x3':{ ra:'ろく', rb:'さん',     rans:'じゅうはち'     },
+  '6x4':{ ra:'ろく', rb:'し',      rans:'にじゅうし'     }, '6x5':{ ra:'ろく', rb:'ご',       rans:'さんじゅう'     }, '6x6':{ ra:'ろく', rb:'ろく',     rans:'さんじゅうろく'  },
+  '6x7':{ ra:'ろく', rb:'しち',    rans:'しじゅうに'     }, '6x8':{ ra:'ろく', rb:'は',       rans:'しじゅうはち'   }, '6x9':{ ra:'ろっ', rb:'く',       rans:'ごじゅうし'     },
+  // 7の段
+  '7x1':{ ra:'しち', rb:'いち が', rans:'しち'         }, '7x2':{ ra:'しち', rb:'に',       rans:'じゅうし'      }, '7x3':{ ra:'しち', rb:'さん',     rans:'にじゅういち'   },
+  '7x4':{ ra:'しち', rb:'し',      rans:'にじゅうはち'   }, '7x5':{ ra:'しち', rb:'ご',       rans:'さんじゅうご'   }, '7x6':{ ra:'しち', rb:'ろく',     rans:'しじゅうに'     },
+  '7x7':{ ra:'しち', rb:'しち',    rans:'しじゅうく'     }, '7x8':{ ra:'しち', rb:'は',       rans:'ごじゅうろく'   }, '7x9':{ ra:'しち', rb:'く',       rans:'ろくじゅうさん'  },
+  // 8の段
+  '8x1':{ ra:'はち', rb:'いち が', rans:'はち'         }, '8x2':{ ra:'はち', rb:'に',       rans:'じゅうろく'     }, '8x3':{ ra:'はち', rb:'さん',     rans:'にじゅうし'     },
+  '8x4':{ ra:'はっ', rb:'し',      rans:'さんじゅうに'   }, '8x5':{ ra:'はち', rb:'ご',       rans:'しじゅう'      }, '8x6':{ ra:'はち', rb:'ろく',     rans:'しじゅうはち'   },
+  '8x7':{ ra:'はち', rb:'しち',    rans:'ごじゅうろく'   }, '8x8':{ ra:'はっ', rb:'ぱ',       rans:'ろくじゅうし'   }, '8x9':{ ra:'はっ', rb:'く',       rans:'しちじゅうに'   },
+  // 9の段
+  '9x1':{ ra:'く',   rb:'いち が', rans:'く'           }, '9x2':{ ra:'く',   rb:'に',       rans:'じゅうはち'     }, '9x3':{ ra:'く',   rb:'さん',     rans:'にじゅうしち'   },
+  '9x4':{ ra:'く',   rb:'し',      rans:'さんじゅうろく'  }, '9x5':{ ra:'く',   rb:'ご',       rans:'しじゅうご'     }, '9x6':{ ra:'く',   rb:'ろく',     rans:'ごじゅうし'     },
+  '9x7':{ ra:'く',   rb:'しち',    rans:'ろくじゅうさん'  }, '9x8':{ ra:'く',   rb:'は',       rans:'しちじゅうに'   }, '9x9':{ ra:'く',   rb:'く',       rans:'はちじゅういち'  },
 };
 
 /* ========== STATE ========== */
@@ -1003,24 +1047,29 @@ function startStudy() {
 
 /* カードのテキストだけ更新（アニメーションなし） */
 function setQuestionContent() {
-  const q    = questions[currentIdx];
-  const yomi = KUKU_YOMI[`${q.a}x${q.b}`] || { q:'', a:'' };
-  document.getElementById('question-text').textContent  = `${q.a} × ${q.b} = ?`;
-  document.getElementById('question-yomi').textContent  = yomi.q;  // 問題読みのみ
-  // 答えは空にしておき、めくった後で表示する
-  document.getElementById('answer-num').textContent    = '';
-  document.getElementById('answer-eq').textContent     = '';
-  document.getElementById('answer-yomi-q').textContent = '';
-  document.getElementById('answer-yomi-a').textContent = '';
+  const q = questions[currentIdx];
+  const y = KUKU_YOMI[`${q.a}x${q.b}`] || { ra:'', rb:'', rans:'' };
+  // 表面：問題
+  document.getElementById('q-ra').textContent = y.ra;
+  document.getElementById('q-na').textContent = q.a;
+  document.getElementById('q-rb').textContent = y.rb;
+  document.getElementById('q-nb').textContent = q.b;
+  // 裏面：クリアしておく（めくった後にセット）
+  ['a-ra','a-na','a-rb','a-nb','a-rans','a-nans'].forEach(id => {
+    document.getElementById(id).textContent = '';
+  });
 }
 
 function setAnswerContent() {
-  const q    = questions[currentIdx];
-  const yomi = KUKU_YOMI[`${q.a}x${q.b}`] || { q:'', a:'' };
-  document.getElementById('answer-num').textContent    = `${q.ans}`;
-  document.getElementById('answer-eq').textContent     = `${q.a} × ${q.b} = ${q.ans}`;
-  document.getElementById('answer-yomi-q').textContent = yomi.q;  // 問題読み
-  document.getElementById('answer-yomi-a').textContent = yomi.a;  // 答え読み
+  const q = questions[currentIdx];
+  const y = KUKU_YOMI[`${q.a}x${q.b}`] || { ra:'', rb:'', rans:'' };
+  // 裏面：全式＋読み
+  document.getElementById('a-ra').textContent   = y.ra;
+  document.getElementById('a-na').textContent   = q.a;
+  document.getElementById('a-rb').textContent   = y.rb;
+  document.getElementById('a-nb').textContent   = q.b;
+  document.getElementById('a-rans').textContent = y.rans;
+  document.getElementById('a-nans').textContent = q.ans;
 }
 
 function showStudyButtons(state) {
