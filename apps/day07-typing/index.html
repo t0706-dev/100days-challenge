@@ -882,13 +882,14 @@ function finish() {
     </div>`;
 
   $('btn-stop').style.display = 'none';
-  $('btn-start').textContent  = '▶ 次の問題';
+  $('btn-start').textContent  = '▶ 次の問題  [Space]';
 
   addPts(earned);
 }
 
 // ─── KEYDOWN ──────────────────────────────────────────
 document.addEventListener('keydown', e => {
+  if (S.status === 'done' && e.key === ' ') { e.preventDefault(); startGame(); return; }
   if (S.status !== 'playing') return;
   if (e.ctrlKey||e.altKey||e.metaKey) return;
   if (e.key === 'Tab') { e.preventDefault(); return; }
