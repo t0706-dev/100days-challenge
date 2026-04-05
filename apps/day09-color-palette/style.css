@@ -208,9 +208,11 @@ input[type="color"]:hover {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 12px;
   padding: 14px 20px;
   border-bottom: 1px solid var(--border);
   background: #fafbfc;
+  flex-wrap: wrap;
 }
 
 .pattern-title {
@@ -219,17 +221,25 @@ input[type="color"]:hover {
   color: var(--text);
 }
 
+/* コピーボタン 2 つをまとめるコンテナ */
+.copy-btn-group {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .copy-btn {
-  padding: 6px 16px;
+  padding: 6px 14px;
   background: transparent;
   border: 1.5px solid var(--border);
   border-radius: 6px;
   font-family: inherit;
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
   color: var(--text-muted);
   transition: border-color 0.18s, color 0.18s, background 0.18s;
+  white-space: nowrap;
 }
 
 .copy-btn:hover {
@@ -247,14 +257,32 @@ input[type="color"]:hover {
 .pattern-card-body {
   padding: 20px 24px;
   display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* 上段：スウォッチ + プレビュー */
+.card-top-row {
+  display: flex;
   gap: 28px;
   flex-wrap: wrap;
   align-items: flex-start;
 }
 
+/* 下段：CSS変数 + WordPress用CSS */
+.card-code-row {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  border-top: 1px solid var(--border);
+  padding-top: 20px;
+}
+
 /* セクション見出し共通 */
 .swatches-section h4,
 .css-section h4,
+.wp-css-section h4,
 .preview-section h4 {
   font-size: 0.73rem;
   font-weight: 700;
@@ -262,6 +290,15 @@ input[type="color"]:hover {
   text-transform: uppercase;
   letter-spacing: 0.08em;
   margin-bottom: 10px;
+}
+
+/* 見出し横の補足テキスト */
+.section-note {
+  font-size: 0.68rem;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  opacity: 0.75;
 }
 
 /* ============================================================
@@ -311,12 +348,20 @@ input[type="color"]:hover {
 }
 
 /* ============================================================
-   CSS 変数コード表示
+   CSS コードブロック
    ============================================================ */
+
+/* CSS 変数（コンパクト） */
 .css-section {
   flex: 0 0 auto;
 }
 
+/* WordPress 用 CSS（横幅を広めに取る） */
+.wp-css-section {
+  flex: 1 1 320px;
+}
+
+/* コードブロック共通 */
 .css-code {
   background: #1a1f2e;
   color: #a8d8ea;
@@ -328,12 +373,19 @@ input[type="color"]:hover {
   white-space: pre;
 }
 
+/* WordPress 用 CSS はコード量が多いので縦スクロール可能に */
+.css-code--wp {
+  max-height: 320px;
+  overflow-y: auto;
+  color: #b8e0c8; /* 変数ブロックと色を分けて視認性を上げる */
+}
+
 /* ============================================================
    プレビュー
    ============================================================ */
 .preview-section {
-  flex: 1 1 280px;
-  min-width: 260px;
+  flex: 1 1 260px;
+  min-width: 240px;
 }
 
 .preview-frame {
@@ -443,7 +495,8 @@ input[type="color"]:hover {
     text-align: center;
   }
 
-  .pattern-card-body {
+  .card-top-row,
+  .card-code-row {
     flex-direction: column;
   }
 
@@ -453,6 +506,10 @@ input[type="color"]:hover {
 
   .preview-cards {
     flex-direction: column;
+  }
+
+  .css-code--wp {
+    max-height: 240px;
   }
 }
 

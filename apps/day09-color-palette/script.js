@@ -240,11 +240,11 @@ function generateAllPatterns(baseHex, personaKey) {
 
 
 // ============================================================
-// CSS 変数テキスト生成
+// CSS 出力テキスト生成
 // ============================================================
 
 /**
- * パレットオブジェクトから CSS カスタムプロパティのコードを生成する
+ * パレットから CSS カスタムプロパティ（:root 変数）コードを生成する
  * @param {Object} palette
  * @returns {string}
  */
@@ -258,6 +258,81 @@ function buildCssVariables(palette) {
     `  --text:    ${palette.text};\n` +
     `}`
   );
+}
+
+/**
+ * WordPress の「追加CSS」に貼りやすいサンプルCSSを生成する。
+ * :root 変数ブロック ＋ 汎用セレクタへの適用例をまとめて出力する。
+ *
+ * ※ テーマによってクラス名が異なるため、あくまで流用テンプレートとして使用すること。
+ *
+ * @param {Object} palette
+ * @returns {string}
+ */
+function buildWordPressCss(palette) {
+  // Primary・Accent の上に乗る文字色を輝度で自動判定
+  const onPrimary = isLight(palette.primary) ? '#1a202c' : '#ffffff';
+  const onAccent  = isLight(palette.accent)  ? '#1a202c' : '#ffffff';
+
+  const lines = [
+    // ① CSS 変数ブロック（:root）
+    buildCssVariables(palette),
+    '',
+    '/* ----------------------------------------',
+    '   ベース',
+    '---------------------------------------- */',
+    'body {',
+    '  background-color: var(--bg);',
+    '  color: var(--text);',
+    '}',
+    '',
+    'a {',
+    '  color: var(--primary);',
+    '}',
+    '',
+    '/* ----------------------------------------',
+    '   ボタン類',
+    '---------------------------------------- */',
+    'button,',
+    'input[type="submit"],',
+    '.wp-block-button__link {',
+    `  background-color: var(--accent);`,
+    `  color: ${onAccent};`,
+    '  border: 1px solid var(--accent);',
+    '}',
+    '',
+    '/* ----------------------------------------',
+    '   サイトヘッダー',
+    '---------------------------------------- */',
+    '.site-header {',
+    '  background-color: var(--primary);',
+    `  color: ${onPrimary};`,
+    '}',
+    '',
+    '.wp-block-navigation a {',
+    `  color: ${onPrimary};`,
+    '}',
+    '',
+    '/* ----------------------------------------',
+    '   コンテンツ',
+    '---------------------------------------- */',
+    '.entry-content {',
+    '  color: var(--text);',
+    '}',
+    '',
+    '/* ----------------------------------------',
+    '   ブロック',
+    '---------------------------------------- */',
+    '.wp-block-group {',
+    '  background-color: var(--surface);',
+    '}',
+    '',
+    '.wp-block-cover {',
+    '  color: #ffffff;',
+    '}',
+  ];
+
+  return lines.join('\n');
 }
 
 
@@ -367,33 +442,44 @@ function escapeHtml(str) {
  * @returns {string} HTML 文字列
  */
 function renderPatternCard(palette, index) {
-  const cssText = buildCssVariables(palette);
+  const cssVars = buildCssVariables(palette);
+  const wpCss   = buildWordPressCss(palette);
 
   return `
     <div class="pattern-card">
-      <!-- カードヘッダー -->
+      <!-- カードヘッダー：タイトル + コピーボタン 2 つ -->
       <div class="pattern-card-header">
         <div class="pattern-title">${palette.label}</div>
-        <button class="copy-btn" data-index="${index}">CSS をコピー</button>
+        <div class="copy-btn-group">
+          <button class="copy-btn" data-index="${index}" data-type="vars">変数CSS をコピー</button>
+          <button class="copy-btn" data-index="${index}" data-type="wp">WordPress用CSS をコピー</button>
+        </div>
       </div>
       <!-- カードボディ -->
       <div class="pattern-card-body">
-        <!-- スウォッチ -->
-        <div class="swatches-section">
-          <h4>カラー</h4>
-          <div class="swatches">
-            ${renderSwatches(palette)}
+        <!-- 上段：スウォッチ + プレビュー -->
+        <div class="card-top-row">
+          <div class="swatches-section">
+            <h4>カラー</h4>
+            <div class="swatches">
+              ${renderSwatches(palette)}
+            </div>
+          </div>
+          <div class="preview-section">
+            <h4>プレビュー</h4>
+            ${renderPreview(palette)}
           </div>
         </div>
-        <!-- CSS 変数 -->
-        <div class="css-section">
-          <h4>CSS 変数</h4>
-          <div class="css-code">${escapeHtml(cssText)}</div>
-        </div>
-        <!-- プレビュー -->
-        <div class="preview-section">
-          <h4>プレビュー</h4>
-          ${renderPreview(palette)}
+        <!-- 下段：CSS 変数 + WordPress 用 CSS -->
+        <div class="card-code-row">
+          <div class="css-section">
+            <h4>CSS 変数</h4>
+            <div class="css-code">${escapeHtml(cssVars)}</div>
+          </div>
+          <div class="wp-css-section">
+            <h4>WordPress 用 CSS <span class="section-note">（追加CSSに貼って使用）</span></h4>
+            <div class="css-code css-code--wp">${escapeHtml(wpCss)}</div>
+          </div>
         </div>
       </div>
     </div>
@@ -412,17 +498,25 @@ function renderOutput(palettes) {
   const section = document.getElementById('outputSection');
   section.innerHTML = palettes.map((p, i) => renderPatternCard(p, i)).join('');
 
-  // コピーボタンにクリックイベントを設定
+  // コピーボタンにクリックイベントを設定（data-type で種類を切り替え）
   section.querySelectorAll('.copy-btn').forEach((btn) => {
+    // ボタンの元のラベルを記憶しておく
+    const originalLabel = btn.textContent;
+
     btn.addEventListener('click', () => {
       const index = parseInt(btn.dataset.index, 10);
-      const cssText = buildCssVariables(currentPalettes[index]);
+      const type  = btn.dataset.type; // 'vars' | 'wp'
+
+      // コピーするテキストをタイプで切り替え
+      const cssText = (type === 'wp')
+        ? buildWordPressCss(currentPalettes[index])
+        : buildCssVariables(currentPalettes[index]);
 
       navigator.clipboard.writeText(cssText).then(() => {
         btn.textContent = 'コピーしました！';
         btn.classList.add('copied');
         setTimeout(() => {
-          btn.textContent = 'CSS をコピー';
+          btn.textContent = originalLabel;
           btn.classList.remove('copied');
         }, 2000);
       }).catch(() => {
