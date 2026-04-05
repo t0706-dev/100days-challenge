@@ -634,7 +634,6 @@ input[type="color"]:hover {
   align-items: flex-start;
   border-top: 1px solid var(--border);
   padding-top: 20px;
-  overflow: hidden; /* 子要素のはみ出しをカード内に収める */
 }
 
 /* セクション見出し共通 */
@@ -910,8 +909,22 @@ input[type="color"]:hover {
     flex-direction: column;
   }
 
+  /* モバイルではコードを折り返して切れないようにする */
+  .css-code {
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-size: 0.74rem;
+    overflow-x: visible;
+  }
+
   .css-code--wp {
-    max-height: 240px;
+    max-height: 260px;
+  }
+
+  /* コードブロックのコピーボタンが切れないよう折り返し許可 */
+  .code-block-header {
+    flex-wrap: wrap;
+    gap: 6px;
   }
 }
 
