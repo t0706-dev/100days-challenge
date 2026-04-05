@@ -451,15 +451,16 @@
     /* Study buttons */
     .study-buttons {
       width: 100%;
-      display: flex;
-      gap: 12px;
+      position: relative;
       height: 56px;
       flex-shrink: 0;
     }
 
-    .btn-answer {
-      flex: 1;
-      background: linear-gradient(135deg, var(--lavender) 0%, #B090E8 100%);
+    .btn-answer,
+    .btn-next {
+      position: absolute;
+      inset: 0;
+      width: 100%;
       border: none;
       border-radius: 18px;
       padding: 15px;
@@ -468,9 +469,14 @@
       font-weight: 900;
       color: var(--white);
       cursor: pointer;
+      transition: opacity 0.22s;
+    }
+
+    .btn-answer {
+      background: linear-gradient(135deg, var(--lavender) 0%, #B090E8 100%);
       box-shadow: 0 4px 18px rgba(160,120,230,0.35);
-      transition: opacity 0.2s;
       opacity: 1;
+      pointer-events: auto;
     }
     .btn-answer.hidden {
       opacity: 0;
@@ -479,18 +485,8 @@
     .btn-answer:active { transform: scale(0.97); }
 
     .btn-next {
-      flex: 1;
       background: linear-gradient(135deg, var(--pink) 0%, #FF90B0 100%);
-      border: none;
-      border-radius: 18px;
-      padding: 15px;
-      font-family: 'M PLUS Rounded 1c', sans-serif;
-      font-size: 17px;
-      font-weight: 900;
-      color: var(--white);
-      cursor: pointer;
       box-shadow: 0 4px 18px rgba(255,120,160,0.35);
-      transition: opacity 0.2s;
       opacity: 0;
       pointer-events: none;
     }
