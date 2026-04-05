@@ -433,12 +433,19 @@
       text-align: center;
     }
     .yomi-text {
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 700;
       color: var(--text-light);
       letter-spacing: 0.5px;
-      margin-bottom: 6px;
-      min-height: 1.4em;
+      min-height: 1.3em;
+    }
+    .yomi-ans {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--lavender);
+      letter-spacing: 0.5px;
+      min-height: 1.3em;
+      margin-top: 2px;
     }
     .question-text {
       font-size: 40px;
@@ -721,7 +728,8 @@
       </div>
       <div class="card-face card-back">
         <div class="answer-display">
-          <div class="yomi-text" id="answer-yomi"></div>
+          <div class="yomi-text" id="answer-yomi-q"></div>
+          <div class="yomi-ans"  id="answer-yomi-a"></div>
           <div class="answer-num" id="answer-num">6</div>
           <div class="answer-eq"  id="answer-eq">2 × 3 = 6</div>
         </div>
@@ -799,43 +807,43 @@ const BUNNY_SVG = `
   document.getElementById(id).innerHTML = BUNNY_SVG;
 });
 
-/* ========== 九九読み方テーブル ========== */
+/* ========== 九九読み方テーブル { q:問題読み, a:答え読み } ========== */
 const KUKU_YOMI = {
-  '1x1':'いんいち が いち',  '1x2':'いん に が に',      '1x3':'いんさん が さん',
-  '1x4':'いん し が し',    '1x5':'いん ご が ご',      '1x6':'いんろく が ろく',
-  '1x7':'いんしち が しち',  '1x8':'いんはち が はち',   '1x9':'いん く が く',
+  '1x1':{ q:'いんいち が',  a:'いち'         }, '1x2':{ q:'いんに が',   a:'に'           }, '1x3':{ q:'いんさん が',  a:'さん'         },
+  '1x4':{ q:'いんし が',   a:'し'           }, '1x5':{ q:'いんご が',   a:'ご'           }, '1x6':{ q:'いんろく が',  a:'ろく'         },
+  '1x7':{ q:'いんしち が',  a:'しち'         }, '1x8':{ q:'いんはち が',  a:'はち'         }, '1x9':{ q:'いんく が',   a:'く'           },
 
-  '2x1':'に いち が に',    '2x2':'に に が し',        '2x3':'に さん が ろく',
-  '2x4':'に し が はち',    '2x5':'に ご じゅう',       '2x6':'にろく じゅうに',
-  '2x7':'にしち じゅうし',   '2x8':'にはち じゅうろく',  '2x9':'にく じゅうはち',
+  '2x1':{ q:'に いち が',  a:'に'           }, '2x2':{ q:'に にん が',  a:'し'           }, '2x3':{ q:'に さん が',  a:'ろく'         },
+  '2x4':{ q:'に し が',   a:'はち'         }, '2x5':{ q:'に ご',      a:'じゅう'        }, '2x6':{ q:'にろく',     a:'じゅうに'      },
+  '2x7':{ q:'にしち',     a:'じゅうし'      }, '2x8':{ q:'にはち',     a:'じゅうろく'     }, '2x9':{ q:'にく',      a:'じゅうはち'     },
 
-  '3x1':'さんいち が さん',  '3x2':'さん に が ろく',    '3x3':'さ ざん が く',
-  '3x4':'さんし じゅうに',   '3x5':'さんご じゅうご',    '3x6':'さぶろく じゅうはち',
-  '3x7':'さんしち にじゅういち','3x8':'さんぱ にじゅうし', '3x9':'さんく にじゅうしち',
+  '3x1':{ q:'さんいち が',  a:'さん'         }, '3x2':{ q:'さんに が',   a:'ろく'         }, '3x3':{ q:'さ ざん が',  a:'く'           },
+  '3x4':{ q:'さんし',     a:'じゅうに'      }, '3x5':{ q:'さんご',     a:'じゅうご'      }, '3x6':{ q:'さぶろく',    a:'じゅうはち'     },
+  '3x7':{ q:'さんしち',    a:'にじゅういち'   }, '3x8':{ q:'さんぱ',     a:'にじゅうし'     }, '3x9':{ q:'さんく',     a:'にじゅうしち'   },
 
-  '4x1':'し いち が し',    '4x2':'し に が はち',      '4x3':'しさん じゅうに',
-  '4x4':'し し じゅうろく',  '4x5':'し ご にじゅう',     '4x6':'しろく にじゅうし',
-  '4x7':'ししち にじゅうはち','4x8':'しは さんじゅうに',  '4x9':'しく さんじゅうろく',
+  '4x1':{ q:'し いち が',  a:'し'           }, '4x2':{ q:'し に が',   a:'はち'         }, '4x3':{ q:'しさん',     a:'じゅうに'      },
+  '4x4':{ q:'し し',     a:'じゅうろく'     }, '4x5':{ q:'し ご',      a:'にじゅう'      }, '4x6':{ q:'しろく',     a:'にじゅうし'     },
+  '4x7':{ q:'ししち',     a:'にじゅうはち'   }, '4x8':{ q:'しは',      a:'さんじゅうに'   }, '4x9':{ q:'しく',      a:'さんじゅうろく'  },
 
-  '5x1':'ご いち が ご',    '5x2':'ご に じゅう',       '5x3':'ごさん じゅうご',
-  '5x4':'ごし にじゅう',     '5x5':'ごご にじゅうご',    '5x6':'ごろく さんじゅう',
-  '5x7':'ごしち さんじゅうご','5x8':'ごは しじゅう',      '5x9':'ごく しじゅうご',
+  '5x1':{ q:'ご いち が',  a:'ご'           }, '5x2':{ q:'ご に',      a:'じゅう'        }, '5x3':{ q:'ごさん',     a:'じゅうご'      },
+  '5x4':{ q:'ごし',      a:'にじゅう'      }, '5x5':{ q:'ごご',      a:'にじゅうご'     }, '5x6':{ q:'ごろく',     a:'さんじゅう'     },
+  '5x7':{ q:'ごしち',     a:'さんじゅうご'   }, '5x8':{ q:'ごは',      a:'しじゅう'      }, '5x9':{ q:'ごく',      a:'しじゅうご'     },
 
-  '6x1':'ろくいち が ろく',  '6x2':'ろくに じゅうに',    '6x3':'ろくさん じゅうはち',
-  '6x4':'ろくし にじゅうし',  '6x5':'ろくご さんじゅう',  '6x6':'ろくろく さんじゅうろく',
-  '6x7':'ろくしち しじゅうに','6x8':'ろくは しじゅうはち', '6x9':'ろくく ごじゅうし',
+  '6x1':{ q:'ろくいち が',  a:'ろく'         }, '6x2':{ q:'ろくに',     a:'じゅうに'      }, '6x3':{ q:'ろくさん',    a:'じゅうはち'     },
+  '6x4':{ q:'ろくし',     a:'にじゅうし'     }, '6x5':{ q:'ろくご',     a:'さんじゅう'     }, '6x6':{ q:'ろくろく',    a:'さんじゅうろく'  },
+  '6x7':{ q:'ろくしち',    a:'しじゅうに'     }, '6x8':{ q:'ろくは',     a:'しじゅうはち'   }, '6x9':{ q:'ろっく',     a:'ごじゅうし'     },
 
-  '7x1':'しちいち が しち',  '7x2':'しちに じゅうし',    '7x3':'しちさん にじゅういち',
-  '7x4':'しちし にじゅうはち','7x5':'しちご さんじゅうご', '7x6':'しちろく しじゅうに',
-  '7x7':'しちしち しじゅうく','7x8':'しちは ごじゅうろく', '7x9':'しちく ろくじゅうさん',
+  '7x1':{ q:'しちいち が',  a:'しち'         }, '7x2':{ q:'しちに',     a:'じゅうし'      }, '7x3':{ q:'しちさん',    a:'にじゅういち'   },
+  '7x4':{ q:'しちし',     a:'にじゅうはち'   }, '7x5':{ q:'しちご',     a:'さんじゅうご'   }, '7x6':{ q:'しちろく',    a:'しじゅうに'     },
+  '7x7':{ q:'しちしち',    a:'しじゅうく'     }, '7x8':{ q:'しちは',     a:'ごじゅうろく'   }, '7x9':{ q:'しちく',     a:'ろくじゅうさん'  },
 
-  '8x1':'はちいち が はち',  '8x2':'はちに じゅうろく',  '8x3':'はちさん にじゅうし',
-  '8x4':'はっし さんじゅうに','8x5':'はちご しじゅう',    '8x6':'はちろく しじゅうはち',
-  '8x7':'はちしち ごじゅうろく','8x8':'はっぱ ろくじゅうし','8x9':'はちく しちじゅうに',
+  '8x1':{ q:'はちいち が',  a:'はち'         }, '8x2':{ q:'はちに',     a:'じゅうろく'     }, '8x3':{ q:'はちさん',    a:'にじゅうし'     },
+  '8x4':{ q:'はっし',     a:'さんじゅうに'   }, '8x5':{ q:'はちご',     a:'しじゅう'      }, '8x6':{ q:'はちろく',    a:'しじゅうはち'   },
+  '8x7':{ q:'はちしち',    a:'ごじゅうろく'   }, '8x8':{ q:'はっぱ',     a:'ろくじゅうし'   }, '8x9':{ q:'はっく',     a:'しちじゅうに'   },
 
-  '9x1':'く いち が く',    '9x2':'くに じゅうはち',    '9x3':'くさん にじゅうしち',
-  '9x4':'くし さんじゅうろく','9x5':'くご しじゅうご',    '9x6':'くろく ごじゅうし',
-  '9x7':'くしち ろくじゅうさん','9x8':'くは しちじゅうに', '9x9':'くく はちじゅういち',
+  '9x1':{ q:'くいち が',   a:'く'           }, '9x2':{ q:'くに',      a:'じゅうはち'     }, '9x3':{ q:'くさん',     a:'にじゅうしち'   },
+  '9x4':{ q:'くし',      a:'さんじゅうろく'  }, '9x5':{ q:'くご',      a:'しじゅうご'     }, '9x6':{ q:'くろく',     a:'ごじゅうし'     },
+  '9x7':{ q:'くしち',     a:'ろくじゅうさん'  }, '9x8':{ q:'くは',      a:'しちじゅうに'   }, '9x9':{ q:'くく',      a:'はちじゅういち'  },
 };
 
 /* ========== STATE ========== */
@@ -996,21 +1004,23 @@ function startStudy() {
 /* カードのテキストだけ更新（アニメーションなし） */
 function setQuestionContent() {
   const q    = questions[currentIdx];
-  const yomi = KUKU_YOMI[`${q.a}x${q.b}`] || '';
-  document.getElementById('question-text').textContent = `${q.a} × ${q.b} = ?`;
-  document.getElementById('question-yomi').textContent = yomi;
+  const yomi = KUKU_YOMI[`${q.a}x${q.b}`] || { q:'', a:'' };
+  document.getElementById('question-text').textContent  = `${q.a} × ${q.b} = ?`;
+  document.getElementById('question-yomi').textContent  = yomi.q;  // 問題読みのみ
   // 答えは空にしておき、めくった後で表示する
-  document.getElementById('answer-num').textContent  = '';
-  document.getElementById('answer-eq').textContent   = '';
-  document.getElementById('answer-yomi').textContent = '';
+  document.getElementById('answer-num').textContent    = '';
+  document.getElementById('answer-eq').textContent     = '';
+  document.getElementById('answer-yomi-q').textContent = '';
+  document.getElementById('answer-yomi-a').textContent = '';
 }
 
 function setAnswerContent() {
   const q    = questions[currentIdx];
-  const yomi = KUKU_YOMI[`${q.a}x${q.b}`] || '';
-  document.getElementById('answer-num').textContent  = `${q.ans}`;
-  document.getElementById('answer-eq').textContent   = `${q.a} × ${q.b} = ${q.ans}`;
-  document.getElementById('answer-yomi').textContent = yomi;
+  const yomi = KUKU_YOMI[`${q.a}x${q.b}`] || { q:'', a:'' };
+  document.getElementById('answer-num').textContent    = `${q.ans}`;
+  document.getElementById('answer-eq').textContent     = `${q.a} × ${q.b} = ${q.ans}`;
+  document.getElementById('answer-yomi-q').textContent = yomi.q;  // 問題読み
+  document.getElementById('answer-yomi-a').textContent = yomi.a;  // 答え読み
 }
 
 function showStudyButtons(state) {
