@@ -634,6 +634,7 @@ input[type="color"]:hover {
   align-items: flex-start;
   border-top: 1px solid var(--border);
   padding-top: 20px;
+  overflow: hidden; /* 子要素のはみ出しをカード内に収める */
 }
 
 /* セクション見出し共通 */
@@ -711,11 +712,15 @@ input[type="color"]:hover {
 /* CSS 変数（コンパクト） */
 .css-section {
   flex: 0 0 auto;
+  min-width: 0;   /* flex 子要素のはみ出し防止 */
+  max-width: 100%;
 }
 
 /* WordPress 用 CSS（横幅を広めに取る） */
 .wp-css-section {
   flex: 1 1 320px;
+  min-width: 0;   /* flex 子要素のはみ出し防止 */
+  max-width: 100%;
 }
 
 /* コードブロックのヘッダー（タイトル + コピーボタン） */
@@ -765,13 +770,16 @@ input[type="color"]:hover {
   font-size: 0.78rem;
   line-height: 1.8;
   white-space: pre;
+  overflow-x: auto;  /* 横にはみ出す場合はスクロール */
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
-/* WordPress 用 CSS はコード量が多いので縦スクロール可能に */
+/* WordPress 用 CSS は縦スクロールも可能に */
 .css-code--wp {
   max-height: 320px;
   overflow-y: auto;
-  color: #b8e0c8; /* 変数ブロックと色を分けて視認性を上げる */
+  color: #b8e0c8;
 }
 
 /* ============================================================
