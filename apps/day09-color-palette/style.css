@@ -376,13 +376,17 @@ body {
 /* ---- カラーピッカー ---- */
 .input-group--color {
   flex: 0 0 auto;
-  min-width: 260px;
+  min-width: 300px;
 }
 
 .color-picker {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  background: var(--bg);
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
 }
 
 /* 1行目：ネイティブピッカー + HEX入力 */
@@ -432,24 +436,23 @@ input[type="color"]:hover {
   border-color: var(--primary);
 }
 
-/* 行レイアウト（ラベル + コントロール） */
-.color-picker-row {
+/* セクション（ラベル上・コントロール下） */
+.color-picker-section {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .color-sub-label {
   font-size: 0.72rem;
   font-weight: 700;
   color: var(--text-muted);
-  white-space: nowrap;
-  min-width: 3.5em;
+  letter-spacing: 0.02em;
 }
 
 /* 色相スライダー */
 .hue-slider {
-  flex: 1;
+  width: 100%;
   height: 12px;
   border-radius: 6px;
   border: none;
@@ -493,23 +496,24 @@ input[type="color"]:hover {
 }
 
 .color-preset-btn {
-  width: 22px;
-  height: 22px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  border: 2px solid transparent;
+  border: 2.5px solid transparent;
   cursor: pointer;
   padding: 0;
-  transition: transform 0.12s, border-color 0.12s;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  transition: transform 0.12s, border-color 0.12s, box-shadow 0.12s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.18);
 }
 
 .color-preset-btn:hover {
-  transform: scale(1.2);
+  transform: scale(1.25);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.25);
 }
 
 .color-preset-btn.active {
   border-color: var(--text);
-  transform: scale(1.15);
+  transform: scale(1.2);
 }
 
 /* ---- 提案ボタン ---- */
