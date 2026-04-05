@@ -75,9 +75,8 @@
       color: var(--text);
       white-space: nowrap;
       box-shadow: 0 2px 8px rgba(180,130,220,0.18);
-      position: absolute;
-      top: -4px;
-      right: -76px;
+      position: relative;
+      flex-shrink: 0;
     }
     .speech-bubble::before {
       content: '';
@@ -122,7 +121,11 @@
       justify-content: center;
       align-items: center;
       height: 88px;
-      position: relative;
+    }
+    .bunny-bubble-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
 
     .mode-buttons {
@@ -374,14 +377,14 @@
     .study-bunny-row {
       display: flex;
       justify-content: center;
-      align-items: flex-end;
+      align-items: center;
       height: 76px;
-      position: relative;
+      flex-shrink: 0;
     }
     .study-bunny-inner {
-      position: relative;
       display: flex;
-      align-items: flex-end;
+      align-items: center;
+      gap: 12px;
     }
 
     /* Card */
@@ -446,7 +449,13 @@
     }
 
     /* Study buttons */
-    .study-buttons { width: 100%; display: flex; gap: 12px; }
+    .study-buttons {
+      width: 100%;
+      display: flex;
+      gap: 12px;
+      height: 56px;
+      flex-shrink: 0;
+    }
 
     .btn-answer {
       flex: 1;
@@ -460,7 +469,12 @@
       color: var(--white);
       cursor: pointer;
       box-shadow: 0 4px 18px rgba(160,120,230,0.35);
-      transition: all 0.15s;
+      transition: opacity 0.2s;
+      opacity: 1;
+    }
+    .btn-answer.hidden {
+      opacity: 0;
+      pointer-events: none;
     }
     .btn-answer:active { transform: scale(0.97); }
 
@@ -476,10 +490,14 @@
       color: var(--white);
       cursor: pointer;
       box-shadow: 0 4px 18px rgba(255,120,160,0.35);
-      transition: all 0.15s;
-      display: none;
+      transition: opacity 0.2s;
+      opacity: 0;
+      pointer-events: none;
     }
-    .btn-next.show { display: block; }
+    .btn-next.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
     .btn-next:active { transform: scale(0.97); }
 
     /* ===== COMPLETE SCREEN ===== */
@@ -581,7 +599,7 @@
   </div>
 
   <div class="home-bunny-row">
-    <div style="position:relative; display:inline-flex; align-items:flex-end;">
+    <div class="bunny-bubble-wrap">
       <div class="bunny" id="home-bunny"></div>
       <div class="speech-bubble" id="home-speech">いっしょにやろう！</div>
     </div>
@@ -942,11 +960,17 @@ function setAnswerContent() {
 
 function showStudyButtons(state) {
   // state: 'answer' | 'next' | 'none'
-  document.getElementById('btn-answer').style.display = state === 'answer' ? 'block' : 'none';
-  if (state === 'next') {
-    document.getElementById('btn-next').classList.add('show');
+  const ansBtn  = document.getElementById('btn-answer');
+  const nextBtn = document.getElementById('btn-next');
+  if (state === 'answer') {
+    ansBtn.classList.remove('hidden');
+    nextBtn.classList.remove('show');
+  } else if (state === 'next') {
+    ansBtn.classList.add('hidden');
+    nextBtn.classList.add('show');
   } else {
-    document.getElementById('btn-next').classList.remove('show');
+    ansBtn.classList.add('hidden');
+    nextBtn.classList.remove('show');
   }
 }
 
