@@ -54,34 +54,34 @@ body {
 .subtitle {
   color: var(--text-muted);
   font-size: 0.92rem;
+  margin: 0; /* flex アイテムとして並べるため margin をリセット */
 }
 
-/* サブタイトル + ヘルプボタンを横並びに */
+/* サブタイトルとボタンを同じ行に並べる */
 .subtitle-row {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  justify-content: center;
-  margin-top: 6px;
-}
-
-/* 丸型「?」ボタン */
-.help-btn {
-  flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  border: 1.5px solid var(--text-muted);
-  background: transparent;
-  color: var(--text-muted);
-  font-family: inherit;
-  font-size: 0.75rem;
-  font-weight: 700;
-  line-height: 1;
-  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+/* 「？使い方」ピル型ボタン */
+.help-btn {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 12px;
+  background: transparent;
+  border: 1.5px solid var(--text-muted);
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
   transition: border-color 0.18s, color 0.18s, background 0.18s;
 }
 
@@ -94,9 +94,9 @@ body {
 /* ============================================================
    モーダル
    ============================================================ */
-/* .is-open クラスで表示切り替え（hidden 属性は使用しない） */
+/* .is-open クラスで表示切り替え */
 .modal-overlay {
-  display: none;
+  display: none !important; /* キャッシュ対策：デフォルトは必ず非表示 */
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.45);
@@ -107,7 +107,7 @@ body {
 }
 
 .modal-overlay.is-open {
-  display: flex;
+  display: flex !important;
 }
 
 .modal {
