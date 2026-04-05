@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>わんわんタイピング - Day 7</title>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+:root {
+  --pink: #ffb3c1;
+  --blue: #aed6f1;
+  --green: #a9dfbf;
+  --yellow: #fdebd0;
+  --purple: #d7bde2;
+  --bg: #ffffff;
+  --text: #444;
+  --muted: #aaa;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== HEADER ===== */
+.header {
+  background: linear-gradient(135deg, #aed6f1 0%, #d7bde2 100%);
+  padding: 14px 40px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+}
+.header-title {
+  font-size: 22px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  white-space: nowrap;
+}
+.level-badge {
+  background: white;
+  color: #7a6ce0;
+  font-weight: 800;
+  font-size: 17px;
+  padding: 4px 16px;
+  border-radius: 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  white-space: nowrap;
+  min-width: 72px;
+  text-align: center;
+}
+.points-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  max-width: 320px;
+}
+.points-label { font-size: 12px; color: rgba(255,255,255,0.95); font-weight: 700; }
+.points-bar-wrap {
+  background: rgba(255,255,255,0.35);
+  border-radius: 10px;
+  height: 12px;
+  overflow: hidden;
+}
+.points-bar {
+  height: 100%;
+  background: white;
+  border-radius: 10px;
+  transition: width 0.6s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ===== MAIN ===== */
+.main {
+  flex: 1;
+  display: flex;
+  gap: 40px;
+  padding: 36px 40px;
+  max-width: 1140px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ===== LEFT PANEL ===== */
+.left-panel {
+  width: 250px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Speech bubble */
+.speech-bubble {
+  background: var(--yellow);
+  border: 2.5px solid #f0c060;
+  border-radius: 16px;
+  padding: 13px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #666;
+  position: relative;
+  width: 100%;
+  text-align: center;
+  line-height: 1.6;
+}
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: var(--yellow);
+}
+.speech-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 8px solid transparent;
+  border-top-color: #f0c060;
+}
+
+/* ===== DOG ===== */
+.dog-wrap {
+  margin-top: 12px;
+  display: flex;
+  justify-content: center;
+}
+
+.dog {
+  position: relative;
+  width: 160px;
+}
+
+/* HEAD */
+.dog-head {
+  width: 136px;
+  height: 130px;
+  background: #faebd0;
+  border-radius: 50%;
+  margin: 0 auto;
+  position: relative;
+  border: 3px solid #d4a060;
+  box-shadow: inset 0 -10px 0 rgba(0,0,0,0.05), 0 4px 12px rgba(0,0,0,0.08);
+}
+
+/* EARS */
+.dog-ear {
+  position: absolute;
+  width: 48px;
+  height: 62px;
+  background: #c8884a;
+  border: 3px solid #a86830;
+  top: -26px;
+  overflow: hidden;
+}
+.dog-ear::after {
+  content: '';
+  width: 26px;
+  height: 40px;
+  background: #e8a878;
+  border-radius: 50%;
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+.dog-ear-l {
+  left: -8px;
+  border-radius: 50% 20% 35% 55%;
+  transform: rotate(-22deg);
+}
+.dog-ear-r {
+  right: -8px;
+  border-radius: 20% 55% 55% 35%;
+  transform: rotate(22deg);
+}
+
+/* INNER FACE */
+.dog-inner {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -44%);
+  width: 90px;
+  text-align: center;
+}
+
+/* EYES */
+.dog-eyes {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 8px;
+}
+.eye {
+  width: 22px;
+  height: 25px;
+  background: #1a1a2e;
+  border-radius: 50%;
+  position: relative;
+  border: 2px solid white;
+  transition: all 0.15s;
+}
+/* main shine */
+.eye::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 3px;
+  right: 2px;
+}
+/* secondary shine */
+.eye::before {
+  content: '';
+  width: 4px;
+  height: 4px;
+  background: rgba(255,255,255,0.65);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 4px;
+  left: 3px;
+  z-index: 1;
+}
+
+/* BLUSH */
+.dog-blush-l, .dog-blush-r {
+  width: 24px;
+  height: 13px;
+  background: rgba(255,130,130,0.38);
+  border-radius: 50%;
+  position: absolute;
+  top: 66px;
+}
+.dog-blush-l { left: 10px; }
+.dog-blush-r { right: 10px; }
+
+/* NOSE */
+.dog-nose {
+  width: 20px;
+  height: 13px;
+  background: #b05060;
+  border-radius: 50% 50% 45% 45%;
+  margin: 0 auto 6px;
+  position: relative;
+}
+.dog-nose::after {
+  content: '';
+  width: 6px;
+  height: 4px;
+  background: rgba(255,255,255,0.45);
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 3px;
+}
+
+/* MOUTH */
+.dog-mouth {
+  font-size: 20px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* === EXPRESSIONS === */
+.dog.idle    .dog-mouth::after { content: '◡'; }
+.dog.typing  .dog-mouth::after { content: '–'; font-size: 13px; }
+.dog.happy   .eye { height: 10px; border-radius: 50% 50% 0 0; margin-top: 6px; overflow: hidden; }
+.dog.happy   .dog-mouth::after { content: 'ω'; font-size: 22px; color: #c05065; }
+.dog.error   .eye:first-child { transform: rotate(-18deg) scaleX(0.65); }
+.dog.error   .eye:last-child  { transform: rotate(18deg)  scaleX(0.65); }
+.dog.error   .dog-mouth::after { content: '︵'; font-size: 15px; color: #999; }
+.dog.levelup .dog-mouth::after { content: '▽'; font-size: 20px; }
+.dog.levelup .eye::after { background: #ffe066; box-shadow: 0 0 4px #ffd700; }
+
+/* BODY */
+.dog-body {
+  width: 106px;
+  height: 68px;
+  background: #faebd0;
+  border: 3px solid #d4a060;
+  border-top: none;
+  border-radius: 0 0 54% 54%;
+  margin: -6px auto 0;
+  position: relative;
+  overflow: hidden;
+}
+/* belly spot */
+.dog-body::after {
+  content: '';
+  width: 54px;
+  height: 42px;
+  background: rgba(255,255,255,0.55);
+  border-radius: 50%;
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* TAIL */
+.dog-tail {
+  width: 32px;
+  height: 32px;
+  background: #c8884a;
+  border: 3px solid #a86830;
+  border-radius: 50% 50% 0 50%;
+  position: absolute;
+  right: -14px;
+  bottom: 5px;
+  transform: rotate(30deg);
+  transform-origin: bottom right;
+}
+
+/* PAWS */
+.dog-paws {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  margin-top: -5px;
+}
+.paw {
+  width: 26px;
+  height: 16px;
+  background: #faebd0;
+  border: 2.5px solid #d4a060;
+  border-radius: 50%;
+}
+
+/* TAIL ANIMATIONS */
+.dog.idle .dog-tail    { animation: wag-idle 2s ease-in-out infinite; }
+.dog.happy .dog-tail   { animation: wag 0.22s ease-in-out 5; }
+.dog.levelup .dog-tail { animation: wag 0.18s ease-in-out 8; }
+@keyframes wag {
+  0%, 100% { transform: rotate(30deg); }
+  50%       { transform: rotate(-20deg); }
+}
+@keyframes wag-idle {
+  0%, 100% { transform: rotate(30deg); }
+  50%       { transform: rotate(0deg); }
+}
+
+/* SHAKE / BOUNCE */
+.dog-wrap.shake  { animation: shake 0.3s ease; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-8px); }
+  75%       { transform: translateX(8px); }
+}
+
+/* ===== DIFFICULTY ===== */
+.difficulty-row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+}
+.diff-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--muted);
+  text-align: center;
+  letter-spacing: 0.05em;
+}
+.diff-buttons { display: flex; gap: 6px; justify-content: center; }
+.diff-btn {
+  flex: 1;
+  padding: 7px 4px;
+  border: 2px solid #ddd;
+  border-radius: 14px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #f7f7f7;
+  color: #999;
+}
+.diff-btn:hover { transform: translateY(-1px); opacity: 0.85; }
+.diff-btn.easy   { border-color: #a9dfbf; }
+.diff-btn.easy.active  { background: #a9dfbf; color: #1e8449; }
+.diff-btn.normal { border-color: #aed6f1; }
+.diff-btn.normal.active { background: #aed6f1; color: #1a6fa8; }
+.diff-btn.hard   { border-color: #f9a8d4; }
+.diff-btn.hard.active  { background: #f9a8d4; color: #c0392b; }
+
+/* ===== RIGHT PANEL ===== */
+.right-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Typing card */
+.typing-card {
+  background: #fafafa;
+  border: 2.5px solid #eee;
+  border-radius: 20px;
+  padding: 28px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-height: 190px;
+  justify-content: center;
+  user-select: none;
+}
+
+/* Japanese display (お題) */
+.ja-display {
+  font-size: 26px;
+  font-weight: 700;
+  color: #bbb;
+  text-align: center;
+  letter-spacing: 0.1em;
+  min-height: 34px;
+}
+
+.ro-divider {
+  height: 1.5px;
+  background: #eee;
+  border-radius: 1px;
+}
+
+/* Romaji typing display */
+.typing-display {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  line-height: 1.7;
+  word-break: break-word;
+  text-align: center;
+}
+.ch         { color: #ccc; }
+.ch.correct { color: #27ae60; }
+.ch.current {
+  background: #aed6f1;
+  border-radius: 4px;
+  padding: 0 2px;
+  color: #333;
+  animation: blink 0.9s step-end infinite;
+}
+.ch.wrong   { color: #e74c3c; background: #fce8e8; border-radius: 4px; padding: 0 2px; }
+@keyframes blink { 50% { background: transparent; } }
+
+.typing-hint { font-size: 20px; color: #ccc; font-weight: 700; }
+
+/* Stats */
+.stats-row { display: flex; gap: 14px; }
+.stat-card {
+  flex: 1;
+  background: #fafafa;
+  border: 2.5px solid #eee;
+  border-radius: 16px;
+  padding: 16px 10px;
+  text-align: center;
+}
+.stat-val { font-size: 38px; font-weight: 800; line-height: 1; margin-bottom: 4px; }
+.stat-lbl { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+.stat-card.wpm  .stat-val { color: #2e86c1; }
+.stat-card.acc  .stat-val { color: #1e8449; }
+.stat-card.time .stat-val { color: #8e44ad; }
+
+/* Result */
+.result-area { min-height: 0; }
+.result-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  padding: 14px 24px;
+  background: #f0fff4;
+  border: 2px solid #a9dfbf;
+  border-radius: 14px;
+  animation: slide-in 0.3s ease;
+}
+@keyframes slide-in {
+  from { transform: translateY(-8px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+.result-item { font-size: 16px; font-weight: 700; color: #555; }
+.pts-earned  { font-size: 24px; font-weight: 800; color: #e67e22; }
+
+/* Controls */
+.control-row { display: flex; justify-content: center; gap: 14px; }
+
+.btn-start {
+  padding: 14px 52px;
+  background: linear-gradient(135deg, #aed6f1, #d7bde2);
+  border: none;
+  border-radius: 32px;
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 800;
+  color: white;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+  transition: transform 0.15s, box-shadow 0.15s;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+.btn-start:hover { transform: translateY(-2px); box-shadow: 0 7px 18px rgba(0,0,0,0.13); }
+.btn-start:active { transform: translateY(0); }
+
+.btn-stop {
+  padding: 14px 32px;
+  background: #fde8ea;
+  border: 2px solid #f5c2c7;
+  border-radius: 32px;
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 800;
+  color: #842029;
+  cursor: pointer;
+  transition: all 0.15s;
+  display: none;
+}
+.btn-stop:hover { background: #f5c2c7; transform: translateY(-2px); }
+.btn-stop:active { transform: translateY(0); }
+
+/* ===== LEVEL UP OVERLAY ===== */
+.lu-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(174,214,241,0.5);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+.lu-overlay.show { opacity: 1; pointer-events: all; }
+.lu-card {
+  background: white;
+  border-radius: 32px;
+  padding: 52px 72px;
+  text-align: center;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.14);
+  transform: scale(0.78);
+  transition: transform 0.35s cubic-bezier(0.34,1.56,0.64,1);
+}
+.lu-overlay.show .lu-card { transform: scale(1); }
+.lu-stars { font-size: 36px; letter-spacing: 8px; margin-bottom: 8px; }
+.lu-title { font-size: 44px; font-weight: 800; color: #7a6ce0; }
+.lu-level { font-size: 88px; font-weight: 800; color: #f0c030;
+            line-height: 1; text-shadow: 0 4px 16px rgba(240,192,48,0.3); }
+.lu-sub   { font-size: 20px; font-weight: 700; color: #888; margin-top: 4px; }
+
+/* ===== PARTICLES ===== */
+.particle {
+  position: fixed;
+  pointer-events: none;
+  z-index: 99;
+  font-size: 26px;
+  animation: float-up 1s ease forwards;
+}
+@keyframes float-up {
+  0%   { transform: translateY(0) rotate(0deg) scale(1);     opacity: 1; }
+  100% { transform: translateY(-130px) rotate(360deg) scale(0.3); opacity: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-title">🐾 わんわんタイピング</div>
+  <div class="level-badge" id="level-badge">Lv.1</div>
+  <div class="points-area">
+    <div class="points-label" id="pts-label">0 pts</div>
+    <div class="points-bar-wrap">
+      <div class="points-bar" id="pts-bar" style="width:0%"></div>
+    </div>
+  </div>
+</header>
+
+<!-- LEVEL UP OVERLAY -->
+<div class="lu-overlay" id="lu-overlay">
+  <div class="lu-card">
+    <div class="lu-stars">⭐⭐⭐</div>
+    <div class="lu-title">LEVEL UP！</div>
+    <div class="lu-level" id="lu-num">2</div>
+    <div class="lu-sub">わんわん！すごいぞ！</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- LEFT -->
+  <div class="left-panel">
+    <div class="speech-bubble" id="bubble">
+      スタートを押して<br>タイピングを始めよう！
+    </div>
+
+    <div class="dog-wrap" id="dog-wrap">
+      <div class="dog idle" id="dog">
+        <div class="dog-head">
+          <div class="dog-ear dog-ear-l"></div>
+          <div class="dog-ear dog-ear-r"></div>
+          <div class="dog-blush-l"></div>
+          <div class="dog-blush-r"></div>
+          <div class="dog-inner">
+            <div class="dog-eyes">
+              <div class="eye"></div>
+              <div class="eye"></div>
+            </div>
+            <div class="dog-nose"></div>
+            <div class="dog-mouth"></div>
+          </div>
+        </div>
+        <div class="dog-body">
+          <div class="dog-tail"></div>
+        </div>
+        <div class="dog-paws">
+          <div class="paw"></div>
+          <div class="paw"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="difficulty-row">
+      <div class="diff-label">難易度</div>
+      <div class="diff-buttons">
+        <button class="diff-btn easy active" onclick="setDiff('easy')">かんたん</button>
+        <button class="diff-btn normal"      onclick="setDiff('normal')">ふつう</button>
+        <button class="diff-btn hard"        onclick="setDiff('hard')">むずかしい</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="right-panel">
+
+    <div class="typing-card">
+      <div class="ja-display" id="ja-display"></div>
+      <div class="ro-divider" id="ro-divider" style="display:none"></div>
+      <div class="typing-display" id="typing-display">
+        <span class="typing-hint">▶ スタートを押してね！</span>
+      </div>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat-card wpm">
+        <div class="stat-val" id="s-wpm">0</div>
+        <div class="stat-lbl">WPM</div>
+      </div>
+      <div class="stat-card acc">
+        <div class="stat-val" id="s-acc">100%</div>
+        <div class="stat-lbl">正確率</div>
+      </div>
+      <div class="stat-card time">
+        <div class="stat-val" id="s-time">0.0s</div>
+        <div class="stat-lbl">タイム</div>
+      </div>
+    </div>
+
+    <div class="result-area" id="result-area"></div>
+
+    <div class="control-row">
+      <button class="btn-stop" id="btn-stop" onclick="stopGame()">← 戻る</button>
+      <button class="btn-start" id="btn-start" onclick="startGame()">▶ スタート</button>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── PROMPTS (Japanese + romaji) ───────────────────────
+// ん before consonant (not n/m/y) → "n"
+// ん before vowel/n/m/y or end    → "nn"
+// っ doubles the next consonant
+const PROMPTS = {
+  easy: [
+    { ja: 'いぬ だいすき',       ro: 'inu daisuki' },
+    { ja: 'わんわん あそぼ',      ro: 'wanwan asobo' },
+    { ja: 'いぬは かわいい',      ro: 'inuha kawaii' },
+    { ja: 'おすわり できた',      ro: 'osuwari dekita' },
+    { ja: 'しっぽが かわいい',    ro: 'shippoga kawaii' },
+    { ja: 'まいにち さんぽ',      ro: 'mainichi sanpo' },
+    { ja: 'いいこ だね',          ro: 'iiko dane' },
+    { ja: 'いぬと あそぶ',        ro: 'inuto asobu' },
+    { ja: 'おやつの じかん',      ro: 'oyatsuno jikan' },
+    { ja: 'てを なめなめ',        ro: 'tewo namename' },
+  ],
+  normal: [
+    { ja: 'いぬと ねこは なかよし です',          ro: 'inuto nekowa nakayoshi desu' },
+    { ja: 'しっぽを ふると うれしい きもち',       ro: 'shippowo furuto ureshii kimochi' },
+    { ja: 'うちの いぬは とても かしこい',          ro: 'uchino inuha totemo kashikoi' },
+    { ja: 'まいにち うんどうすると いぬも げんき',  ro: 'mainichi undousuruto inumo genki' },
+    { ja: 'いぬが ほえると たのしい きもち',        ro: 'inuga hoeruto tanoshii kimochi' },
+    { ja: 'いぬと いっしょに そとへ いこう',        ro: 'inuto isshoni sotohe ikou' },
+    { ja: 'れんしゅうすれば きっとうまくなる',      ro: 'renshuusureba kittoumakunaru' },
+    { ja: 'わんわん いぬは みんなが すきだよ',      ro: 'wanwan inuha minnaga sukidayo' },
+  ],
+  hard: [
+    { ja: 'いぬは ひとの いちばんよい ともだちです',               ro: 'inuha hitono ichibanyoi tomodachidesu' },
+    { ja: 'いぬの しっぽは きもちを あらわしています',             ro: 'inuno shippowa kimochowo arawashiteimasu' },
+    { ja: 'しっかり れんしゅうすれば タイピングが じょうずになるよ', ro: 'shikkari renshuusureba taipinguga jouzuninaruyo' },
+    { ja: 'まいにち すこしずつ れんしゅうして じょうずになろう',    ro: 'mainichi sukoshizutsu renshuushite jouzuninarou' },
+    { ja: 'いぬは かしこくて やさしい すてきな どうぶつです',       ro: 'inuha kashikokute yasashii sutekina doubutsudesu' },
+  ]
+};
+
+const BUBBLE = {
+  idle:    ['スタートを押して\nタイピングを始めよう！', 'いっしょに\nれんしゅうしよう！', 'わんわん！\nがんばろう！'],
+  typing:  ['がんばれ！\nわんわん！', 'ていねいに\nうっていこう！', 'ファイト！\nわんわん！'],
+  done:    ['やったね！\nすごいぞ！', 'かんぺき！\nわんわん！', 'だいせいこう！\nえらい！'],
+  stop:    ['またね！\nわんわん！', 'やすんで\nまたがんばろう！'],
+  levelup: ['レベルアップ！\nわんわん！！！'],
+};
+
+const LV_TH = [0,100,250,450,700,1000,1400,1900,2500,3200,
+               4000,4900,5900,7000,8200,9500,10900,12400,14000,16000];
+
+// ─── STATE ────────────────────────────────────────────
+const S = {
+  diff: 'easy',
+  status: 'idle',   // idle | playing | done
+  ja: '', ro: '',
+  pos: 0, errors: 0, keys: 0,
+  t0: null, timerID: null,
+  level: 1, pts: 0, usedIdx: [],
+};
+
+// ─── AUDIO ────────────────────────────────────────────
+let actx = null;
+function getCtx() {
+  if (!actx) actx = new (window.AudioContext || window.webkitAudioContext)();
+  return actx;
+}
+function tone(freq, dur, type='sine', vol=0.1) {
+  try {
+    const c=getCtx(), o=c.createOscillator(), g=c.createGain();
+    o.connect(g); g.connect(c.destination);
+    o.frequency.value=freq; o.type=type;
+    g.gain.setValueAtTime(vol, c.currentTime);
+    g.gain.exponentialRampToValueAtTime(0.001, c.currentTime+dur);
+    o.start(); o.stop(c.currentTime+dur);
+  } catch(e){}
+}
+const sndCorrect  = () => tone(880, 0.06, 'sine', 0.08);
+const sndWrong    = () => tone(160, 0.13, 'sawtooth', 0.08);
+const sndComplete = () => [523,659,784,1046].forEach((f,i)=>setTimeout(()=>tone(f,0.2),i*110));
+const sndLevelUp  = () => [523,659,784,1046,1318].forEach((f,i)=>setTimeout(()=>tone(f,0.25,'sine',0.13),i*100));
+
+// ─── HELPERS ──────────────────────────────────────────
+const $   = id  => document.getElementById(id);
+const rnd = arr => arr[Math.floor(Math.random()*arr.length)];
+const setExpr = n => $('dog').className = `dog ${n}`;
+const setBubble = t => $('bubble').innerHTML = t.replace(/\n/g,'<br>');
+
+// ─── DIFFICULTY ───────────────────────────────────────
+function setDiff(d) {
+  S.diff = d;
+  document.querySelectorAll('.diff-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelector(`.diff-btn.${d}`).classList.add('active');
+  if (S.status !== 'idle') stopGame();
+}
+
+// ─── GAME ─────────────────────────────────────────────
+function pickPrompt() {
+  const pool = PROMPTS[S.diff];
+  if (S.usedIdx.length >= pool.length) S.usedIdx = [];
+  let i;
+  do { i = Math.floor(Math.random()*pool.length); } while(S.usedIdx.includes(i));
+  S.usedIdx.push(i);
+  return pool[i];
+}
+
+function startGame() {
+  const p = pickPrompt();
+  S.status = 'playing';
+  S.ja = p.ja;
+  S.ro = p.ro.replace(/ /g, '');
+  S.pos = 0; S.errors = 0; S.keys = 0; S.t0 = null;
+
+  clearInterval(S.timerID);
+  S.timerID = setInterval(tickTimer, 100);
+
+  $('ja-display').textContent = S.ja;
+  $('ro-divider').style.display = '';
+  renderText();
+
+  $('s-wpm').textContent  = '0';
+  $('s-acc').textContent  = '100%';
+  $('s-time').textContent = '0.0s';
+  $('result-area').innerHTML = '';
+
+  $('btn-stop').style.display  = 'block';
+  $('btn-start').textContent = '↺ リトライ';
+
+  setExpr('typing');
+  setBubble(rnd(BUBBLE.typing));
+}
+
+function stopGame() {
+  S.status = 'idle';
+  clearInterval(S.timerID);
+  S.t0 = null;
+
+  $('btn-stop').style.display = 'none';
+  $('btn-start').textContent  = '▶ スタート';
+  $('ja-display').textContent = '';
+  $('ro-divider').style.display = 'none';
+  $('typing-display').innerHTML = '<span class="typing-hint">▶ スタートを押してね！</span>';
+  $('s-wpm').textContent  = '0';
+  $('s-acc').textContent  = '100%';
+  $('s-time').textContent = '0.0s';
+  $('result-area').innerHTML = '';
+
+  setExpr('idle');
+  setBubble(rnd(BUBBLE.stop));
+}
+
+function renderText() {
+  const html = S.ro.split('').map((c,i) => {
+    const ch = c === ' ' ? '&nbsp;' : c;
+    if (i < S.pos)   return `<span class="ch correct">${ch}</span>`;
+    if (i === S.pos) return `<span class="ch current">${ch}</span>`;
+    return `<span class="ch">${ch}</span>`;
+  }).join('');
+  $('typing-display').innerHTML = html;
+}
+
+function tickTimer() {
+  if (!S.t0) return;
+  const sec = (Date.now()-S.t0)/1000;
+  $('s-time').textContent = sec.toFixed(1)+'s';
+  if (sec > 0.5) $('s-wpm').textContent = Math.round((S.pos/5)/(sec/60));
+}
+
+function calcAcc() {
+  return S.keys ? Math.round(((S.keys-S.errors)/S.keys)*100) : 100;
+}
+
+function finish() {
+  S.status = 'done';
+  clearInterval(S.timerID);
+
+  const sec = (Date.now()-S.t0)/1000;
+  const wpm = Math.round((S.ro.length/5)/(sec/60));
+  const acc = calcAcc();
+
+  $('s-wpm').textContent  = wpm;
+  $('s-acc').textContent  = acc+'%';
+  $('s-time').textContent = sec.toFixed(1)+'s';
+
+  const base = {easy:10, normal:20, hard:35}[S.diff];
+  const wpmBonus = Math.max(0, wpm - {easy:30, normal:25, hard:20}[S.diff]);
+  const accBonus = acc>=95?10 : acc>=85?5 : acc>=75?2 : 0;
+  const earned = base + Math.floor(wpmBonus*0.5) + accBonus;
+
+  setExpr('happy');
+  setBubble(rnd(BUBBLE.done));
+  sndComplete();
+
+  $('result-area').innerHTML = `
+    <div class="result-row">
+      <div class="result-item">⏱ ${sec.toFixed(1)}s</div>
+      <div class="result-item">💨 WPM: <strong>${wpm}</strong></div>
+      <div class="result-item">🎯 ${acc}%</div>
+      <div class="pts-earned">+${earned} pts ✨</div>
+    </div>`;
+
+  $('btn-stop').style.display = 'none';
+  $('btn-start').textContent  = '▶ 次の問題';
+
+  addPts(earned);
+}
+
+// ─── KEYDOWN ──────────────────────────────────────────
+document.addEventListener('keydown', e => {
+  if (S.status !== 'playing') return;
+  if (e.ctrlKey||e.altKey||e.metaKey) return;
+  if (e.key === 'Tab') { e.preventDefault(); return; }
+  if (e.key === ' ') e.preventDefault();
+
+  if (e.key === 'Backspace') {
+    if (S.pos > 0) { S.pos--; renderText(); }
+    return;
+  }
+  if (e.key.length !== 1) return;
+
+  if (!S.t0) S.t0 = Date.now();
+
+  const expected = S.ro[S.pos];
+  S.keys++;
+
+  if (e.key === expected) {
+    S.pos++;
+    sndCorrect();
+    if (S.pos % 6 === 0) {
+      setExpr('happy');
+      setTimeout(()=>{ if(S.status==='playing') setExpr('typing'); }, 300);
+    }
+    if (S.pos >= S.ro.length) { renderText(); finish(); return; }
+  } else {
+    S.errors++;
+    sndWrong();
+
+    const dw = $('dog-wrap');
+    dw.classList.remove('shake');
+    void dw.offsetWidth;
+    dw.classList.add('shake');
+    setTimeout(()=>dw.classList.remove('shake'), 300);
+
+    setExpr('error');
+    setTimeout(()=>{ if(S.status==='playing') setExpr('typing'); }, 380);
+
+    const spans = $('typing-display').querySelectorAll('.ch');
+    if (spans[S.pos]) {
+      spans[S.pos].classList.add('wrong');
+      setTimeout(()=>spans[S.pos]&&spans[S.pos].classList.remove('wrong'), 160);
+    }
+  }
+
+  renderText();
+  $('s-acc').textContent = calcAcc()+'%';
+});
+
+// ─── POINTS & LEVEL ───────────────────────────────────
+function addPts(earned) {
+  const prevLv = S.level;
+  S.pts += earned;
+  let newLv = 1;
+  for (let i=LV_TH.length-1; i>=0; i--) {
+    if (S.pts >= LV_TH[i]) { newLv = i+1; break; }
+  }
+  S.level = Math.min(newLv, 20);
+  updateBar();
+  if (S.level > prevLv) setTimeout(()=>showLevelUp(S.level), 700);
+}
+
+function updateBar() {
+  const lv   = S.level;
+  const cur  = LV_TH[lv-1] || 0;
+  const next = lv < LV_TH.length ? LV_TH[lv] : cur+1;
+  const pct  = Math.min(100, ((S.pts-cur)/(next-cur))*100);
+  $('level-badge').textContent = `Lv.${lv}`;
+  $('pts-bar').style.width     = pct+'%';
+  $('pts-label').textContent   = `${S.pts} pts`;
+}
+
+function showLevelUp(lv) {
+  setExpr('levelup');
+  setBubble(BUBBLE.levelup[0]);
+  sndLevelUp();
+  spawnParticles();
+  $('lu-num').textContent = lv;
+  const ov = $('lu-overlay');
+  ov.classList.add('show');
+  setTimeout(()=>{ ov.classList.remove('show'); setExpr('idle'); setBubble(rnd(BUBBLE.idle)); }, 2800);
+}
+
+// ─── PARTICLES ────────────────────────────────────────
+function spawnParticles() {
+  const set = ['⭐','✨','🎉','🐾','💛','🌟','🎊'];
+  for (let i=0; i<16; i++) {
+    setTimeout(()=>{
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.textContent = rnd(set);
+      p.style.left = (Math.random()*window.innerWidth)+'px';
+      p.style.top  = (Math.random()*window.innerHeight*0.7+window.innerHeight*0.1)+'px';
+      document.body.appendChild(p);
+      setTimeout(()=>p.remove(), 1100);
+    }, i*65);
+  }
+}
+
+// ─── INIT ─────────────────────────────────────────────
+updateBar();
+</script>
+</body>
+</html>
