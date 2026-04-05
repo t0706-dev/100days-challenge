@@ -555,6 +555,35 @@ function generate() {
   renderOutput(palettes);
 }
 
+// ============================================================
+// 使い方モーダル
+// ============================================================
+
+/**
+ * モーダルを開く
+ */
+function openModal() {
+  const overlay = document.getElementById('modalOverlay');
+  overlay.hidden = false;
+  // フォーカスを閉じるボタンに当てる（アクセシビリティ）
+  document.getElementById('modalClose').focus();
+}
+
+/**
+ * モーダルを閉じる
+ */
+function closeModal() {
+  const overlay = document.getElementById('modalOverlay');
+  overlay.hidden = true;
+  // フォーカスを使い方ボタンに戻す
+  document.getElementById('helpBtn').focus();
+}
+
+
+// ============================================================
+// アプリ初期化
+// ============================================================
+
 /**
  * アプリの初期化（DOMContentLoaded 後に呼ばれる）
  */
@@ -574,6 +603,22 @@ function init() {
 
   // 提案ボタン
   document.getElementById('generateBtn').addEventListener('click', generate);
+
+  // 使い方モーダル：開く
+  document.getElementById('helpBtn').addEventListener('click', openModal);
+
+  // 使い方モーダル：✕ボタンで閉じる
+  document.getElementById('modalClose').addEventListener('click', closeModal);
+
+  // 使い方モーダル：オーバーレイ（背景）クリックで閉じる
+  document.getElementById('modalOverlay').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  // 使い方モーダル：Escキーで閉じる
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeModal();
+  });
 
   // 初期表示（ページロード時に即座に提案を出す）
   generate();

@@ -40,6 +40,7 @@ body {
 .app-header {
   text-align: center;
   margin-bottom: 28px;
+  position: relative;
 }
 
 .app-header h1 {
@@ -53,6 +54,239 @@ body {
 .subtitle {
   color: var(--text-muted);
   font-size: 0.92rem;
+  margin-bottom: 12px;
+}
+
+/* 使い方ボタン */
+.help-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 10px;
+  padding: 6px 16px;
+  background: transparent;
+  border: 1.5px solid var(--border);
+  border-radius: 20px;
+  font-family: inherit;
+  font-size: 0.84rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 0.18s, color 0.18s, background 0.18s;
+}
+
+.help-btn:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #eef4fd;
+}
+
+/* ============================================================
+   モーダル
+   ============================================================ */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  /* hidden 属性で非表示、JS で display を切り替える */
+}
+
+.modal-overlay[hidden] {
+  display: none;
+}
+
+.modal {
+  background: var(--surface);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 640px;
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.18);
+  overflow: hidden;
+}
+
+/* モーダルヘッダー */
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.modal-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modal-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.modal-close:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* モーダルボディ（スクロール可） */
+.modal-body {
+  padding: 24px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ---- STEP ブロック ---- */
+.help-step {
+  padding: 4px 0 20px;
+}
+
+.help-step-label {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--primary);
+  background: #eef4fd;
+  padding: 2px 10px;
+  border-radius: 20px;
+  margin-bottom: 8px;
+}
+
+.help-step-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.help-step-desc {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin-bottom: 12px;
+}
+
+.help-step-desc strong {
+  color: var(--text);
+}
+
+.help-step-desc code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.82rem;
+  background: #f0f4f8;
+  padding: 1px 6px;
+  border-radius: 4px;
+  color: var(--text);
+}
+
+.help-step-desc em {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* ペルソナ説明グリッド */
+.help-persona-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.help-persona-item {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+.help-persona-item strong {
+  font-size: 0.88rem;
+  color: var(--text);
+}
+
+.help-persona-icon {
+  font-size: 1.2rem;
+}
+
+/* パターン説明リスト */
+.help-pattern-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.help-pattern-item {
+  font-size: 0.86rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  padding: 8px 12px;
+  background: var(--bg);
+  border-left: 3px solid var(--border);
+  border-radius: 0 6px 6px 0;
+}
+
+.help-pattern-item strong {
+  color: var(--text);
+}
+
+.help-pattern-item code {
+  font-family: 'Courier New', monospace;
+  font-size: 0.8rem;
+  background: #e8edf3;
+  padding: 1px 5px;
+  border-radius: 3px;
+  color: var(--text);
+}
+
+.help-pattern-item em {
+  font-style: normal;
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* 区切り線 */
+.help-divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 4px 0 20px;
+}
+
+@media (max-width: 480px) {
+  .help-persona-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .modal {
+    max-height: 92vh;
+  }
 }
 
 /* ============================================================

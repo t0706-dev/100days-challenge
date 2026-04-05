@@ -14,7 +14,103 @@
     <header class="app-header">
       <h1>🎨 カラーパレット生成</h1>
       <p class="subtitle">ペルソナとベースカラーを選んで、Webデザイン向けの配色を提案します</p>
+      <button class="help-btn" id="helpBtn">？ 使い方</button>
     </header>
+
+    <!-- 使い方モーダル -->
+    <div class="modal-overlay" id="modalOverlay" role="dialog" aria-modal="true" aria-labelledby="modalTitle" hidden>
+      <div class="modal">
+        <div class="modal-header">
+          <h2 class="modal-title" id="modalTitle">📖 使い方</h2>
+          <button class="modal-close" id="modalClose" aria-label="閉じる">✕</button>
+        </div>
+        <div class="modal-body">
+
+          <!-- STEP 1 -->
+          <div class="help-step">
+            <div class="help-step-label">STEP 1</div>
+            <h3 class="help-step-title">ペルソナを選ぶ</h3>
+            <p class="help-step-desc">
+              作りたいWebサイトの<strong>雰囲気・ターゲット</strong>を選びます。<br>
+              ペルソナは配色の「方向性」を決めます。彩度・明度・コントラストの強さが変わります。
+            </p>
+            <div class="help-persona-grid">
+              <div class="help-persona-item">
+                <span class="help-persona-icon">💼</span>
+                <strong>ビジネス</strong>
+                <span>落ち着き・信頼感。彩度控えめで明度中〜高め。</span>
+              </div>
+              <div class="help-persona-item">
+                <span class="help-persona-icon">🎈</span>
+                <strong>子ども向け</strong>
+                <span>明るく親しみやすい。彩度高めで楽しい印象。</span>
+              </div>
+              <div class="help-persona-item">
+                <span class="help-persona-icon">✨</span>
+                <strong>高級感</strong>
+                <span>深みと品格。低彩度・暗めのトーンで上品に。</span>
+              </div>
+              <div class="help-persona-item">
+                <span class="help-persona-icon">◻</span>
+                <strong>シンプル</strong>
+                <span>余白と静けさ。色の主張を抑えミニマルに。</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="help-divider"></div>
+
+          <!-- STEP 2 -->
+          <div class="help-step">
+            <div class="help-step-label">STEP 2</div>
+            <h3 class="help-step-title">ベースカラーを選ぶ</h3>
+            <p class="help-step-desc">
+              使いたい色の<strong>色相（何色か）</strong>をカラーピッカーで指定します。<br>
+              明度や彩度はペルソナに応じて自動調整されるので、<strong>おおまかな色みだけ決めればOK</strong>です。
+            </p>
+          </div>
+
+          <div class="help-divider"></div>
+
+          <!-- STEP 3 -->
+          <div class="help-step">
+            <div class="help-step-label">STEP 3</div>
+            <h3 class="help-step-title">「提案する」を押す → 3パターン比較</h3>
+            <p class="help-step-desc">
+              同じペルソナ × ベースカラーで、雰囲気が少し異なる3案が表示されます。
+            </p>
+            <div class="help-pattern-list">
+              <div class="help-pattern-item"><strong>パターン A</strong> — 安全で使いやすい標準案</div>
+              <div class="help-pattern-item"><strong>パターン B</strong> — コントラスト強め・メリハリのある案</div>
+              <div class="help-pattern-item"><strong>パターン C</strong> — やわらかめ・落ち着いた案</div>
+            </div>
+          </div>
+
+          <div class="help-divider"></div>
+
+          <!-- STEP 4 -->
+          <div class="help-step">
+            <div class="help-step-label">STEP 4</div>
+            <h3 class="help-step-title">CSSをコピーして使う</h3>
+            <p class="help-step-desc">
+              各パターンに2種類のコピーボタンがあります。
+            </p>
+            <div class="help-pattern-list">
+              <div class="help-pattern-item">
+                <strong>変数CSS をコピー</strong> —
+                <code>:root { --bg: ... }</code> 形式。汎用プロジェクト向け。
+              </div>
+              <div class="help-pattern-item">
+                <strong>WordPress用CSS をコピー</strong> —
+                変数 ＋ <code>body</code> / <code>.site-header</code> 等のセレクタ付き。<br>
+                WordPressの <em>外観 › カスタマイズ › 追加CSS</em> にそのまま貼れます。
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /.modal-body -->
+      </div><!-- /.modal -->
+    </div><!-- /.modal-overlay -->
 
     <!-- 入力エリア -->
     <section class="input-section">
