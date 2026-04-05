@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>パスワード生成器 | Day10</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="container">
+    <header class="header">
+      <h1 class="header__title">パスワード生成器</h1>
+      <p class="header__subtitle">安全なパスワードを簡単に作成</p>
+    </header>
+
+    <main>
+
+      <!-- 出力エリア -->
+      <section class="card output-area">
+
+        <div class="password-display">
+          <input
+            type="password"
+            id="password-field"
+            class="password-field"
+            readonly
+            placeholder="生成されたパスワードが表示されます"
+            aria-label="生成されたパスワード"
+          />
+          <button id="toggle-visibility" class="icon-btn" title="表示切り替え" aria-label="パスワードの表示切り替え">
+            <!-- 目のアイコン（非表示状態） -->
+            <svg id="icon-eye" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+            <!-- 目線ありアイコン（表示状態） -->
+            <svg id="icon-eye-off" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              style="display:none;">
+              <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
+              <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
+              <line x1="1" y1="1" x2="23" y2="23"/>
+            </svg>
+          </button>
+          <button id="copy-btn" class="icon-btn" title="コピー" aria-label="パスワードをコピー">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- フィードバックメッセージ -->
+        <p id="message" class="message" aria-live="polite"></p>
+
+        <!-- 強度表示 -->
+        <div class="strength-area" aria-label="パスワード強度">
+          <div class="strength-bar">
+            <div id="strength-fill" class="strength-fill"></div>
+          </div>
+          <span id="strength-label" class="strength-label">-</span>
+        </div>
+
+      </section>
+
+      <!-- 設定エリア -->
+      <section class="card settings-area">
+
+        <!-- 文字数スライダー -->
+        <div class="setting-row">
+          <label for="length-slider" class="setting-label">文字数</label>
+          <div class="slider-group">
+            <input
+              type="range"
+              id="length-slider"
+              min="8"
+              max="64"
+              value="16"
+              class="slider"
+              aria-label="パスワードの文字数"
+            />
+            <span id="length-display" class="length-display">16</span>
+          </div>
+        </div>
+
+        <!-- 文字種チェックボックス -->
+        <div class="setting-row">
+          <span class="setting-label">文字種</span>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" id="use-lower" checked />
+              英小文字 <span class="char-example">(a-z)</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="use-upper" checked />
+              英大文字 <span class="char-example">(A-Z)</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="use-number" checked />
+              数字 <span class="char-example">(0-9)</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="use-symbol" />
+              記号 <span class="char-example">(!@#$…)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- 似た文字の除外 -->
+        <div class="setting-row">
+          <span class="setting-label">オプション</span>
+          <label class="checkbox-label">
+            <input type="checkbox" id="exclude-similar" />
+            似た文字を除外 <span class="char-example">(0, O, o, 1, l, I)</span>
+          </label>
+        </div>
+
+      </section>
+
+      <!-- 操作エリア -->
+      <div class="action-area">
+        <button id="generate-btn" class="generate-btn">生成する</button>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

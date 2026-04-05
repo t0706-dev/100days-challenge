@@ -1,0 +1,318 @@
+/* ===========================
+   リセット・基本設定
+=========================== */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 15px;
+  background-color: #f4f6f9;
+  color: #2c2c2c;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 40px 16px 60px;
+}
+
+/* ===========================
+   レイアウト
+=========================== */
+.container {
+  width: 100%;
+  max-width: 560px;
+}
+
+/* ===========================
+   ヘッダー
+=========================== */
+.header {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.header__title {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  letter-spacing: 0.02em;
+}
+
+.header__subtitle {
+  margin-top: 6px;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+/* ===========================
+   カード
+=========================== */
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+}
+
+/* ===========================
+   出力エリア
+=========================== */
+.password-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.password-field {
+  flex: 1;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1.1rem;
+  letter-spacing: 0.06em;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #1e293b;
+  outline: none;
+  min-width: 0;
+  /* テキスト選択しやすくする */
+  cursor: text;
+}
+
+.password-field:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.12);
+}
+
+/* アイコンボタン（コピー・表示切り替え） */
+.icon-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #64748b;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.icon-btn:hover {
+  background: #f1f5f9;
+  color: #334155;
+  border-color: #94a3b8;
+}
+
+.icon-btn:active {
+  background: #e2e8f0;
+}
+
+/* ===========================
+   フィードバックメッセージ
+=========================== */
+.message {
+  min-height: 20px;
+  margin-top: 10px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #16a34a;
+  transition: opacity 0.3s;
+}
+
+.message.error {
+  color: #dc2626;
+}
+
+/* ===========================
+   強度バー
+=========================== */
+.strength-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.strength-bar {
+  flex: 1;
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.strength-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: 99px;
+  transition: width 0.4s ease, background-color 0.4s ease;
+}
+
+/* 強度レベル別スタイル */
+.strength-fill.weak   { width: 33%;  background: #ef4444; }
+.strength-fill.medium { width: 66%;  background: #f59e0b; }
+.strength-fill.strong { width: 100%; background: #22c55e; }
+
+.strength-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  min-width: 32px;
+  text-align: right;
+  color: #6b7280;
+}
+
+.strength-label.weak   { color: #ef4444; }
+.strength-label.medium { color: #f59e0b; }
+.strength-label.strong { color: #22c55e; }
+
+/* ===========================
+   設定エリア
+=========================== */
+.settings-area {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.setting-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.setting-label {
+  flex-shrink: 0;
+  width: 72px;
+  padding-top: 2px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #475569;
+}
+
+/* スライダー */
+.slider-group {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.slider {
+  flex: 1;
+  height: 4px;
+  cursor: pointer;
+  accent-color: #6366f1;
+}
+
+.length-display {
+  flex-shrink: 0;
+  width: 36px;
+  text-align: right;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+/* チェックボックス */
+.checkbox-group {
+  flex: 1;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 20px;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox-label input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: #6366f1;
+  cursor: pointer;
+}
+
+.char-example {
+  font-size: 0.78rem;
+  color: #94a3b8;
+}
+
+/* ===========================
+   生成ボタン
+=========================== */
+.action-area {
+  display: flex;
+  justify-content: center;
+}
+
+.generate-btn {
+  width: 100%;
+  max-width: 320px;
+  padding: 14px 0;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+  background: #6366f1;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+
+.generate-btn:hover {
+  background: #4f46e5;
+}
+
+.generate-btn:active {
+  background: #4338ca;
+  transform: scale(0.98);
+}
+
+/* ===========================
+   レスポンシブ（スマホ）
+=========================== */
+@media (max-width: 480px) {
+  body {
+    padding: 24px 12px 40px;
+  }
+
+  .header__title {
+    font-size: 1.35rem;
+  }
+
+  .card {
+    padding: 18px;
+  }
+
+  .password-field {
+    font-size: 0.95rem;
+  }
+
+  .setting-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .setting-label {
+    width: auto;
+    padding-top: 0;
+  }
+
+  .checkbox-group {
+    gap: 8px 16px;
+  }
+}
