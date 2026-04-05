@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>九九れんしゅう</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --pink:         #FFB6C8;
+      --pink-light:   #FFE6F0;
+      --pink-mid:     #FFC8D8;
+      --lavender:     #C8B0F0;
+      --lavender-light: #EDE6FF;
+      --mint:         #A8E6C8;
+      --mint-light:   #D8F8EC;
+      --yellow:       #FFE88A;
+      --bg-start:     #FFE8F4;
+      --bg-end:       #E8F4FF;
+      --text:         #6B4580;
+      --text-light:   #A890B8;
+      --white:        #FFFFFF;
+    }
+
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      background: linear-gradient(160deg, var(--bg-start) 0%, #F4E8FF 50%, var(--bg-end) 100%);
+      height: 100svh;
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      color: var(--text);
+    }
+
+    /* ===== SCREENS ===== */
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: 430px;
+      height: 100svh;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+    }
+    .screen.active { display: flex; }
+
+    /* ===== BUNNY ===== */
+    .bunny {
+      animation: bunnyBounce 0.65s ease-in-out infinite alternate;
+      transform-origin: bottom center;
+    }
+    @keyframes bunnyBounce {
+      from { transform: translateY(0) rotate(-3deg); }
+      to   { transform: translateY(-14px) rotate(3deg); }
+    }
+    .bunny.celebrate {
+      animation: bunnyCelebrate 0.4s ease-in-out infinite alternate;
+    }
+    @keyframes bunnyCelebrate {
+      from { transform: translateY(0) rotate(-12deg) scale(1); }
+      to   { transform: translateY(-22px) rotate(12deg) scale(1.12); }
+    }
+
+    .speech-bubble {
+      background: var(--white);
+      border: 2.5px solid var(--lavender);
+      border-radius: 18px;
+      padding: 7px 13px;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--text);
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(180,130,220,0.18);
+      position: absolute;
+      top: -4px;
+      right: -76px;
+    }
+    .speech-bubble::before {
+      content: '';
+      position: absolute;
+      left: -11px; top: 50%;
+      transform: translateY(-50%);
+      border: 7px solid transparent;
+      border-right-color: var(--lavender);
+    }
+    .speech-bubble::after {
+      content: '';
+      position: absolute;
+      left: -7px; top: 50%;
+      transform: translateY(-50%);
+      border: 5px solid transparent;
+      border-right-color: var(--white);
+    }
+
+    /* ===== HOME SCREEN ===== */
+    #screen-home {
+      justify-content: center;
+      gap: 22px;
+      padding: 28px 24px;
+    }
+
+    .app-title { text-align: center; }
+    .app-title h1 {
+      font-size: 30px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: 1px;
+    }
+    .app-title p {
+      font-size: 13px;
+      color: var(--text-light);
+      margin-top: 5px;
+      font-weight: 700;
+    }
+
+    .home-bunny-row {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 88px;
+      position: relative;
+    }
+
+    .mode-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+      width: 100%;
+    }
+
+    .btn-mode {
+      background: var(--white);
+      border: 2.5px solid var(--pink);
+      border-radius: 22px;
+      padding: 15px 18px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--text);
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(255,140,180,0.18);
+      transition: all 0.18s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-align: left;
+    }
+    .btn-mode:active { transform: scale(0.97); background: var(--pink-light); }
+    .btn-mode .mode-icon { font-size: 28px; flex-shrink: 0; }
+    .btn-mode .mode-label { font-size: 16px; font-weight: 800; }
+    .btn-mode small {
+      display: block;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-light);
+      margin-top: 2px;
+    }
+
+    /* ===== SETUP SCREEN ===== */
+    #screen-setup { justify-content: flex-start; }
+
+    .setup-header {
+      width: 100%;
+      background: var(--white);
+      padding: 14px 18px 12px;
+      border-bottom: 2px solid var(--pink-light);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+    .btn-back {
+      background: var(--pink-light);
+      border: none;
+      border-radius: 12px;
+      width: 36px; height: 36px;
+      font-size: 16px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: background 0.15s;
+    }
+    .btn-back:active { background: var(--pink-mid); }
+    .setup-header h2 {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .setup-content {
+      width: 100%;
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .setup-content::-webkit-scrollbar { width: 3px; }
+    .setup-content::-webkit-scrollbar-thumb { background: var(--pink); border-radius: 99px; }
+
+    .setup-section {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 15px;
+      box-shadow: 0 2px 12px rgba(180,130,220,0.1);
+    }
+    .setup-section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      margin-bottom: 11px;
+    }
+
+    /* Dan checkboxes */
+    .dan-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+    .dan-check { display: none; }
+    .dan-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--lavender-light);
+      border: 2.5px solid transparent;
+      border-radius: 14px;
+      padding: 9px 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .dan-check:checked + .dan-label {
+      background: var(--lavender);
+      border-color: #9060C8;
+      color: var(--white);
+      box-shadow: 0 2px 8px rgba(160,120,220,0.3);
+    }
+    .btn-select-all {
+      background: none;
+      border: none;
+      color: var(--lavender);
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 12px;
+      font-weight: 800;
+      cursor: pointer;
+      margin-top: 9px;
+      padding: 3px 0;
+      display: block;
+    }
+
+    /* Order radios */
+    .order-options { display: flex; flex-direction: column; gap: 7px; }
+    .order-radio { display: none; }
+    .order-label {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      background: var(--pink-light);
+      border: 2.5px solid transparent;
+      border-radius: 14px;
+      padding: 10px 13px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .order-radio:checked + .order-label {
+      background: var(--pink);
+      border-color: #D07090;
+      color: var(--white);
+    }
+    .order-label .icon { font-size: 16px; }
+
+    /* Count radios */
+    .count-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 7px;
+    }
+    .count-radio { display: none; }
+    .count-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--mint-light);
+      border: 2.5px solid transparent;
+      border-radius: 14px;
+      padding: 9px 6px;
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+    }
+    .count-radio:checked + .count-label {
+      background: var(--mint);
+      border-color: #60A878;
+      color: var(--text);
+    }
+
+    /* Start button */
+    .btn-start {
+      width: 100%;
+      background: linear-gradient(135deg, var(--pink) 0%, var(--lavender) 100%);
+      border: none;
+      border-radius: 20px;
+      padding: 15px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--white);
+      cursor: pointer;
+      box-shadow: 0 5px 22px rgba(180,120,210,0.38);
+      transition: all 0.18s;
+      letter-spacing: 1px;
+    }
+    .btn-start:active { transform: scale(0.97); }
+    .btn-start:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* ===== STUDY SCREEN ===== */
+    #screen-study {
+      justify-content: space-between;
+      padding: 16px 20px 26px;
+    }
+
+    .study-top { width: 100%; }
+    .progress-bar-wrap {
+      width: 100%;
+      height: 8px;
+      background: var(--pink-light);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 5px;
+    }
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--pink), var(--lavender));
+      border-radius: 99px;
+      transition: width 0.45s cubic-bezier(0.4,0,0.2,1);
+    }
+    .progress-info {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .progress-text {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-light);
+    }
+    .btn-study-home {
+      background: none;
+      border: none;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-light);
+      cursor: pointer;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      padding: 2px 6px;
+    }
+
+    .study-bunny-row {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 76px;
+      position: relative;
+    }
+    .study-bunny-inner {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    /* Card */
+    .card-area {
+      width: 100%;
+      perspective: 900px;
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 320px;
+      height: 185px;
+      position: relative;
+      transform-style: preserve-3d;
+      transition: transform 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .card.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 26px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(180,120,200,0.18);
+    }
+    .card-front {
+      background: var(--white);
+      border: 3px solid var(--pink-light);
+    }
+    .card-back {
+      background: linear-gradient(145deg, #FFF4FB, #F4EEFF);
+      border: 3px solid var(--lavender);
+      transform: rotateY(180deg);
+    }
+
+    .question-text {
+      font-size: 44px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: 2px;
+    }
+    .answer-display { text-align: center; }
+    .answer-num {
+      font-size: 60px;
+      font-weight: 900;
+      color: var(--text);
+      line-height: 1;
+    }
+    .answer-eq {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-light);
+      margin-top: 6px;
+    }
+
+    /* Study buttons */
+    .study-buttons { width: 100%; display: flex; gap: 12px; }
+
+    .btn-answer {
+      flex: 1;
+      background: linear-gradient(135deg, var(--lavender) 0%, #B090E8 100%);
+      border: none;
+      border-radius: 18px;
+      padding: 15px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--white);
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(160,120,230,0.35);
+      transition: all 0.15s;
+    }
+    .btn-answer:active { transform: scale(0.97); }
+
+    .btn-next {
+      flex: 1;
+      background: linear-gradient(135deg, var(--pink) 0%, #FF90B0 100%);
+      border: none;
+      border-radius: 18px;
+      padding: 15px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 17px;
+      font-weight: 900;
+      color: var(--white);
+      cursor: pointer;
+      box-shadow: 0 4px 18px rgba(255,120,160,0.35);
+      transition: all 0.15s;
+      display: none;
+    }
+    .btn-next.show { display: block; }
+    .btn-next:active { transform: scale(0.97); }
+
+    /* ===== COMPLETE SCREEN ===== */
+    #screen-complete {
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      padding: 30px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #confetti-canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+    }
+
+    .complete-bunny-row {
+      height: 100px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      position: relative;
+      z-index: 1;
+    }
+
+    .complete-card {
+      background: var(--white);
+      border-radius: 28px;
+      padding: 24px 32px;
+      text-align: center;
+      box-shadow: 0 8px 36px rgba(180,120,200,0.2);
+      z-index: 1;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both 0.1s;
+    }
+    @keyframes popIn {
+      from { transform: scale(0.6) rotate(-6deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .complete-card h2 {
+      font-size: 24px;
+      font-weight: 900;
+      color: var(--text);
+    }
+    .complete-card p {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-light);
+      margin-top: 6px;
+    }
+
+    .stars {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      font-size: 32px;
+      z-index: 1;
+    }
+    .star {
+      display: inline-block;
+      animation: starPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    }
+    .star:nth-child(1) { animation-delay: 0.4s; }
+    .star:nth-child(2) { animation-delay: 0.6s; }
+    .star:nth-child(3) { animation-delay: 0.8s; }
+    @keyframes starPop {
+      from { transform: scale(0) rotate(-30deg); opacity: 0; }
+      to   { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+
+    .btn-restart {
+      background: linear-gradient(135deg, var(--pink) 0%, var(--lavender) 100%);
+      border: none;
+      border-radius: 20px;
+      padding: 13px 38px;
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      font-size: 15px;
+      font-weight: 900;
+      color: var(--white);
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(180,120,210,0.35);
+      transition: all 0.18s;
+      z-index: 1;
+    }
+    .btn-restart:active { transform: scale(0.97); }
+  </style>
+</head>
+<body>
+
+<!-- ============ HOME SCREEN ============ -->
+<div id="screen-home" class="screen active">
+
+  <div class="app-title">
+    <h1>🔢 九九れんしゅう</h1>
+    <p>カードをめくって九九をおぼえよう！</p>
+  </div>
+
+  <div class="home-bunny-row">
+    <div style="position:relative; display:inline-flex; align-items:flex-end;">
+      <div class="bunny" id="home-bunny"></div>
+      <div class="speech-bubble" id="home-speech">いっしょにやろう！</div>
+    </div>
+  </div>
+
+  <div class="mode-buttons">
+    <button class="btn-mode" onclick="goSetup('dan')">
+      <span class="mode-icon">📚</span>
+      <div>
+        <div class="mode-label">段を選んで練習</div>
+        <small>1〜9の段からえらべるよ</small>
+      </div>
+    </button>
+    <button class="btn-mode" onclick="goSetup('random')">
+      <span class="mode-icon">🎲</span>
+      <div>
+        <div class="mode-label">ランダムに練習</div>
+        <small>いろんな段をまぜて出題するよ</small>
+      </div>
+    </button>
+  </div>
+
+</div>
+
+<!-- ============ SETUP SCREEN ============ -->
+<div id="screen-setup" class="screen">
+
+  <div class="setup-header">
+    <button class="btn-back" onclick="goHome()">←</button>
+    <h2 id="setup-title">設定</h2>
+  </div>
+
+  <div class="setup-content">
+
+    <!-- 段選択 -->
+    <div class="setup-section" id="section-dan">
+      <div class="setup-section-title">🔢 段をえらぼう（複数OK）</div>
+      <div class="dan-grid">
+        <input type="checkbox" id="d1" class="dan-check" value="1"><label for="d1" class="dan-label">1の段</label>
+        <input type="checkbox" id="d2" class="dan-check" value="2"><label for="d2" class="dan-label">2の段</label>
+        <input type="checkbox" id="d3" class="dan-check" value="3"><label for="d3" class="dan-label">3の段</label>
+        <input type="checkbox" id="d4" class="dan-check" value="4"><label for="d4" class="dan-label">4の段</label>
+        <input type="checkbox" id="d5" class="dan-check" value="5"><label for="d5" class="dan-label">5の段</label>
+        <input type="checkbox" id="d6" class="dan-check" value="6"><label for="d6" class="dan-label">6の段</label>
+        <input type="checkbox" id="d7" class="dan-check" value="7"><label for="d7" class="dan-label">7の段</label>
+        <input type="checkbox" id="d8" class="dan-check" value="8"><label for="d8" class="dan-label">8の段</label>
+        <input type="checkbox" id="d9" class="dan-check" value="9"><label for="d9" class="dan-label">9の段</label>
+      </div>
+      <button class="btn-select-all" id="btn-select-all" onclick="toggleSelectAll()">▶ 全部えらぶ</button>
+    </div>
+
+    <!-- 順番選択 -->
+    <div class="setup-section" id="section-order">
+      <div class="setup-section-title">📋 じゅんばんをえらぼう</div>
+      <div class="order-options">
+        <input type="radio" id="o-asc"  name="order" value="asc"    class="order-radio" checked>
+        <label for="o-asc"  class="order-label"><span class="icon">⬆️</span> 最初から順番に（×1, ×2 …）</label>
+
+        <input type="radio" id="o-desc" name="order" value="desc"   class="order-radio">
+        <label for="o-desc" class="order-label"><span class="icon">⬇️</span> 最後から遡って（×9, ×8 …）</label>
+
+        <input type="radio" id="o-rand" name="order" value="random" class="order-radio">
+        <label for="o-rand" class="order-label"><span class="icon">🔀</span> ランダム</label>
+      </div>
+    </div>
+
+    <!-- 出題数（ランダムモード） -->
+    <div class="setup-section" id="section-count" style="display:none;">
+      <div class="setup-section-title">🔢 出題数をえらぼう</div>
+      <div class="count-grid">
+        <input type="radio" id="c9"  name="count" value="9"  class="count-radio"><label for="c9"  class="count-label">9問</label>
+        <input type="radio" id="c18" name="count" value="18" class="count-radio" checked><label for="c18" class="count-label">18問</label>
+        <input type="radio" id="c27" name="count" value="27" class="count-radio"><label for="c27" class="count-label">27問</label>
+        <input type="radio" id="c36" name="count" value="36" class="count-radio"><label for="c36" class="count-label">36問</label>
+        <input type="radio" id="c45" name="count" value="45" class="count-radio"><label for="c45" class="count-label">45問</label>
+        <input type="radio" id="c81" name="count" value="81" class="count-radio"><label for="c81" class="count-label">全81問</label>
+      </div>
+    </div>
+
+    <button class="btn-start" id="btn-start" onclick="startStudy()">🐰 スタート！</button>
+
+  </div>
+</div>
+
+<!-- ============ STUDY SCREEN ============ -->
+<div id="screen-study" class="screen">
+
+  <div class="study-top">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+    </div>
+    <div class="progress-info">
+      <div class="progress-text" id="progress-text">1 / 9</div>
+      <button class="btn-study-home" onclick="goHome()">🏠 トップ</button>
+    </div>
+  </div>
+
+  <div class="study-bunny-row">
+    <div class="study-bunny-inner">
+      <div class="bunny" id="study-bunny"></div>
+      <div class="speech-bubble" id="study-speech">がんばって！</div>
+    </div>
+  </div>
+
+  <div class="card-area">
+    <div class="card" id="study-card">
+      <div class="card-face card-front">
+        <div class="question-text" id="question-text">2 × 3 = ?</div>
+      </div>
+      <div class="card-face card-back">
+        <div class="answer-display">
+          <div class="answer-num" id="answer-num">6</div>
+          <div class="answer-eq"  id="answer-eq">2 × 3 = 6</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="study-buttons">
+    <button class="btn-answer" id="btn-answer" onclick="showAnswer()">👀 答えをみる</button>
+    <button class="btn-next"   id="btn-next"   onclick="nextQuestion()">つぎへ →</button>
+  </div>
+
+</div>
+
+<!-- ============ COMPLETE SCREEN ============ -->
+<div id="screen-complete" class="screen">
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="complete-bunny-row">
+    <div class="bunny celebrate" id="complete-bunny"></div>
+  </div>
+
+  <div class="complete-card">
+    <h2>🎉 よくがんばったね！</h2>
+    <p id="complete-msg">全部おわったよ！すごい！</p>
+  </div>
+
+  <div class="stars">
+    <span class="star">⭐</span>
+    <span class="star">⭐</span>
+    <span class="star">⭐</span>
+  </div>
+
+  <button class="btn-restart" onclick="goHome()">🏠 トップへもどる</button>
+
+</div>
+
+<script>
+/* ========== BUNNY SVG ========== */
+const BUNNY_SVG = `
+<svg width="72" height="84" viewBox="0 0 72 84" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Left ear -->
+  <ellipse cx="23" cy="20" rx="7.5" ry="17" fill="#F5CCE8" transform="rotate(-12 23 20)"/>
+  <ellipse cx="23" cy="20" rx="4.5" ry="12" fill="#FFB0D0" transform="rotate(-12 23 20)"/>
+  <!-- Right ear -->
+  <ellipse cx="49" cy="20" rx="7.5" ry="17" fill="#F5CCE8" transform="rotate(12 49 20)"/>
+  <ellipse cx="49" cy="20" rx="4.5" ry="12" fill="#FFB0D0" transform="rotate(12 49 20)"/>
+  <!-- Head -->
+  <ellipse cx="36" cy="43" rx="23" ry="21" fill="#FFF0F8"/>
+  <!-- Face glow -->
+  <ellipse cx="36" cy="41" rx="17" ry="15" fill="white" opacity="0.45"/>
+  <!-- Cheeks -->
+  <ellipse cx="24" cy="48" rx="7" ry="4.5" fill="#FFB6C8" opacity="0.65"/>
+  <ellipse cx="48" cy="48" rx="7" ry="4.5" fill="#FFB6C8" opacity="0.65"/>
+  <!-- Eyes (closed happy curves) -->
+  <path d="M29 40 Q32 37 35 40" stroke="#6B4580" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <path d="M37 40 Q40 37 43 40" stroke="#6B4580" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+  <!-- Nose -->
+  <ellipse cx="36" cy="48.5" rx="2.5" ry="2" fill="#FFB6C8"/>
+  <!-- Mouth -->
+  <path d="M32 52 Q36 56 40 52" stroke="#E090B8" stroke-width="1.8" fill="none" stroke-linecap="round"/>
+  <!-- Body -->
+  <ellipse cx="36" cy="71" rx="19" ry="15" fill="#FFF0F8"/>
+  <!-- Tummy -->
+  <ellipse cx="36" cy="72" rx="11" ry="9" fill="white" opacity="0.7"/>
+  <!-- Left arm -->
+  <ellipse cx="18" cy="66" rx="6.5" ry="10" fill="#FFF0F8" transform="rotate(-22 18 66)"/>
+  <!-- Right arm -->
+  <ellipse cx="54" cy="66" rx="6.5" ry="10" fill="#FFF0F8" transform="rotate(22 54 66)"/>
+</svg>`;
+
+/* ========== INIT ========== */
+['home-bunny','study-bunny','complete-bunny'].forEach(id => {
+  document.getElementById(id).innerHTML = BUNNY_SVG;
+});
+
+/* ========== STATE ========== */
+let currentMode = 'dan';
+let questions   = [];
+let currentIdx  = 0;
+let flipped     = false;
+
+const SPEECHES_STUDY = [
+  'がんばって！', 'できるよ！', 'おちついて！',
+  'ゆっくりでいいよ！', 'いいちょうし！', 'ファイト！',
+  'さあつぎは？', 'もうすこしだよ！'
+];
+
+/* ========== NAVIGATION ========== */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goHome() {
+  showScreen('screen-home');
+}
+
+function goSetup(mode) {
+  currentMode = mode;
+  if (mode === 'dan') {
+    document.getElementById('setup-title').textContent = '段を選んで練習';
+    document.getElementById('section-dan').style.display   = 'block';
+    document.getElementById('section-order').style.display = 'block';
+    document.getElementById('section-count').style.display = 'none';
+  } else {
+    document.getElementById('setup-title').textContent = 'ランダム練習';
+    document.getElementById('section-dan').style.display   = 'none';
+    document.getElementById('section-order').style.display = 'none';
+    document.getElementById('section-count').style.display = 'block';
+  }
+  showScreen('screen-setup');
+}
+
+/* ========== SETUP HELPERS ========== */
+let allSelected = false;
+function toggleSelectAll() {
+  allSelected = !allSelected;
+  document.querySelectorAll('.dan-check').forEach(c => c.checked = allSelected);
+  document.getElementById('btn-select-all').textContent =
+    allSelected ? '▶ 全部はずす' : '▶ 全部えらぶ';
+}
+
+/* ========== SHUFFLE ========== */
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+/* ========== GENERATE QUESTIONS ========== */
+function generateQuestions() {
+  questions = [];
+
+  if (currentMode === 'dan') {
+    const selected = Array.from(document.querySelectorAll('.dan-check:checked'))
+                          .map(c => parseInt(c.value));
+    if (selected.length === 0) { alert('段をえらんでね！'); return false; }
+
+    const order = document.querySelector('input[name="order"]:checked').value;
+
+    selected.forEach(dan => {
+      let mults = [1,2,3,4,5,6,7,8,9];
+      if (order === 'desc')   mults = [9,8,7,6,5,4,3,2,1];
+      if (order === 'random') mults = shuffle(mults);
+      mults.forEach(m => questions.push({ a: dan, b: m, ans: dan * m }));
+    });
+
+    if (order === 'random') questions = shuffle(questions);
+
+  } else {
+    const count = parseInt(document.querySelector('input[name="count"]:checked').value);
+    const all = [];
+    for (let a = 1; a <= 9; a++)
+      for (let b = 1; b <= 9; b++)
+        all.push({ a, b, ans: a * b });
+    questions = shuffle(all).slice(0, count);
+  }
+  return true;
+}
+
+/* ========== STUDY ========== */
+function startStudy() {
+  if (!generateQuestions()) return;
+  currentIdx = 0;
+  flipped = false;
+  showScreen('screen-study');
+  loadQuestion();
+}
+
+function loadQuestion() {
+  const q = questions[currentIdx];
+
+  // Reset card
+  const card = document.getElementById('study-card');
+  card.classList.remove('flipped');
+  flipped = false;
+
+  document.getElementById('btn-answer').style.display = 'block';
+  document.getElementById('btn-next').classList.remove('show');
+
+  // Set content
+  document.getElementById('question-text').textContent = `${q.a} × ${q.b} = ?`;
+  document.getElementById('answer-num').textContent    = `${q.ans}`;
+  document.getElementById('answer-eq').textContent     = `${q.a} × ${q.b} = ${q.ans}`;
+
+  // Progress
+  const pct = currentIdx / questions.length * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${currentIdx + 1} / ${questions.length}`;
+
+  // Speech
+  const sp = SPEECHES_STUDY[Math.floor(Math.random() * SPEECHES_STUDY.length)];
+  document.getElementById('study-speech').textContent = sp;
+}
+
+function showAnswer() {
+  if (flipped) return;
+  flipped = true;
+  document.getElementById('study-card').classList.add('flipped');
+  document.getElementById('btn-answer').style.display = 'none';
+  document.getElementById('btn-next').classList.add('show');
+  document.getElementById('study-speech').textContent = 'あってたかな？';
+}
+
+function nextQuestion() {
+  currentIdx++;
+  if (currentIdx >= questions.length) {
+    showComplete();
+  } else {
+    loadQuestion();
+  }
+}
+
+/* ========== COMPLETE ========== */
+function showComplete() {
+  showScreen('screen-complete');
+  document.getElementById('complete-msg').textContent =
+    `${questions.length}問ぜんぶおわったよ！えらいね！`;
+
+  // reset star animations
+  document.querySelectorAll('.star').forEach(s => {
+    s.style.animation = 'none';
+    s.offsetHeight; // reflow
+    s.style.animation = '';
+  });
+
+  launchConfetti();
+}
+
+/* ========== CONFETTI ========== */
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx    = canvas.getContext('2d');
+  canvas.width  = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+
+  const COLORS = ['#FFB6C8','#C8B0F0','#A8E6C8','#FFE88A','#B0D8FF','#FFD0A8'];
+  const pieces = Array.from({ length: 90 }, () => ({
+    x:     Math.random() * canvas.width,
+    y:     Math.random() * -canvas.height * 0.8,
+    w:     Math.random() * 11 + 5,
+    h:     Math.random() * 7  + 4,
+    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+    speed: Math.random() * 3.5 + 1.2,
+    angle: Math.random() * Math.PI * 2,
+    spin:  (Math.random() - 0.5) * 0.14,
+  }));
+
+  let frame = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    pieces.forEach(p => {
+      p.y     += p.speed;
+      p.angle += p.spin;
+      const fade = Math.max(0, 1 - p.y / (canvas.height * 1.1));
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.angle);
+      ctx.globalAlpha = fade;
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.roundRect(-p.w/2, -p.h/2, p.w, p.h, 2);
+      ctx.fill();
+      ctx.restore();
+    });
+    frame++;
+    if (frame < 220) requestAnimationFrame(draw);
+  }
+  draw();
+}
+</script>
+</body>
+</html>
