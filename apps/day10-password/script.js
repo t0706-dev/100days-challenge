@@ -221,6 +221,18 @@ function togglePasswordVisibility() {
  * 生成ボタンを押したときのメイン処理
  */
 function handleGenerate() {
+  // 数値入力欄が範囲外のままボタンを押した場合もエラーにする
+  const inputVal = parseInt(lengthInput.value, 10);
+  if (isNaN(inputVal) || inputVal < 8 || inputVal > 64) {
+    lengthInput.classList.add('error');
+    lengthInput.value = lengthSlider.value; // スライダーの値に戻す
+    lengthInput.classList.remove('error');
+    showMessage('文字数は8〜64の整数で入力してください', true);
+    return;
+  }
+  // 入力欄とスライダーを確実に同期してから生成
+  lengthSlider.value = inputVal;
+
   const password = generatePassword();
 
   if (!password) {
@@ -267,14 +279,13 @@ lengthInput.addEventListener('blur', () => {
   const val = parseInt(raw, 10);
 
   if (raw === '' || isNaN(val) || val < 8 || val > 64) {
+    // エラー表示のみ。リセットは生成ボタン側で行う
     lengthInput.classList.add('error');
     showMessage('文字数は8〜64の整数で入力してください', true);
-    // 入力欄をスライダーの現在値に戻す
-    lengthInput.value = lengthSlider.value;
-    lengthInput.classList.remove('error');
   } else {
     lengthSlider.value = val;
     lengthInput.value  = val;
+    lengthInput.classList.remove('error');
   }
 });
 
