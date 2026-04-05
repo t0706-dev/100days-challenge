@@ -78,7 +78,7 @@ OKが出たら初めて作成を開始する。
 
 ```bash
 cd /Users/yagitakashi/Desktop/claude_dev/tool/100days-challenge
-python log_today.py
+python3 log_today.py
 ```
 
 **② log_today.py で聞かれる内容の一覧（表形式）**
@@ -106,7 +106,7 @@ python log_today.py
 ## 今日の記録をつける
 
 ```bash
-python log_today.py
+python3 log_today.py
 ```
 
 このコマンドを実行すると、対話形式で今日の進捗を入力でき、
