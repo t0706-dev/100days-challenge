@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<!--
+  アイコン生成ツール
+  このファイルをブラウザで開いて「アイコンを生成・保存」ボタンを押すと
+  icons/icon-192.png と icons/icon-512.png 相当のPNGを
+  ダウンロードできます。
+
+  ダウンロードしたファイルを icons/ フォルダに配置してください。
+-->
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>アイコン生成</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    canvas { border: 1px solid #ccc; margin: 8px; }
+    button { margin: 8px; padding: 10px 20px; font-size: 1rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h2>BMIアプリ アイコン生成</h2>
+  <p>下のボタンを押してPNGをダウンロードし、<code>icons/</code>フォルダに入れてください。</p>
+
+  <canvas id="canvas192" width="192" height="192"></canvas>
+  <canvas id="canvas512" width="512" height="512"></canvas>
+  <br/>
+  <button onclick="downloadIcon(192)">icon-192.png をダウンロード</button>
+  <button onclick="downloadIcon(512)">icon-512.png をダウンロード</button>
+
+  <script>
+    function drawIcon(canvas) {
+      const size = canvas.width;
+      const ctx  = canvas.getContext('2d');
+      const r    = size * 0.15; // 角丸半径
+
+      // 背景（角丸）
+      ctx.beginPath();
+      ctx.moveTo(r, 0);
+      ctx.lineTo(size - r, 0);
+      ctx.quadraticCurveTo(size, 0, size, r);
+      ctx.lineTo(size, size - r);
+      ctx.quadraticCurveTo(size, size, size - r, size);
+      ctx.lineTo(r, size);
+      ctx.quadraticCurveTo(0, size, 0, size - r);
+      ctx.lineTo(0, r);
+      ctx.quadraticCurveTo(0, 0, r, 0);
+      ctx.closePath();
+
+      // グラデーション背景
+      const grad = ctx.createLinearGradient(0, 0, size, size);
+      grad.addColorStop(0, '#4caf8a');
+      grad.addColorStop(1, '#3a9070');
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // 絵文字 🏃 を中央に描画
+      const emoji = '🏃';
+      ctx.font      = `${size * 0.52}px serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(emoji, size / 2, size / 2 + size * 0.02);
+    }
+
+    // 両キャンバスに描画
+    const c192 = document.getElementById('canvas192');
+    const c512 = document.getElementById('canvas512');
+    drawIcon(c192);
+    drawIcon(c512);
+
+    function downloadIcon(size) {
+      const canvas = size === 192 ? c192 : c512;
+      const link   = document.createElement('a');
+      link.download = `icon-${size}.png`;
+      link.href     = canvas.toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#4caf8a" />
+  <meta name="description" content="体重とBMIを記録して推移を確認できるアプリです" />
+
+  <!-- PWA関連 -->
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="BMI記録" />
+  <link rel="apple-touch-icon" href="icons/icon-192.png" />
+
+  <title>BMI記録アプリ</title>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== ヘッダー ===== -->
+  <header class="app-header">
+    <div class="header-inner">
+      <span class="header-icon">🏃</span>
+      <h1 class="header-title">BMI記録アプリ</h1>
+    </div>
+  </header>
+
+  <!-- ===== メインコンテンツ ===== -->
+  <main class="main-content">
+
+    <!-- 1. 身長設定カード -->
+    <section class="card" id="section-height">
+      <h2 class="card-title">
+        <span class="card-icon">📏</span> 身長設定
+      </h2>
+      <div class="input-row">
+        <div class="input-group">
+          <label for="input-height" class="input-label">身長</label>
+          <div class="input-with-unit">
+            <input
+              type="number"
+              id="input-height"
+              class="input-field"
+              placeholder="例：170"
+              min="50"
+              max="250"
+              step="0.1"
+            />
+            <span class="unit">cm</span>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="btn-save-height">保存</button>
+      </div>
+      <p class="saved-height-display" id="saved-height-display"></p>
+      <p class="error-msg" id="error-height"></p>
+    </section>
+
+    <!-- 2. 体重入力カード -->
+    <section class="card" id="section-weight">
+      <h2 class="card-title">
+        <span class="card-icon">⚖️</span> 体重を記録する
+      </h2>
+      <div class="input-row">
+        <div class="input-group">
+          <label for="input-date" class="input-label">日付</label>
+          <input
+            type="date"
+            id="input-date"
+            class="input-field"
+          />
+        </div>
+        <div class="input-group">
+          <label for="input-weight" class="input-label">体重</label>
+          <div class="input-with-unit">
+            <input
+              type="number"
+              id="input-weight"
+              class="input-field"
+              placeholder="例：65.0"
+              min="1"
+              max="300"
+              step="0.1"
+            />
+            <span class="unit">kg</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-accent btn-full" id="btn-save-record">記録する</button>
+      <p class="error-msg" id="error-weight"></p>
+    </section>
+
+    <!-- 3. 最新結果表示カード -->
+    <section class="card" id="section-latest" style="display: none;">
+      <h2 class="card-title">
+        <span class="card-icon">📊</span> 最新の結果
+      </h2>
+      <div class="result-display">
+        <div class="result-item">
+          <span class="result-label">体重</span>
+          <span class="result-value" id="result-weight">--</span>
+          <span class="result-unit">kg</span>
+        </div>
+        <div class="result-divider"></div>
+        <div class="result-item result-bmi">
+          <span class="result-label">BMI</span>
+          <span class="result-value bmi-value" id="result-bmi">--</span>
+        </div>
+        <div class="result-divider"></div>
+        <div class="result-item">
+          <span class="result-label">判定</span>
+          <span class="result-badge" id="result-category">--</span>
+        </div>
+      </div>
+      <p class="ideal-weight-text" id="ideal-weight-text"></p>
+    </section>
+
+    <!-- 4. 体重推移グラフ -->
+    <section class="card" id="section-chart-weight" style="display: none;">
+      <h2 class="card-title">
+        <span class="card-icon">📈</span> 体重の推移
+      </h2>
+      <div class="chart-container">
+        <canvas id="chart-weight"></canvas>
+      </div>
+    </section>
+
+    <!-- 5. BMI推移グラフ -->
+    <section class="card" id="section-chart-bmi" style="display: none;">
+      <h2 class="card-title">
+        <span class="card-icon">📉</span> BMIの推移
+      </h2>
+      <div class="chart-container">
+        <canvas id="chart-bmi"></canvas>
+      </div>
+    </section>
+
+    <!-- 6. 履歴一覧カード -->
+    <section class="card" id="section-history" style="display: none;">
+      <div class="history-header">
+        <h2 class="card-title">
+          <span class="card-icon">📋</span> 記録履歴
+        </h2>
+        <button class="btn btn-danger btn-sm" id="btn-clear-all">全件削除</button>
+      </div>
+      <div class="history-list" id="history-list">
+        <!-- JS で動的生成 -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===== フッター ===== -->
+  <footer class="app-footer">
+    <p>Day 11 / 100日アプリチャレンジ</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
