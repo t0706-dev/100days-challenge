@@ -457,15 +457,6 @@ input[type="date"].input-field:focus {
   padding: 16px 0;
 }
 
-/* ===== フッター ===== */
-.app-footer {
-  text-align: center;
-  padding: 20px 16px;
-  font-size: 0.75rem;
-  color: var(--color-text-sub);
-  font-weight: 500;
-  opacity: 0.7;
-}
 
 /* ===== レスポンシブ（幅が広い場合） ===== */
 @media (min-width: 500px) {
