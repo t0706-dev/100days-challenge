@@ -77,7 +77,7 @@ OKが出たら初めて作成を開始する。
 `log_today.py` は対話形式で個人の感想・学びを入力するスクリプトなので、ターミナルで直接実行してください。
 
 ```bash
-cd /Users/yagitakashi/Desktop/claude_dev/tool/100days-challenge
+cd /path/to/100days-challenge
 python3 log_today.py
 ```
 
