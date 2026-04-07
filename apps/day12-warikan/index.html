@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>割り勘計算機</title>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+
+    <!-- ========== ヘッダー ========== -->
+    <header class="app-header">
+      <h1>🍻 割り勘計算機</h1>
+      <p class="description">飲み会・食事会の割り勘をかんたん計算。幹事調整・男女別・飲まない人設定に対応。</p>
+    </header>
+
+    <!-- ========== 基本入力 ========== -->
+    <section class="card" id="basic-input">
+      <h2 class="section-title">基本入力</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="total">合計金額（円）</label>
+          <input type="number" id="total" placeholder="例: 25000" min="1" aria-label="合計金額">
+        </div>
+        <div class="form-group">
+          <label for="count">参加人数（人）</label>
+          <input type="number" id="count" value="2" min="1" aria-label="参加人数">
+        </div>
+        <div class="form-group full-width">
+          <label for="rounding">端数処理</label>
+          <select id="rounding" aria-label="端数処理方法">
+            <option value="none">そのまま（小数点以下そのまま）</option>
+            <option value="ceil1">1円単位で切り上げ</option>
+            <option value="ceil10" selected>10円単位で切り上げ</option>
+            <option value="ceil100">100円単位で切り上げ</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== 詳細設定 ========== -->
+    <section class="card" id="detail-settings">
+      <h2 class="section-title">詳細設定</h2>
+
+      <!-- 幹事設定 -->
+      <fieldset class="sub-fieldset">
+        <legend>幹事設定</legend>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="hostCount">幹事人数（人）</label>
+            <input type="number" id="hostCount" value="0" min="0" aria-label="幹事人数">
+          </div>
+          <div class="form-group">
+            <label for="hostMode">幹事の支払方法</label>
+            <select id="hostMode" aria-label="幹事の支払方法">
+              <option value="normal">通常どおり</option>
+              <option value="zero">0円（無料）</option>
+              <option value="less">一般参加者より少なめ</option>
+              <option value="more">一般参加者より多め</option>
+            </select>
+          </div>
+          <div class="form-group" id="hostAdjGroup" style="display:none;">
+            <label for="hostAdj">調整額（円）</label>
+            <input type="number" id="hostAdj" value="500" min="0" placeholder="例: 500" aria-label="幹事調整額">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 飲まない人設定 -->
+      <fieldset class="sub-fieldset">
+        <legend>飲まない人の設定</legend>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="nonDrinkerCount">飲まない人の人数（人）</label>
+            <input type="number" id="nonDrinkerCount" value="0" min="0" aria-label="飲まない人の人数">
+          </div>
+          <div class="form-group">
+            <label for="nonDrinkerReduction">1人あたりの減額（円）</label>
+            <input type="number" id="nonDrinkerReduction" value="0" min="0" placeholder="例: 1000" aria-label="飲まない人の減額">
+          </div>
+        </div>
+      </fieldset>
+
+      <!-- 男女別設定 -->
+      <fieldset class="sub-fieldset">
+        <legend>男女別設定</legend>
+        <div class="form-group mb-12">
+          <label class="checkbox-label">
+            <input type="checkbox" id="useMaleFemale" aria-label="男女で金額を分ける">
+            男女で金額を分ける
+          </label>
+        </div>
+        <div id="genderFields" style="display:none;">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="maleCount">男性人数（人）</label>
+              <input type="number" id="maleCount" value="0" min="0" aria-label="男性人数">
+            </div>
+            <div class="form-group">
+              <label for="femaleCount">女性人数（人）</label>
+              <input type="number" id="femaleCount" value="0" min="0" aria-label="女性人数">
+            </div>
+            <div class="form-group">
+              <label for="femaleDiscount">女性の割引額（円）</label>
+              <input type="number" id="femaleDiscount" value="0" min="0" placeholder="例: 500" aria-label="女性の割引額">
+            </div>
+          </div>
+          <p class="field-note">※ 幹事・飲まない人は男性に含まれるものとして計算します。</p>
+        </div>
+      </fieldset>
+    </section>
+
+    <!-- ========== 操作ボタン ========== -->
+    <div class="button-row">
+      <button class="btn btn-primary" id="btnCalc">計算する</button>
+      <button class="btn btn-secondary" id="btnReset">リセット</button>
+    </div>
+
+    <!-- ========== エラーエリア ========== -->
+    <div id="errorArea" class="error-area" style="display:none;" role="alert" aria-live="assertive"></div>
+
+    <!-- ========== 計算結果 ========== -->
+    <section class="card" id="result-section" style="display:none;" aria-live="polite">
+      <h2 class="section-title">計算結果</h2>
+      <div id="resultContent"></div>
+      <div class="button-row mt-16">
+        <button class="btn btn-success" id="btnSaveHistory">履歴を保存</button>
+      </div>
+    </section>
+
+    <!-- ========== コピー用テキスト ========== -->
+    <section class="card" id="copy-section" style="display:none;">
+      <h2 class="section-title">コピー用テキスト</h2>
+      <textarea id="copyText" readonly rows="5" aria-label="コピー用テキスト"></textarea>
+      <div class="button-row mt-12">
+        <button class="btn btn-primary" id="btnCopy">コピーする</button>
+      </div>
+      <p id="copyMsg" class="copy-msg" style="display:none;" aria-live="polite">✅ コピーしました！</p>
+    </section>
+
+    <!-- ========== 履歴 ========== -->
+    <section class="card" id="history-section">
+      <div class="section-header">
+        <h2 class="section-title no-border">計算履歴</h2>
+        <button class="btn btn-danger btn-sm" id="btnClearHistory">全削除</button>
+      </div>
+      <div id="historyList">
+        <p class="empty-msg">履歴がありません</p>
+      </div>
+    </section>
+
+  </div><!-- /container -->
+  <script src="script.js"></script>
+</body>
+</html>
