@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="" data-font="small">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>高機能文字数カウントツール</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+
+    <!-- ===== ヘッダー ===== -->
+    <header class="header">
+      <h1 class="title">高機能文字数カウント</h1>
+      <div class="header-controls">
+        <div class="font-size-control">
+          <span class="control-label">文字サイズ</span>
+          <button class="btn-icon active" data-size="small">小</button>
+          <button class="btn-icon" data-size="medium">中</button>
+          <button class="btn-icon" data-size="large">大</button>
+        </div>
+        <button class="btn-dark-mode" id="darkModeToggle" title="ダークモード切替">🌙</button>
+      </div>
+    </header>
+
+    <main class="main-content">
+
+      <!-- ===== 目標文字数 ===== -->
+      <div class="card target-section">
+        <label class="section-label" for="targetCount">目標文字数</label>
+        <div class="target-input-group">
+          <input type="number" id="targetCount" class="target-input" placeholder="例: 800" min="0">
+          <span class="target-hint">文字</span>
+          <button class="btn-small" id="clearTarget">クリア</button>
+        </div>
+      </div>
+
+      <!-- ===== テキストエリア ===== -->
+      <div class="card textarea-section">
+        <div class="textarea-header">
+          <span class="section-label">テキスト入力</span>
+          <span class="live-count" id="liveCount">0 文字</span>
+        </div>
+        <textarea
+          id="mainTextarea"
+          class="main-textarea"
+          placeholder="ここにテキストを入力してください…"
+          spellcheck="false"
+        ></textarea>
+      </div>
+
+      <!-- ===== 除外オプション ===== -->
+      <div class="card options-section">
+        <span class="section-label">除外オプション（カウントから除外）</span>
+        <div class="options-grid">
+          <label class="option-item">
+            <input type="checkbox" id="excludeHalfSpace"> 半角スペース
+          </label>
+          <label class="option-item">
+            <input type="checkbox" id="excludeFullSpace"> 全角スペース
+          </label>
+          <label class="option-item">
+            <input type="checkbox" id="excludeNewline"> 改行
+          </label>
+          <label class="option-item">
+            <input type="checkbox" id="excludeSymbol"> 記号（。、！？等）
+          </label>
+          <label class="option-item">
+            <input type="checkbox" id="excludeUrl"> URL（https://〜）
+          </label>
+        </div>
+      </div>
+
+      <!-- ===== カウント結果グリッド ===== -->
+      <div class="results-grid">
+        <div class="result-card accent" id="cardTotal">
+          <div class="result-label">総文字数</div>
+          <div class="result-value" id="totalCount">0</div>
+        </div>
+        <div class="result-card" id="cardNoNewline">
+          <div class="result-label">改行除外</div>
+          <div class="result-value" id="noNewlineCount">0</div>
+        </div>
+        <div class="result-card" id="cardNoSpace">
+          <div class="result-label">空白・改行除外</div>
+          <div class="result-value" id="noSpaceCount">0</div>
+        </div>
+        <div class="result-card" id="cardLine">
+          <div class="result-label">行数</div>
+          <div class="result-value" id="lineCount">0</div>
+        </div>
+        <div class="result-card" id="cardWord">
+          <div class="result-label">単語数</div>
+          <div class="result-value" id="wordCount">0</div>
+        </div>
+        <div class="result-card" id="remainingCard">
+          <div class="result-label">残り文字数</div>
+          <div class="result-value" id="remainingCount">—</div>
+        </div>
+      </div>
+
+      <!-- ===== 目標プログレスバー ===== -->
+      <div class="card target-card" id="targetCard" style="display:none">
+        <div class="target-card-header">
+          <span class="section-label">目標達成度</span>
+          <span class="target-percentage" id="targetPercentage">0%</span>
+        </div>
+        <div class="progress-bar-container">
+          <div class="progress-bar" id="progressBar"></div>
+        </div>
+      </div>
+
+      <!-- ===== SNS カード ===== -->
+      <div class="card sns-card">
+        <span class="section-label">SNS 文字数チェック</span>
+        <div class="sns-grid">
+          <div class="sns-item">
+            <div class="sns-label">X（140字制限）</div>
+            <div class="sns-bar-container">
+              <div class="sns-bar" id="snsBar140"></div>
+            </div>
+            <div class="sns-count" id="snsCount140">0 / 140</div>
+          </div>
+          <div class="sns-item">
+            <div class="sns-label">X（280字制限）</div>
+            <div class="sns-bar-container">
+              <div class="sns-bar" id="snsBar280"></div>
+            </div>
+            <div class="sns-count" id="snsCount280">0 / 280</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ===== ボタンエリア ===== -->
+      <div class="action-section">
+        <div class="action-buttons">
+          <button class="btn btn-primary" id="copyBtn">コピー</button>
+          <button class="btn btn-secondary" id="pasteBtn">ペースト</button>
+          <button class="btn btn-danger" id="clearBtn">クリア</button>
+        </div>
+        <div class="save-buttons">
+          <button class="btn btn-save" id="saveBtn">手動保存</button>
+          <button class="btn btn-load" id="loadBtn">読み込み</button>
+        </div>
+      </div>
+
+      <!-- ===== ステータスメッセージ ===== -->
+      <div class="status-message" id="statusMessage"></div>
+
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
