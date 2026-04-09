@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!--
+  アイコン生成ツール
+  このファイルをブラウザで開いて「ダウンロード」ボタンを押すと
+  icon-192.png / icon-512.png が保存されます。
+  ダウンロードしたファイルを icons/ フォルダに上書き配置してください。
+-->
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>アイコン生成</title>
+  <style>
+    body { font-family: sans-serif; padding: 24px; background: #f0f4f8; }
+    h2   { margin-bottom: 16px; }
+    .row { display: flex; gap: 24px; align-items: flex-end; flex-wrap: wrap; margin-bottom: 20px; }
+    canvas { border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,.2); }
+    button {
+      padding: 10px 24px; font-size: 1rem; cursor: pointer;
+      background: #4A90E2; color: #fff; border: none; border-radius: 8px;
+    }
+    button:hover { background: #357ABD; }
+    p { color: #555; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <h2>文字数カウント アイコン生成</h2>
+  <p>下のボタンを押して PNG をダウンロードし、<code>icons/</code> フォルダに上書きしてください。</p>
+
+  <div class="row">
+    <div>
+      <div>192 × 192</div>
+      <canvas id="c192" width="192" height="192"></canvas>
+    </div>
+    <div>
+      <div>512 × 512</div>
+      <canvas id="c512" width="512" height="512"></canvas>
+    </div>
+  </div>
+
+  <div class="row">
+    <button onclick="download(192)">icon-192.png をダウンロード</button>
+    <button onclick="download(512)">icon-512.png をダウンロード</button>
+  </div>
+
+  <script>
+    function drawIcon(canvas) {
+      const s   = canvas.width;
+      const ctx = canvas.getContext('2d');
+      const r   = s * 0.22; // 角丸半径
+
+      // ---- 角丸背景 ----
+      ctx.beginPath();
+      ctx.moveTo(r, 0);
+      ctx.lineTo(s - r, 0);
+      ctx.arcTo(s, 0,   s, r,     r);
+      ctx.lineTo(s, s - r);
+      ctx.arcTo(s, s,   s - r, s, r);
+      ctx.lineTo(r, s);
+      ctx.arcTo(0, s,   0, s - r, r);
+      ctx.lineTo(0, r);
+      ctx.arcTo(0, 0,   r, 0,     r);
+      ctx.closePath();
+
+      // グラデーション（青系）
+      const grad = ctx.createLinearGradient(0, 0, s, s);
+      grad.addColorStop(0, '#5BA3F5');
+      grad.addColorStop(1, '#2C6FC7');
+      ctx.fillStyle = grad;
+      ctx.fill();
+
+      // ---- 白い横線（テキスト行のイメージ） ----
+      const lw  = s * 0.52;
+      const lh  = s * 0.055;
+      const gap = s * 0.11;
+      const lx  = (s - lw) / 2;
+      const startY = s * 0.30;
+      ctx.fillStyle = 'rgba(255,255,255,0.30)';
+      for (let i = 0; i < 3; i++) {
+        const w = i === 2 ? lw * 0.65 : lw; // 最終行は短め
+        ctx.beginPath();
+        ctx.roundRect(lx, startY + i * (lh + gap), w, lh, lh / 2);
+        ctx.fill();
+      }
+
+      // ---- 中央に「文」文字 ----
+      ctx.fillStyle   = '#FFFFFF';
+      ctx.font        = `bold ${s * 0.38}px "Hiragino Sans", "Yu Gothic", sans-serif`;
+      ctx.textAlign   = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.shadowColor  = 'rgba(0,0,0,0.18)';
+      ctx.shadowBlur   = s * 0.04;
+      ctx.fillText('文', s / 2, s * 0.52);
+      ctx.shadowBlur = 0;
+    }
+
+    const c192 = document.getElementById('c192');
+    const c512 = document.getElementById('c512');
+    drawIcon(c192);
+    drawIcon(c512);
+
+    function download(size) {
+      const c    = size === 192 ? c192 : c512;
+      const link = document.createElement('a');
+      link.download = `icon-${size}.png`;
+      link.href     = c.toDataURL('image/png');
+      link.click();
+    }
+  </script>
+</body>
+</html>
