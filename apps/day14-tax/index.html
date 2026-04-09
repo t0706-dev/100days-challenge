@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="消費税の計算・逆算ができるシンプルな計算機アプリ">
+  <meta name="theme-color" content="#2563eb" id="themeColorMeta">
+  <title>消費税計算機</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="消費税計算機">
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- Styles -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="app-title">
+        <span class="app-icon" aria-hidden="true">🧮</span>
+        <h1>消費税計算機</h1>
+      </div>
+      <button id="darkModeToggle" class="icon-btn" aria-label="ダークモード切替">
+        <span class="icon-sun" aria-hidden="true">☀️</span>
+        <span class="icon-moon" aria-hidden="true">🌙</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Offline Banner -->
+  <div id="offlineBanner" class="offline-banner hidden" role="alert">
+    オフラインです。キャッシュから動作しています。
+  </div>
+
+  <main class="main-content">
+
+    <!-- Calc Mode Tabs -->
+    <div class="calc-mode-tabs" role="tablist" aria-label="計算モード">
+      <button class="calc-tab active" data-mode="from_ex" role="tab" aria-selected="true">
+        税抜 → 税込
+      </button>
+      <button class="calc-tab" data-mode="from_in" role="tab" aria-selected="false">
+        税込 → 税抜
+      </button>
+    </div>
+
+    <!-- Main Card -->
+    <div class="card main-card">
+
+      <!-- Input Mode Toggle -->
+      <div class="input-mode-toggle" role="group" aria-label="入力モード">
+        <button class="input-mode-btn active" data-input="single">単一入力</button>
+        <button class="input-mode-btn" data-input="multi">複数入力</button>
+      </div>
+
+      <!-- Single Amount Input -->
+      <div id="singleInputArea" class="form-group">
+        <label for="amountInput" id="amountLabel">税抜金額</label>
+        <div class="amount-input-wrapper">
+          <span class="currency-symbol" aria-hidden="true">¥</span>
+          <input
+            type="text"
+            id="amountInput"
+            class="amount-input"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="0"
+            aria-labelledby="amountLabel"
+            aria-describedby="amountError"
+          >
+          <button class="clear-input-btn" id="clearAmountBtn" aria-label="金額をクリア">✕</button>
+        </div>
+        <p class="field-error hidden" id="amountError" role="alert"></p>
+      </div>
+
+      <!-- Multi Amount Input -->
+      <div id="multiInputArea" class="form-group hidden">
+        <label for="multiAmountInput">金額リスト（1行に1件）</label>
+        <textarea
+          id="multiAmountInput"
+          class="multi-input"
+          inputmode="decimal"
+          placeholder="1000&#10;2500&#10;3980"
+          rows="5"
+          aria-describedby="multiValidation"
+        ></textarea>
+        <div id="multiValidation" class="multi-validation" role="alert"></div>
+      </div>
+
+      <!-- Tax Rate -->
+      <div class="form-group">
+        <label>消費税率</label>
+        <div class="option-buttons" role="group" aria-label="消費税率を選択">
+          <button class="option-btn active" data-rate="10" aria-pressed="true">10%</button>
+          <button class="option-btn" data-rate="8" aria-pressed="false">8%</button>
+          <button class="option-btn" data-rate="custom" aria-pressed="false">任意</button>
+        </div>
+        <div id="customRateArea" class="custom-rate-area hidden">
+          <div class="custom-rate-input-wrapper">
+            <input
+              type="number"
+              id="customRateInput"
+              min="0"
+              max="100"
+              step="0.1"
+              placeholder="例: 5"
+              inputmode="decimal"
+              aria-label="任意税率（0〜100）"
+              aria-describedby="customRateError"
+            >
+            <span class="rate-unit">%</span>
+          </div>
+          <p class="field-error hidden" id="customRateError" role="alert"></p>
+        </div>
+      </div>
+
+      <!-- Rounding Method -->
+      <div class="form-group">
+        <label>端数処理（税額に適用）</label>
+        <div class="option-buttons" role="group" aria-label="端数処理を選択">
+          <button class="option-btn" data-round="floor" aria-pressed="false">切り捨て</button>
+          <button class="option-btn" data-round="ceil" aria-pressed="false">切り上げ</button>
+          <button class="option-btn active" data-round="round" aria-pressed="true">四捨五入</button>
+        </div>
+      </div>
+
+      <!-- Result Area -->
+      <div id="resultArea" class="result-area" aria-live="polite" aria-atomic="true">
+        <div class="result-placeholder">
+          <span class="placeholder-icon" aria-hidden="true">💡</span>
+          <p>金額を入力すると<br>計算結果が表示されます</p>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <button id="copyBtn" class="btn btn-copy" aria-label="結果をコピー" disabled>
+          コピー
+        </button>
+        <button id="clearAllBtn" class="btn btn-secondary" aria-label="入力をクリア">
+          クリア
+        </button>
+      </div>
+    </div>
+
+    <!-- Formula Hint Card -->
+    <div class="card formula-card">
+      <h2 class="card-title">計算式</h2>
+      <div id="formulaHint" class="formula-hint"></div>
+    </div>
+
+    <!-- History Section -->
+    <div class="history-section">
+      <div class="history-header">
+        <h2>履歴</h2>
+        <button id="clearHistoryBtn" class="btn-text" aria-label="履歴を一括クリア">
+          一括クリア
+        </button>
+      </div>
+      <div id="historyList" class="history-list" role="list" aria-label="計算履歴"></div>
+    </div>
+
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
