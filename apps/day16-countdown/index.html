@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>カウントダウン</title>
+  <meta name="description" content="複数イベントのカウントダウンツール。誕生日・旅行・締切などを管理。">
+  <meta name="theme-color" content="#6366f1">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="カウントダウン">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ===== HEADER ===== -->
+  <header class="app-header">
+    <div class="header-left">
+      <span class="app-icon">⏰</span>
+      <h1 class="app-title">カウントダウン</h1>
+    </div>
+    <div class="header-right">
+      <button id="animToggle" class="icon-btn" title="アニメーション切替">✨</button>
+      <button id="darkToggle" class="icon-btn" title="ダークモード">🌙</button>
+      <button id="addEventBtn" class="btn btn-primary">
+        <span class="btn-icon">+</span>
+        <span class="btn-text">追加</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MAIN LAYOUT ===== -->
+  <main class="app-main">
+
+    <!-- LEFT: Event List -->
+    <aside class="event-panel">
+      <div class="panel-header">
+        <h2 class="panel-title">イベント</h2>
+        <select id="sortSelect" class="sort-select" title="並び替え">
+          <option value="nearest">日付が近い順</option>
+          <option value="created">登録順</option>
+          <option value="name">名前順</option>
+        </select>
+      </div>
+      <div id="eventList" class="event-list"></div>
+    </aside>
+
+    <!-- RIGHT: Countdown Display -->
+    <section class="display-panel">
+
+      <!-- Style Tabs -->
+      <nav class="style-tabs" role="tablist" aria-label="表示スタイル">
+        <button class="style-tab active" data-style="digital" role="tab">デジタル</button>
+        <button class="style-tab" data-style="ring" role="tab">リング</button>
+        <button class="style-tab" data-style="analog" role="tab">アナログ</button>
+        <button class="style-tab" data-style="bar" role="tab">バー</button>
+        <button class="style-tab" data-style="flip" role="tab">フリップ</button>
+      </nav>
+
+      <!-- No Event State -->
+      <div id="noEventMsg" class="no-event-msg" style="display:none;">
+        <div class="no-event-icon">🗓️</div>
+        <p>イベントが登録されていません</p>
+        <button class="btn btn-primary" id="noEventAddBtn">+ イベントを追加する</button>
+      </div>
+
+      <!-- Countdown Display -->
+      <div id="countdownDisplay" class="countdown-display">
+
+        <!-- Event Info Header -->
+        <div class="event-info-header">
+          <div class="event-info-row">
+            <span id="displayEventName" class="display-event-name"></span>
+            <span id="displayCategory" class="display-category"></span>
+          </div>
+          <div id="displayDate" class="display-date"></div>
+          <div id="displayMemo" class="display-memo"></div>
+        </div>
+
+        <!-- ===== STYLE 1: DIGITAL ===== -->
+        <div id="styleDigital" class="style-content" role="tabpanel">
+          <div id="digitalGrid" class="digital-grid">
+            <div class="digital-card" id="dDays">
+              <span class="digital-value">0</span>
+              <span class="digital-label">日</span>
+            </div>
+            <div class="digital-sep">:</div>
+            <div class="digital-card" id="dHours">
+              <span class="digital-value">00</span>
+              <span class="digital-label">時間</span>
+            </div>
+            <div class="digital-sep">:</div>
+            <div class="digital-card" id="dMinutes">
+              <span class="digital-value">00</span>
+              <span class="digital-label">分</span>
+            </div>
+            <div class="digital-sep">:</div>
+            <div class="digital-card" id="dSeconds">
+              <span class="digital-value">00</span>
+              <span class="digital-label">秒</span>
+            </div>
+          </div>
+          <div id="digitalStatus" class="status-text"></div>
+        </div>
+
+        <!-- ===== STYLE 2: RING ===== -->
+        <div id="styleRing" class="style-content" style="display:none;" role="tabpanel">
+          <div class="ring-wrapper">
+            <div class="ring-container">
+              <!-- SVG Ring: rotate(-90deg) so progress starts at 12 o'clock -->
+              <svg id="ringSvg" viewBox="0 0 220 220" class="ring-svg" aria-hidden="true">
+                <!-- Outer ring: overall time progress -->
+                <circle cx="110" cy="110" r="90" class="ring-track"/>
+                <circle id="ringProgress" cx="110" cy="110" r="90" class="ring-progress"
+                        transform="rotate(-90, 110, 110)"/>
+                <!-- Inner ring: seconds (0-59) -->
+                <circle cx="110" cy="110" r="68" class="ring-track ring-track-inner"/>
+                <circle id="ringSecProgress" cx="110" cy="110" r="68" class="ring-progress ring-sec-progress"
+                        transform="rotate(-90, 110, 110)"/>
+              </svg>
+              <div class="ring-center">
+                <div id="ringDays" class="ring-main-value">0</div>
+                <div class="ring-main-label">日</div>
+                <div id="ringTime" class="ring-sub-value">00:00:00</div>
+              </div>
+            </div>
+          </div>
+          <div id="ringStatus" class="status-text"></div>
+        </div>
+
+        <!-- ===== STYLE 3: ANALOG ===== -->
+        <div id="styleAnalog" class="style-content" style="display:none;" role="tabpanel">
+          <div class="analog-wrapper">
+            <div class="analog-container">
+              <svg id="analogSvg" viewBox="0 0 240 240" class="analog-svg" aria-hidden="true">
+                <circle cx="120" cy="120" r="112" class="analog-face"/>
+                <circle cx="120" cy="120" r="110" class="analog-border"/>
+                <!-- Tick marks: generated by JS -->
+                <g id="analogMarks"></g>
+                <!-- Day hand (thick, blue): 30-day cycle -->
+                <line id="analogDayHand"
+                      x1="120" y1="120" x2="120" y2="42"
+                      class="analog-hand analog-day-hand"
+                      stroke-linecap="round"/>
+                <!-- Hour hand (medium, purple): 24-hour cycle -->
+                <line id="analogHourHand"
+                      x1="120" y1="120" x2="120" y2="58"
+                      class="analog-hand analog-hour-hand"
+                      stroke-linecap="round"/>
+                <!-- Minute hand (thin, accent): 60-minute cycle -->
+                <line id="analogMinHand"
+                      x1="120" y1="120" x2="120" y2="32"
+                      class="analog-hand analog-min-hand"
+                      stroke-linecap="round"/>
+                <!-- Center dot -->
+                <circle cx="120" cy="120" r="7" class="analog-center"/>
+                <circle cx="120" cy="120" r="3" class="analog-center-dot"/>
+              </svg>
+              <!-- Legend -->
+              <div class="analog-legend">
+                <div class="analog-legend-item">
+                  <span class="analog-legend-dot analog-legend-day"></span>
+                  <span>日</span>
+                </div>
+                <div class="analog-legend-item">
+                  <span class="analog-legend-dot analog-legend-hour"></span>
+                  <span>時間</span>
+                </div>
+                <div class="analog-legend-item">
+                  <span class="analog-legend-dot analog-legend-min"></span>
+                  <span>分</span>
+                </div>
+              </div>
+            </div>
+            <div class="analog-info">
+              <div class="analog-info-item">
+                <span id="analogDaysVal" class="analog-info-value">0</span>
+                <span class="analog-info-label">日</span>
+              </div>
+              <div class="analog-info-item">
+                <span id="analogHoursVal" class="analog-info-value">00</span>
+                <span class="analog-info-label">時間</span>
+              </div>
+              <div class="analog-info-item">
+                <span id="analogMinsVal" class="analog-info-value">00</span>
+                <span class="analog-info-label">分</span>
+              </div>
+              <div class="analog-info-item">
+                <span id="analogSecsVal" class="analog-info-value">00</span>
+                <span class="analog-info-label">秒</span>
+              </div>
+            </div>
+          </div>
+          <div id="analogStatus" class="status-text"></div>
+        </div>
+
+        <!-- ===== STYLE 4: BAR ===== -->
+        <div id="styleBar" class="style-content" style="display:none;" role="tabpanel">
+          <div class="bar-container">
+            <div id="barMainValue" class="bar-main-value">あと 0日</div>
+            <div id="barTimeValue" class="bar-time-value">00:00:00</div>
+            <div class="bar-progress-wrap">
+              <div class="bar-meta">
+                <span id="barStartLabel" class="bar-meta-start">開始</span>
+                <span id="barPercent" class="bar-percent">0%</span>
+                <span id="barEndLabel" class="bar-meta-end">目標</span>
+              </div>
+              <div class="bar-track">
+                <div id="barFill" class="bar-fill" style="width:0%"></div>
+                <div id="barThumb" class="bar-thumb" style="left:0%"></div>
+              </div>
+              <div class="bar-date-labels">
+                <span id="barStartDate" class="bar-date-start"></span>
+                <span id="barEndDate" class="bar-date-end"></span>
+              </div>
+            </div>
+            <div class="bar-sub-grid">
+              <div class="bar-sub-item">
+                <span id="barDays" class="bar-sub-value">0</span>
+                <span class="bar-sub-label">日</span>
+              </div>
+              <div class="bar-sub-item">
+                <span id="barHours" class="bar-sub-value">00</span>
+                <span class="bar-sub-label">時間</span>
+              </div>
+              <div class="bar-sub-item">
+                <span id="barMins" class="bar-sub-value">00</span>
+                <span class="bar-sub-label">分</span>
+              </div>
+              <div class="bar-sub-item">
+                <span id="barSecs" class="bar-sub-value">00</span>
+                <span class="bar-sub-label">秒</span>
+              </div>
+            </div>
+          </div>
+          <div id="barStatus" class="status-text"></div>
+        </div>
+
+        <!-- ===== STYLE 5: FLIP ===== -->
+        <div id="styleFlip" class="style-content" style="display:none;" role="tabpanel">
+          <div class="flip-container">
+
+            <!-- Days -->
+            <div class="flip-group">
+              <div class="flip-unit">
+                <div class="flip-top" id="flipDaysTop"><span>0</span></div>
+                <div class="flip-bottom" id="flipDaysBottom"><span>0</span></div>
+                <div class="flip-anim-top" id="flipDaysAnimTop"><span>0</span></div>
+                <div class="flip-anim-bottom" id="flipDaysAnimBottom"><span>0</span></div>
+              </div>
+              <div class="flip-label">日</div>
+            </div>
+
+            <div class="flip-separator">:</div>
+
+            <!-- Hours -->
+            <div class="flip-group">
+              <div class="flip-unit">
+                <div class="flip-top" id="flipHoursTop"><span>00</span></div>
+                <div class="flip-bottom" id="flipHoursBottom"><span>00</span></div>
+                <div class="flip-anim-top" id="flipHoursAnimTop"><span>00</span></div>
+                <div class="flip-anim-bottom" id="flipHoursAnimBottom"><span>00</span></div>
+              </div>
+              <div class="flip-label">時間</div>
+            </div>
+
+            <div class="flip-separator">:</div>
+
+            <!-- Minutes -->
+            <div class="flip-group">
+              <div class="flip-unit">
+                <div class="flip-top" id="flipMinutesTop"><span>00</span></div>
+                <div class="flip-bottom" id="flipMinutesBottom"><span>00</span></div>
+                <div class="flip-anim-top" id="flipMinutesAnimTop"><span>00</span></div>
+                <div class="flip-anim-bottom" id="flipMinutesAnimBottom"><span>00</span></div>
+              </div>
+              <div class="flip-label">分</div>
+            </div>
+
+            <div class="flip-separator">:</div>
+
+            <!-- Seconds -->
+            <div class="flip-group">
+              <div class="flip-unit">
+                <div class="flip-top" id="flipSecondsTop"><span>00</span></div>
+                <div class="flip-bottom" id="flipSecondsBottom"><span>00</span></div>
+                <div class="flip-anim-top" id="flipSecondsAnimTop"><span>00</span></div>
+                <div class="flip-anim-bottom" id="flipSecondsAnimBottom"><span>00</span></div>
+              </div>
+              <div class="flip-label">秒</div>
+            </div>
+
+          </div>
+          <div id="flipStatus" class="status-text"></div>
+        </div>
+
+      </div><!-- /#countdownDisplay -->
+    </section>
+  </main>
+
+  <!-- ===== ADD/EDIT MODAL ===== -->
+  <div id="eventModal" class="modal" style="display:none;" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" onclick="closeModal()"></div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle" class="modal-title">イベントを追加</h3>
+        <button class="modal-close" onclick="closeModal()" aria-label="閉じる">✕</button>
+      </div>
+      <form id="eventForm" class="event-form" novalidate>
+        <input type="hidden" id="editId">
+
+        <div class="form-group">
+          <label for="eventName">イベント名 <span class="required" aria-label="必須">*</span></label>
+          <input type="text" id="eventName" placeholder="例：誕生日パーティー" required maxlength="50" autocomplete="off">
+          <span class="form-error" id="nameError"></span>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="eventDate">目標日 <span class="required" aria-label="必須">*</span></label>
+            <input type="date" id="eventDate" required>
+            <span class="form-error" id="dateError"></span>
+          </div>
+          <div class="form-group">
+            <label for="eventTime">目標時刻（任意）</label>
+            <input type="time" id="eventTime">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="eventMemo">メモ（任意）</label>
+          <textarea id="eventMemo" rows="2" placeholder="メモを入力..." maxlength="200"></textarea>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="eventCategory">カテゴリ</label>
+            <select id="eventCategory">
+              <option value="other">その他</option>
+              <option value="work">仕事</option>
+              <option value="private">プライベート</option>
+              <option value="anniversary">記念日</option>
+            </select>
+          </div>
+          <div class="form-group form-group-color">
+            <label for="eventColor">カラー</label>
+            <div class="color-picker-wrap">
+              <input type="color" id="eventColor" value="#6366f1">
+              <div class="color-presets">
+                <button type="button" class="color-preset" data-color="#6366f1" style="background:#6366f1" title="インディゴ"></button>
+                <button type="button" class="color-preset" data-color="#f59e0b" style="background:#f59e0b" title="アンバー"></button>
+                <button type="button" class="color-preset" data-color="#10b981" style="background:#10b981" title="エメラルド"></button>
+                <button type="button" class="color-preset" data-color="#ef4444" style="background:#ef4444" title="レッド"></button>
+                <button type="button" class="color-preset" data-color="#3b82f6" style="background:#3b82f6" title="ブルー"></button>
+                <button type="button" class="color-preset" data-color="#ec4899" style="background:#ec4899" title="ピンク"></button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" onclick="closeModal()">キャンセル</button>
+          <button type="submit" class="btn btn-primary">保存する</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== DELETE CONFIRM MODAL ===== -->
+  <div id="deleteModal" class="modal" style="display:none;" role="dialog" aria-modal="true">
+    <div class="modal-backdrop" onclick="closeDeleteModal()"></div>
+    <div class="modal-content modal-small">
+      <div class="modal-header">
+        <h3 class="modal-title">削除の確認</h3>
+        <button class="modal-close" onclick="closeDeleteModal()" aria-label="閉じる">✕</button>
+      </div>
+      <p id="deleteConfirmText" class="delete-confirm-text"></p>
+      <div class="form-actions">
+        <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">キャンセル</button>
+        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">削除する</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
