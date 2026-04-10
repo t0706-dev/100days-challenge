@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="生年月日から現在年齢・指定日年齢・生まれた日の天気を計算する年齢計算機" />
+  <meta name="theme-color" content="#5b9bd5" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="年齢計算機" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="icon-192.png" />
+  <title>年齢計算機</title>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    /* ===========================
+       リセット・ベース
+    =========================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #5b9bd5;
+      --primary-dark: #3a7bbf;
+      --primary-light: #e8f2fb;
+      --accent: #ff8c69;
+      --accent-light: #fff0eb;
+      --success: #4caf85;
+      --success-light: #e8f7f2;
+      --warn: #f5a623;
+      --warn-light: #fff8ee;
+      --error: #e05555;
+      --error-light: #ffeaea;
+      --text: #333;
+      --text-sub: #666;
+      --text-muted: #999;
+      --border: #dde3ee;
+      --bg: #f4f7fc;
+      --card: #ffffff;
+      --shadow: 0 2px 12px rgba(91,155,213,0.10);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    body {
+      font-family: 'M PLUS Rounded 1c', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ===========================
+       レイアウト
+    =========================== */
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 0 16px 40px;
+    }
+
+    /* ===========================
+       ヘッダー
+    =========================== */
+    header {
+      text-align: center;
+      padding: 36px 0 8px;
+    }
+    header .header-icon { font-size: 2.8rem; display: block; margin-bottom: 6px; }
+    header h1 {
+      font-size: 1.7rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      letter-spacing: .02em;
+    }
+    header p {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    /* ===========================
+       カード
+    =========================== */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-top: 20px;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-title .icon { font-size: 1.1rem; }
+
+    /* ===========================
+       フォーム
+    =========================== */
+    .form-group { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-sub);
+      margin-bottom: 6px;
+    }
+    input[type="date"],
+    input[type="text"] {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 1rem;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color .2s;
+      -webkit-appearance: none;
+    }
+    input[type="date"]:focus,
+    input[type="text"]:focus {
+      border-color: var(--primary);
+    }
+    .input-hint {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* ===========================
+       ボタン
+    =========================== */
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-family: inherit;
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .18s, transform .1s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary {
+      background: var(--bg);
+      color: var(--text-sub);
+      border: 2px solid var(--border);
+      margin-top: 10px;
+    }
+    .btn-secondary:hover { background: var(--border); }
+    .btn-sm {
+      padding: 8px 14px;
+      font-size: 0.85rem;
+      width: auto;
+      display: inline-block;
+    }
+    .btn-retry {
+      background: var(--warn);
+      color: #fff;
+      margin-top: 10px;
+    }
+    .btn-retry:hover { background: #e09000; }
+
+    /* ===========================
+       エラー・メッセージ
+    =========================== */
+    .error-msg {
+      background: var(--error-light);
+      color: var(--error);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 0.88rem;
+      margin-top: 10px;
+      display: none;
+    }
+    .error-msg.show { display: block; }
+    .info-msg {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      margin-top: 8px;
+    }
+
+    /* ===========================
+       ローディング
+    =========================== */
+    .loading {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-sub);
+      font-size: 0.9rem;
+      padding: 12px 0;
+    }
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===========================
+       結果カード
+    =========================== */
+    .result-hidden { display: none; }
+
+    /* メイン年齢表示 */
+    .age-hero {
+      text-align: center;
+      padding: 10px 0 20px;
+    }
+    .age-hero .age-num {
+      font-size: 4.5rem;
+      font-weight: 700;
+      color: var(--primary);
+      line-height: 1;
+    }
+    .age-hero .age-unit {
+      font-size: 1.4rem;
+      color: var(--primary-dark);
+      margin-left: 4px;
+    }
+    .age-hero .age-detail {
+      font-size: 0.95rem;
+      color: var(--text-sub);
+      margin-top: 6px;
+    }
+
+    /* 情報グリッド */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .info-item {
+      background: var(--primary-light);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+    }
+    .info-item .info-label {
+      font-size: 0.75rem;
+      color: var(--text-sub);
+      margin-bottom: 3px;
+    }
+    .info-item .info-value {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .info-item.full { grid-column: 1 / -1; }
+    .info-item.accent { background: var(--accent-light); }
+    .info-item.success { background: var(--success-light); }
+
+    /* 指定日年齢 */
+    .custom-date-result {
+      background: var(--primary-light);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      margin-top: 16px;
+    }
+    .custom-date-result .cdr-title {
+      font-size: 0.8rem;
+      color: var(--text-sub);
+      margin-bottom: 4px;
+    }
+    .custom-date-result .cdr-age {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+    }
+    .custom-date-result .cdr-detail {
+      font-size: 0.85rem;
+      color: var(--text-sub);
+    }
+
+    /* 節目年齢 */
+    .milestone-list {
+      list-style: none;
+      margin-top: 8px;
+    }
+    .milestone-list li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 9px 12px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      background: var(--bg);
+      transition: background .15s;
+    }
+    .milestone-list li.current {
+      background: var(--accent-light);
+      font-weight: 700;
+      color: var(--accent);
+      border: 2px solid var(--accent);
+    }
+    .milestone-list li.passed {
+      opacity: .5;
+    }
+    .milestone-list li .ms-name { font-weight: 700; }
+    .milestone-list li .ms-age { color: var(--text-sub); font-size: 0.82rem; margin-left: 4px; }
+    .milestone-list li .ms-status { font-size: 0.82rem; color: var(--text-sub); }
+
+    /* 天気カード */
+    .weather-hero {
+      text-align: center;
+      padding: 10px 0 8px;
+    }
+    .weather-hero .weather-icon { font-size: 3.5rem; display: block; }
+    .weather-hero .weather-desc {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-top: 4px;
+    }
+    .weather-hero .weather-place {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+    .weather-note {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      text-align: center;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    /* 候補リスト */
+    .candidate-list {
+      list-style: none;
+      margin-top: 10px;
+    }
+    .candidate-list li {
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      margin-bottom: 6px;
+      font-size: 0.9rem;
+      transition: border-color .15s, background .15s;
+    }
+    .candidate-list li:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .candidate-list .cand-name { font-weight: 700; }
+    .candidate-list .cand-sub { color: var(--text-muted); font-size: 0.78rem; margin-top: 2px; }
+
+    /* フッター */
+    footer {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      padding: 28px 0 16px;
+      line-height: 2;
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
+
+    /* セクション区切り */
+    .section-divider {
+      border: none;
+      border-top: 2px solid var(--border);
+      margin: 20px 0 16px;
+    }
+
+    /* PWAインストールバナー */
+    #install-banner {
+      display: none;
+      background: var(--primary);
+      color: #fff;
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      margin-top: 20px;
+      font-size: 0.88rem;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    #install-banner.show { display: flex; }
+    #install-banner button {
+      background: #fff;
+      color: var(--primary);
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-family: inherit;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 0.85rem;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 400px) {
+      .age-hero .age-num { font-size: 3.8rem; }
+      .info-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- ヘッダー -->
+  <header>
+    <span class="header-icon">🎂</span>
+    <h1>年齢計算機</h1>
+    <p>生年月日から年齢・生まれた日の天気を計算します</p>
+  </header>
+
+  <!-- PWAインストールバナー -->
+  <div id="install-banner">
+    <span>ホーム画面に追加してオフラインでも使えます</span>
+    <button id="btn-install">追加する</button>
+  </div>
+
+  <!-- 入力カード -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📅</span> 情報入力</div>
+
+    <div class="form-group">
+      <label for="birthday">生年月日 <span style="color:var(--error)">*</span></label>
+      <input type="date" id="birthday" aria-required="true" aria-label="生年月日" />
+    </div>
+
+    <div class="form-group">
+      <label for="birthplace">出生地（任意）</label>
+      <input type="text" id="birthplace" placeholder="例：東京、横浜市、大阪府" aria-label="出生地" />
+      <div class="input-hint">都道府県・市区町村などを入力してください（天気取得に使用）</div>
+    </div>
+
+    <div class="form-group">
+      <label for="custom-date">指定日時点の年齢（任意）</label>
+      <input type="date" id="custom-date" aria-label="指定日" />
+      <div class="input-hint">空白の場合は今日の日付で計算します</div>
+    </div>
+
+    <div id="input-error" class="error-msg" role="alert"></div>
+
+    <button class="btn btn-primary" id="btn-calc" aria-label="計算する">計算する</button>
+    <button class="btn btn-secondary" id="btn-clear" aria-label="クリア">クリア</button>
+  </div>
+
+  <!-- 年齢計算結果カード -->
+  <div class="card result-hidden" id="result-age">
+    <div class="card-title"><span class="icon">🎈</span> 年齢計算結果</div>
+
+    <!-- 現在年齢ヒーロー -->
+    <div class="age-hero">
+      <div>
+        <span class="age-num" id="res-age-num">--</span>
+        <span class="age-unit">歳</span>
+      </div>
+      <div class="age-detail" id="res-age-detail">-- 年 -- ヶ月 -- 日</div>
+    </div>
+
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">生まれた曜日</div>
+        <div class="info-value" id="res-weekday">--</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">干支</div>
+        <div class="info-value" id="res-eto">--</div>
+      </div>
+      <div class="info-item full">
+        <div class="info-label">和暦</div>
+        <div class="info-value" id="res-wareki">--</div>
+      </div>
+      <div class="info-item accent">
+        <div class="info-label">人生 ○ 日目</div>
+        <div class="info-value" id="res-lifeday">--</div>
+      </div>
+      <div class="info-item accent">
+        <div class="info-label">総週数</div>
+        <div class="info-value" id="res-weeks">--</div>
+      </div>
+      <div class="info-item full accent">
+        <div class="info-label">経過日数 / 総月数目安</div>
+        <div class="info-value" id="res-elapsed">--</div>
+      </div>
+    </div>
+
+    <!-- 指定日時点の年齢 -->
+    <div class="custom-date-result" id="res-custom-block">
+      <div class="cdr-title" id="res-custom-label">指定日時点の年齢</div>
+      <div class="cdr-age" id="res-custom-age">-- 歳</div>
+      <div class="cdr-detail" id="res-custom-detail">--</div>
+    </div>
+
+    <!-- 次の誕生日 -->
+    <hr class="section-divider" />
+    <div class="card-title" style="margin-bottom:10px;"><span class="icon">🎊</span> 次の誕生日</div>
+    <div class="info-grid">
+      <div class="info-item success full">
+        <div class="info-label">次の誕生日</div>
+        <div class="info-value" id="res-next-birthday">--</div>
+      </div>
+      <div class="info-item success">
+        <div class="info-label">残り日数</div>
+        <div class="info-value" id="res-days-to-bday">--</div>
+      </div>
+      <div class="info-item success">
+        <div class="info-label">誕生日の曜日</div>
+        <div class="info-value" id="res-bday-weekday">--</div>
+      </div>
+    </div>
+
+    <!-- 節目年齢 -->
+    <hr class="section-divider" />
+    <div class="card-title" style="margin-bottom:10px;"><span class="icon">🏆</span> 節目年齢</div>
+    <ul class="milestone-list" id="res-milestones"></ul>
+  </div>
+
+  <!-- 天気結果カード -->
+  <div class="card result-hidden" id="result-weather">
+    <div class="card-title"><span class="icon">🌤</span> 生まれた日の天気</div>
+
+    <!-- ローディング -->
+    <div class="loading" id="weather-loading" style="display:none;">
+      <div class="spinner"></div>
+      <span>天気データを取得中...</span>
+    </div>
+
+    <!-- 候補リスト -->
+    <div id="weather-candidates" style="display:none;">
+      <div style="font-size:.88rem;color:var(--text-sub);margin-bottom:6px;">複数の候補が見つかりました。該当する場所を選択してください：</div>
+      <ul class="candidate-list" id="candidate-list"></ul>
+    </div>
+
+    <!-- 天気エラー -->
+    <div id="weather-error" class="error-msg"></div>
+    <button class="btn btn-retry btn-sm result-hidden" id="btn-retry-weather">再試行</button>
+
+    <!-- 天気結果本体 -->
+    <div id="weather-result" style="display:none;">
+      <div class="weather-hero">
+        <span class="weather-icon" id="res-weather-icon">--</span>
+        <div class="weather-desc" id="res-weather-desc">--</div>
+        <div class="weather-place" id="res-weather-place">--</div>
+      </div>
+      <div class="info-grid" style="margin-top:12px;">
+        <div class="info-item">
+          <div class="info-label">最高気温</div>
+          <div class="info-value" id="res-temp-max">--</div>
+        </div>
+        <div class="info-item">
+          <div class="info-label">最低気温</div>
+          <div class="info-value" id="res-temp-min">--</div>
+        </div>
+        <div class="info-item full">
+          <div class="info-label">降水量</div>
+          <div class="info-value" id="res-precip">--</div>
+        </div>
+      </div>
+      <div class="weather-note" id="res-weather-note">
+        ※ 最寄り観測地点の推定・観測ベースデータです。実際の天気と異なる場合があります。
+      </div>
+    </div>
+  </div>
+
+  <!-- フッター -->
+  <footer>
+    <div>天気データ提供：<a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>（オープンソース・無料API）</div>
+    <div>ジオコーディング：<a href="https://open-meteo.com/en/docs/geocoding-api" target="_blank" rel="noopener">Open-Meteo Geocoding API</a></div>
+    <div>天気情報は参考値です。実際の天気と異なる場合があります。</div>
+    <div style="margin-top:6px;">Day 15 / 100日アプリチャレンジ 🎂</div>
+  </footer>
+
+</div><!-- /container -->
+
+<script>
+/* =====================================================
+   定数・マッピングデータ
+===================================================== */
+
+const WEEKDAYS = ['日', '月', '火', '水', '木', '金', '土'];
+
+const ETO = ['子（ねずみ）🐭', '丑（うし）🐮', '寅（とら）🐯', '卯（うさぎ）🐰',
+             '辰（たつ）🐉', '巳（へび）🐍', '午（うま）🐴', '未（ひつじ）🐑',
+             '申（さる）🐵', '酉（とり）🐓', '戌（いぬ）🐕', '亥（いのしし）🐗'];
+
+/** 節目年齢リスト */
+const MILESTONES = [
+  { age: 60, name: '還暦' },
+  { age: 70, name: '古希' },
+  { age: 77, name: '喜寿' },
+  { age: 80, name: '傘寿' },
+  { age: 88, name: '米寿' },
+  { age: 90, name: '卒寿' },
+  { age: 99, name: '白寿' },
+  { age: 100, name: '百寿' },
+];
+
+/**
+ * Open-Meteo weather code → 日本語説明・絵文字
+ * https://open-meteo.com/en/docs#weathervariables
+ */
+const WEATHER_CODES = {
+  0:  { desc: '快晴',       icon: '☀️' },
+  1:  { desc: '晴れ',       icon: '🌤' },
+  2:  { desc: '晴れ時々くもり', icon: '⛅' },
+  3:  { desc: 'くもり',     icon: '☁️' },
+  45: { desc: '霧',         icon: '🌫' },
+  48: { desc: '着氷性の霧',  icon: '🌫' },
+  51: { desc: '霧雨（弱）',  icon: '🌦' },
+  53: { desc: '霧雨',       icon: '🌦' },
+  55: { desc: '霧雨（強）',  icon: '🌧' },
+  56: { desc: '着氷性の霧雨（弱）', icon: '🌧' },
+  57: { desc: '着氷性の霧雨（強）', icon: '🌧' },
+  61: { desc: '雨（弱）',   icon: '🌧' },
+  63: { desc: '雨',         icon: '🌧' },
+  65: { desc: '大雨',       icon: '🌧' },
+  66: { desc: '着氷性の雨（弱）', icon: '🌨' },
+  67: { desc: '着氷性の雨（強）', icon: '🌨' },
+  71: { desc: '雪（弱）',   icon: '🌨' },
+  73: { desc: '雪',         icon: '❄️' },
+  75: { desc: '大雪',       icon: '❄️' },
+  77: { desc: 'あられ',     icon: '🌨' },
+  80: { desc: 'にわか雨（弱）', icon: '🌦' },
+  81: { desc: 'にわか雨',   icon: '🌦' },
+  82: { desc: 'にわか雨（強）', icon: '⛈' },
+  85: { desc: 'にわか雪（弱）', icon: '🌨' },
+  86: { desc: 'にわか雪（強）', icon: '❄️' },
+  95: { desc: '雷雨',       icon: '⛈' },
+  96: { desc: '雷雨（ひょう弱）', icon: '⛈' },
+  99: { desc: '雷雨（ひょう強）', icon: '⛈' },
+};
+
+/* =====================================================
+   ユーティリティ関数
+===================================================== */
+
+/**
+ * Date オブジェクトを "YYYY-MM-DD" 文字列に変換（ローカル時刻基準）
+ */
+function toDateStr(d) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${dd}`;
+}
+
+/**
+ * "YYYY-MM-DD" → {year, month, day} の純粋なオブジェクト
+ * タイムゾーンの影響を受けないようにパースする
+ */
+function parseDateStr(str) {
+  const [y, m, d] = str.split('-').map(Number);
+  return { year: y, month: m, day: d };
+}
+
+/**
+ * {year, month, day} → JavaScript Date（ローカル深夜0時）
+ */
+function toDate({ year, month, day }) {
+  return new Date(year, month - 1, day);
+}
+
+/**
+ * 満年齢計算（誕生日未到来を正確に判定）
+ * @param {Object} birth - {year, month, day}
+ * @param {Object} target - {year, month, day}
+ * @returns {Object} {years, months, days}
+ */
+function calcAge(birth, target) {
+  let years = target.year - birth.year;
+  let months = target.month - birth.month;
+  let days = target.day - birth.day;
+
+  if (days < 0) {
+    months--;
+    // 前月の末日を取得
+    const prevMonth = new Date(target.year, target.month - 1, 0);
+    days += prevMonth.getDate();
+  }
+  if (months < 0) {
+    years--;
+    months += 12;
+  }
+  return { years, months, days };
+}
+
+/**
+ * 2つの {year, month, day} 間の総日数差
+ */
+function diffDays(from, to) {
+  const d1 = toDate(from);
+  const d2 = toDate(to);
+  return Math.round((d2 - d1) / 86400000);
+}
+
+/**
+ * 今日の日付を {year, month, day} で返す
+ */
+function today() {
+  const d = new Date();
+  return { year: d.getFullYear(), month: d.getMonth() + 1, day: d.getDate() };
+}
+
+/**
+ * 和暦変換
+ */
+function toWareki(birth) {
+  const d = toDate(birth);
+  // 令和 (2019-05-01〜)
+  if (d >= new Date(2019, 4, 1)) {
+    const y = birth.year - 2018;
+    return `令和${y}年${birth.month}月${birth.day}日`;
+  }
+  // 平成 (1989-01-08〜2019-04-30)
+  if (d >= new Date(1989, 0, 8)) {
+    const y = birth.year - 1988;
+    return `平成${y}年${birth.month}月${birth.day}日`;
+  }
+  // 昭和 (1926-12-25〜1989-01-07)
+  if (d >= new Date(1926, 11, 25)) {
+    const y = birth.year - 1925;
+    return `昭和${y}年${birth.month}月${birth.day}日`;
+  }
+  // 大正
+  if (d >= new Date(1912, 6, 30)) {
+    const y = birth.year - 1911;
+    return `大正${y}年${birth.month}月${birth.day}日`;
+  }
+  // 明治
+  if (d >= new Date(1868, 0, 25)) {
+    const y = birth.year - 1867;
+    return `明治${y}年${birth.month}月${birth.day}日`;
+  }
+  return `${birth.year}年${birth.month}月${birth.day}日`;
+}
+
+/**
+ * 干支計算（1900年=子）
+ */
+function calcEto(year) {
+  return ETO[(year - 1900) % 12];
+}
+
+/**
+ * 次の誕生日を求める（今日が誕生日なら来年）
+ */
+function nextBirthday(birth) {
+  const t = today();
+  let y = t.year;
+  // 今年の誕生日
+  let next = { year: y, month: birth.month, day: birth.day };
+  // うるう年対策: 2/29生まれ
+  if (birth.month === 2 && birth.day === 29) {
+    // 次のうるう年を探す
+    let ny = y;
+    if (!(ny % 4 === 0 && (ny % 100 !== 0 || ny % 400 === 0)) ||
+        diffDays(t, {year: ny, month: 2, day: 29}) <= 0) {
+      ny++;
+      while (!(ny % 4 === 0 && (ny % 100 !== 0 || ny % 400 === 0))) ny++;
+    }
+    return { year: ny, month: 2, day: 29 };
+  }
+  if (diffDays(t, next) <= 0) {
+    next = { year: y + 1, month: birth.month, day: birth.day };
+  }
+  return next;
+}
+
+/**
+ * weather code を日本語情報に変換
+ */
+function decodeWeather(code) {
+  return WEATHER_CODES[code] || { desc: `不明 (code:${code})`, icon: '❓' };
+}
+
+/* =====================================================
+   localStorage ユーティリティ
+===================================================== */
+const LS_KEY = 'day15_age_calc';
+
+function loadStorage() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch { return {}; }
+}
+
+function saveStorage(data) {
+  try {
+    const prev = loadStorage();
+    localStorage.setItem(LS_KEY, JSON.stringify({ ...prev, ...data }));
+  } catch { /* storage full など */ }
+}
+
+function clearStorage() {
+  try { localStorage.removeItem(LS_KEY); } catch {}
+}
+
+/* =====================================================
+   API 呼び出し
+===================================================== */
+const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search';
+const WEATHER_URL   = 'https://archive-api.open-meteo.com/v1/archive';
+const CACHE_KEY_PREFIX = 'day15_weather_';
+const API_TIMEOUT_MS = 12000;
+
+/**
+ * タイムアウト付き fetch
+ */
+async function fetchWithTimeout(url, ms = API_TIMEOUT_MS) {
+  const ctrl = new AbortController();
+  const timer = setTimeout(() => ctrl.abort(), ms);
+  try {
+    const res = await fetch(url, { signal: ctrl.signal });
+    clearTimeout(timer);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    return await res.json();
+  } catch (e) {
+    clearTimeout(timer);
+    throw e;
+  }
+}
+
+/**
+ * 地名からジオコーディング候補を取得
+ * @param {string} place - 地名文字列
+ * @returns {Array} 候補リスト
+ */
+async function geocodePlace(place) {
+  const params = new URLSearchParams({
+    name: place,
+    count: 10,
+    language: 'ja',
+    format: 'json',
+  });
+  const data = await fetchWithTimeout(`${GEOCODING_URL}?${params}`);
+  return (data.results || []);
+}
+
+/**
+ * Open-Meteo Historical Weather API で1日分の天気を取得
+ * @param {number} lat
+ * @param {number} lng
+ * @param {string} dateStr - "YYYY-MM-DD"
+ */
+async function fetchHistoricalWeather(lat, lng, dateStr) {
+  // キャッシュチェック
+  const cacheKey = CACHE_KEY_PREFIX + `${lat}_${lng}_${dateStr}`;
+  try {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) return JSON.parse(cached);
+  } catch {}
+
+  const params = new URLSearchParams({
+    latitude:  lat,
+    longitude: lng,
+    start_date: dateStr,
+    end_date:   dateStr,
+    daily: [
+      'weather_code',
+      'temperature_2m_max',
+      'temperature_2m_min',
+      'precipitation_sum',
+    ].join(','),
+    timezone: 'Asia/Tokyo',
+  });
+
+  const data = await fetchWithTimeout(`${WEATHER_URL}?${params}`);
+  const daily = data.daily;
+  if (!daily || !daily.time || !daily.time.length) {
+    throw new Error('天気データが取得できませんでした');
+  }
+
+  const result = {
+    weatherCode:  daily.weather_code[0],
+    tempMax:      daily.temperature_2m_max[0],
+    tempMin:      daily.temperature_2m_min[0],
+    precipitation: daily.precipitation_sum[0],
+    lat: data.latitude,
+    lng: data.longitude,
+  };
+
+  // キャッシュ保存
+  try { localStorage.setItem(cacheKey, JSON.stringify(result)); } catch {}
+
+  return result;
+}
+
+/* =====================================================
+   UI ヘルパー
+===================================================== */
+
+function showEl(id) { document.getElementById(id).style.display = ''; }
+function hideEl(id) { document.getElementById(id).style.display = 'none'; }
+function setText(id, val) { document.getElementById(id).textContent = val; }
+
+function showError(id, msg) {
+  const el = document.getElementById(id);
+  el.textContent = msg;
+  el.classList.add('show');
+}
+function clearError(id) {
+  const el = document.getElementById(id);
+  el.textContent = '';
+  el.classList.remove('show');
+}
+
+function showCard(id) {
+  document.getElementById(id).classList.remove('result-hidden');
+}
+function hideCard(id) {
+  document.getElementById(id).classList.add('result-hidden');
+}
+
+/* =====================================================
+   年齢計算・表示
+===================================================== */
+
+function renderAgeResults(birth, customDateStr) {
+  const t = today();
+  const age = calcAge(birth, t);
+
+  // 現在年齢ヒーロー
+  setText('res-age-num', age.years);
+  setText('res-age-detail', `${age.years}年 ${age.months}ヶ月 ${age.days}日`);
+
+  // 生まれた曜日
+  const bdayWeekday = WEEKDAYS[toDate(birth).getDay()];
+  setText('res-weekday', `${bdayWeekday}曜日`);
+
+  // 干支
+  setText('res-eto', calcEto(birth.year));
+
+  // 和暦
+  setText('res-wareki', toWareki(birth));
+
+  // 経過日数
+  const elapsed = diffDays(birth, t);
+  setText('res-lifeday', `人生 ${elapsed.toLocaleString()} 日目`);
+  setText('res-weeks', `${Math.floor(elapsed / 7).toLocaleString()} 週`);
+  setText('res-elapsed', `${elapsed.toLocaleString()} 日 / 約 ${Math.floor(elapsed / 30.4375).toLocaleString()} ヶ月`);
+
+  // 指定日時点の年齢
+  const targetStr = customDateStr || toDateStr(new Date());
+  const targetParsed = parseDateStr(targetStr);
+  const customAge = calcAge(birth, targetParsed);
+  const isToday = targetStr === toDateStr(new Date());
+  setText('res-custom-label', isToday
+    ? `今日（${t.year}年${t.month}月${t.day}日）時点の年齢`
+    : `${targetParsed.year}年${targetParsed.month}月${targetParsed.day}日 時点の年齢`
+  );
+  setText('res-custom-age', `${customAge.years} 歳`);
+  setText('res-custom-detail', `${customAge.years}年 ${customAge.months}ヶ月 ${customAge.days}日`);
+
+  // 次の誕生日
+  const nextBday = nextBirthday(birth);
+  const daysLeft = diffDays(t, nextBday);
+  const nextBdayDate = toDate(nextBday);
+  setText('res-next-birthday', `${nextBday.year}年${nextBday.month}月${nextBday.day}日`);
+  setText('res-days-to-bday', `あと ${daysLeft.toLocaleString()} 日`);
+  setText('res-bday-weekday', `${WEEKDAYS[nextBdayDate.getDay()]}曜日`);
+
+  // 節目年齢
+  renderMilestones(age.years);
+
+  showCard('result-age');
+}
+
+function renderMilestones(currentAge) {
+  const ul = document.getElementById('res-milestones');
+  ul.innerHTML = '';
+  MILESTONES.forEach(({ age, name }) => {
+    const li = document.createElement('li');
+    const isPassed  = currentAge > age;
+    const isCurrent = currentAge === age;
+    const yearsLeft = age - currentAge;
+    li.classList.toggle('passed', isPassed);
+    li.classList.toggle('current', isCurrent);
+
+    const left = document.createElement('span');
+    left.innerHTML = `<span class="ms-name">${name}</span><span class="ms-age">（${age}歳）</span>`;
+
+    const right = document.createElement('span');
+    right.className = 'ms-status';
+    if (isCurrent) right.textContent = '🎊 今年です！';
+    else if (isPassed) right.textContent = '達成済み ✅';
+    else right.textContent = `あと ${yearsLeft} 年`;
+
+    li.appendChild(left);
+    li.appendChild(right);
+    ul.appendChild(li);
+  });
+}
+
+/* =====================================================
+   天気取得・表示フロー
+===================================================== */
+
+let _lastBirth = null;   // 最後に使用した birth
+let _lastGeo   = null;   // 最後に選択した候補 {lat, lng, name, country}
+
+/**
+ * 地名検索 → 候補表示 or 自動選択
+ */
+async function startWeatherFlow(birth, place) {
+  clearError('weather-error');
+  hideEl('weather-candidates');
+  hideEl('weather-result');
+  hideCard('btn-retry-weather');
+  _lastBirth = birth;
+
+  showCard('result-weather');
+  showEl('weather-loading');
+
+  let candidates;
+  try {
+    candidates = await geocodePlace(place);
+  } catch (e) {
+    hideEl('weather-loading');
+    showError('weather-error',
+      e.name === 'AbortError'
+        ? '通信がタイムアウトしました。ネットワークを確認して再試行してください。'
+        : `場所の検索に失敗しました: ${e.message}`
+    );
+    showCard('btn-retry-weather');
+    return;
+  }
+  hideEl('weather-loading');
+
+  if (!candidates.length) {
+    showError('weather-error', `「${place}」が見つかりませんでした。別の地名で試してください。`);
+    showCard('btn-retry-weather');
+    return;
+  }
+
+  if (candidates.length === 1) {
+    await fetchAndRenderWeather(birth, candidates[0]);
+  } else {
+    renderCandidates(candidates, birth);
+  }
+}
+
+/**
+ * 候補リストを表示してユーザーに選ばせる
+ */
+function renderCandidates(candidates, birth) {
+  const ul = document.getElementById('candidate-list');
+  ul.innerHTML = '';
+  candidates.forEach(c => {
+    const li = document.createElement('li');
+    li.innerHTML = `
+      <div class="cand-name">${c.name || ''}</div>
+      <div class="cand-sub">${[c.admin1, c.admin2, c.country].filter(Boolean).join(' / ')} (${Number(c.latitude).toFixed(2)}, ${Number(c.longitude).toFixed(2)})</div>
+    `;
+    li.addEventListener('click', () => {
+      hideEl('weather-candidates');
+      fetchAndRenderWeather(birth, c);
+    });
+    ul.appendChild(li);
+  });
+  showEl('weather-candidates');
+}
+
+/**
+ * 選択された地点で天気データを取得して表示
+ */
+async function fetchAndRenderWeather(birth, geo) {
+  clearError('weather-error');
+  hideEl('weather-result');
+  hideCard('btn-retry-weather');
+  _lastGeo = geo;
+
+  showEl('weather-loading');
+
+  const dateStr = `${birth.year}-${String(birth.month).padStart(2,'0')}-${String(birth.day).padStart(2,'0')}`;
+
+  let wd;
+  try {
+    wd = await fetchHistoricalWeather(geo.latitude, geo.longitude, dateStr);
+  } catch (e) {
+    hideEl('weather-loading');
+    const msg = e.name === 'AbortError'
+      ? '通信がタイムアウトしました。再試行してください。'
+      : `天気データの取得に失敗しました: ${e.message}`;
+    showError('weather-error', msg);
+    showCard('btn-retry-weather');
+    return;
+  }
+  hideEl('weather-loading');
+
+  // 表示
+  const wInfo = decodeWeather(wd.weatherCode);
+  setText('res-weather-icon', wInfo.icon);
+  setText('res-weather-desc', wInfo.desc);
+  setText('res-weather-place',
+    `${geo.name}${geo.country ? '（' + geo.country + '）' : ''} — 観測地点 (${Number(wd.lat).toFixed(2)}, ${Number(wd.lng).toFixed(2)})`
+  );
+  setText('res-temp-max',  wd.tempMax  !== null ? `${wd.tempMax} ℃`  : 'データなし');
+  setText('res-temp-min',  wd.tempMin  !== null ? `${wd.tempMin} ℃`  : 'データなし');
+  setText('res-precip', wd.precipitation !== null ? `${wd.precipitation} mm` : 'データなし');
+
+  showEl('weather-result');
+
+  // 選択した候補を保存
+  saveStorage({ lastGeo: geo });
+}
+
+/* =====================================================
+   計算ボタン メインロジック
+===================================================== */
+
+async function onCalc() {
+  clearError('input-error');
+
+  const birthdayStr  = document.getElementById('birthday').value;
+  const placeVal     = document.getElementById('birthplace').value.trim();
+  const customDateStr = document.getElementById('custom-date').value;
+
+  // バリデーション
+  if (!birthdayStr) {
+    showError('input-error', '生年月日を入力してください。');
+    return;
+  }
+  const birth = parseDateStr(birthdayStr);
+  const t = today();
+  if (diffDays(birth, t) < 0) {
+    showError('input-error', '生年月日は今日以前の日付を入力してください。');
+    return;
+  }
+
+  // 年齢計算
+  renderAgeResults(birth, customDateStr || null);
+
+  // localStorage保存
+  saveStorage({
+    birthday: birthdayStr,
+    birthplace: placeVal,
+    customDate: customDateStr,
+  });
+
+  // 天気取得
+  if (placeVal) {
+    await startWeatherFlow(birth, placeVal);
+  } else {
+    hideCard('result-weather');
+  }
+
+  // 結果へスクロール
+  document.getElementById('result-age').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+/* =====================================================
+   クリア
+===================================================== */
+
+function onClear() {
+  document.getElementById('birthday').value = '';
+  document.getElementById('birthplace').value = '';
+  document.getElementById('custom-date').value = '';
+  clearError('input-error');
+  hideCard('result-age');
+  hideCard('result-weather');
+  hideCard('btn-retry-weather');
+
+  if (confirm('保存されたデータ（localStorage）も削除しますか？')) {
+    clearStorage();
+    // 天気キャッシュも削除
+    try {
+      Object.keys(localStorage)
+        .filter(k => k.startsWith('day15_'))
+        .forEach(k => localStorage.removeItem(k));
+    } catch {}
+  }
+}
+
+/* =====================================================
+   再試行ボタン
+===================================================== */
+
+function onRetryWeather() {
+  const placeVal = document.getElementById('birthplace').value.trim();
+  if (_lastBirth && placeVal) {
+    startWeatherFlow(_lastBirth, placeVal);
+  }
+}
+
+/* =====================================================
+   Enterキーで計算
+===================================================== */
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const active = document.activeElement;
+    if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA')) {
+      onCalc();
+    }
+  }
+});
+
+/* =====================================================
+   PWA: beforeinstallprompt
+===================================================== */
+
+let _deferredInstallPrompt = null;
+
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _deferredInstallPrompt = e;
+  const banner = document.getElementById('install-banner');
+  banner.classList.add('show');
+});
+
+document.getElementById('btn-install').addEventListener('click', async () => {
+  if (!_deferredInstallPrompt) return;
+  _deferredInstallPrompt.prompt();
+  const { outcome } = await _deferredInstallPrompt.userChoice;
+  if (outcome === 'accepted') {
+    document.getElementById('install-banner').classList.remove('show');
+  }
+  _deferredInstallPrompt = null;
+});
+
+window.addEventListener('appinstalled', () => {
+  document.getElementById('install-banner').classList.remove('show');
+});
+
+/* =====================================================
+   Service Worker 登録
+===================================================== */
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {
+    // PWA登録失敗はサイレントに無視（通常動作に影響しない）
+  });
+}
+
+/* =====================================================
+   初期化: localStorage から復元
+===================================================== */
+
+(function init() {
+  // 今日の日付を custom-date のデフォルト上限に設定
+  const maxDate = toDateStr(new Date());
+  document.getElementById('birthday').max = maxDate;
+
+  const saved = loadStorage();
+  if (saved.birthday) {
+    document.getElementById('birthday').value = saved.birthday;
+  }
+  if (saved.birthplace) {
+    document.getElementById('birthplace').value = saved.birthplace;
+  }
+  if (saved.customDate) {
+    document.getElementById('custom-date').value = saved.customDate;
+  }
+
+  // イベント登録
+  document.getElementById('btn-calc').addEventListener('click', onCalc);
+  document.getElementById('btn-clear').addEventListener('click', onClear);
+  document.getElementById('btn-retry-weather').addEventListener('click', onRetryWeather);
+
+  // 保存データがあれば自動計算
+  if (saved.birthday) {
+    const birth = parseDateStr(saved.birthday);
+    const t = today();
+    if (diffDays(birth, t) >= 0) {
+      renderAgeResults(birth, saved.customDate || null);
+      // 天気は保存済みキャッシュから自動復元
+      if (saved.birthplace) {
+        const geo = saved.lastGeo;
+        if (geo) {
+          // キャッシュがあれば即表示
+          const dateStr = `${birth.year}-${String(birth.month).padStart(2,'0')}-${String(birth.day).padStart(2,'0')}`;
+          const cacheKey = `day15_weather_${geo.latitude}_${geo.longitude}_${dateStr}`;
+          try {
+            const cached = localStorage.getItem(cacheKey);
+            if (cached) {
+              showCard('result-weather');
+              fetchAndRenderWeather(birth, geo);
+            }
+          } catch {}
+        }
+      }
+    }
+  }
+})();
+</script>
+
+</body>
+</html>
