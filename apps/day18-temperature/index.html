@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="体感で理解できる摂氏・華氏の温度変換ツール">
+  <meta name="theme-color" content="#FF6B6B">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="温度変換">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <title>🌡️ 温度変換 ℃↔℉</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header class="app-header">
+    <div class="header-inner">
+      <div class="header-icon">🌡️</div>
+      <div class="header-text">
+        <h1>温度変換</h1>
+        <p class="subtitle">体感で理解できる ℃ ↔ ℉</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- 変換カード -->
+    <section class="card" id="converter-card">
+      <div class="input-row">
+        <div class="input-wrap">
+          <label class="unit-label celsius-color" for="celsius-input">℃</label>
+          <input
+            type="number"
+            id="celsius-input"
+            placeholder="0"
+            inputmode="decimal"
+            step="any"
+            autocomplete="off"
+            aria-label="摂氏入力"
+          >
+          <span class="unit-badge">摂氏</span>
+        </div>
+        <div class="swap-area">
+          <button class="swap-btn" id="swap-btn" aria-label="入れ替え" title="値を入れ替える">⇄</button>
+        </div>
+        <div class="input-wrap">
+          <label class="unit-label fahrenheit-color" for="fahrenheit-input">℉</label>
+          <input
+            type="number"
+            id="fahrenheit-input"
+            placeholder="32"
+            inputmode="decimal"
+            step="any"
+            autocomplete="off"
+            aria-label="華氏入力"
+          >
+          <span class="unit-badge">華氏</span>
+        </div>
+      </div>
+
+      <div class="formula-display" id="formula-display">
+        数値を入力してください
+      </div>
+
+      <button class="copy-btn" id="copy-btn" disabled aria-label="変換結果をコピー">
+        <span>📋</span>
+        <span>コピー</span>
+      </button>
+
+      <!-- 温度メーター -->
+      <div class="meter-section">
+        <div class="meter-track" id="meter-track">
+          <div class="meter-marker" id="meter-marker">
+            <div class="marker-dot" id="marker-dot"></div>
+            <div class="marker-temp" id="marker-temp"></div>
+          </div>
+        </div>
+        <div class="meter-labels">
+          <span>-30℃</span>
+          <span>0℃</span>
+          <span>25℃</span>
+          <span>55℃</span>
+          <span>100℃+</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 体感カード -->
+    <section class="card feeling-card" id="feeling-card">
+      <div class="feeling-header">
+        <div class="danger-badge" id="danger-badge">－</div>
+        <div class="feeling-emoji" id="feeling-emoji">🌡️</div>
+      </div>
+      <div class="feeling-text" id="feeling-text">温度を入力してください</div>
+      <div class="life-scene" id="life-scene"></div>
+      <div class="milestone" id="milestone"></div>
+    </section>
+
+    <!-- プリセット -->
+    <section class="card" id="presets-card">
+      <h2 class="card-title">⭐ よく使う温度</h2>
+      <div class="presets-group">
+        <div class="presets-subtitle">摂氏（℃）</div>
+        <div class="preset-buttons">
+          <button class="preset-btn celsius-preset" data-celsius="0">0℃</button>
+          <button class="preset-btn celsius-preset" data-celsius="10">10℃</button>
+          <button class="preset-btn celsius-preset" data-celsius="20">20℃</button>
+          <button class="preset-btn celsius-preset" data-celsius="25">25℃</button>
+          <button class="preset-btn celsius-preset" data-celsius="30">30℃</button>
+          <button class="preset-btn celsius-preset" data-celsius="37">37℃</button>
+          <button class="preset-btn celsius-preset" data-celsius="100">100℃</button>
+        </div>
+      </div>
+      <div class="presets-group">
+        <div class="presets-subtitle">華氏（℉）</div>
+        <div class="preset-buttons">
+          <button class="preset-btn fahrenheit-preset" data-fahrenheit="32">32℉</button>
+          <button class="preset-btn fahrenheit-preset" data-fahrenheit="68">68℉</button>
+          <button class="preset-btn fahrenheit-preset" data-fahrenheit="77">77℉</button>
+          <button class="preset-btn fahrenheit-preset" data-fahrenheit="86">86℉</button>
+          <button class="preset-btn fahrenheit-preset" data-fahrenheit="212">212℉</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 設定 -->
+    <section class="card" id="settings-card">
+      <h2 class="card-title">⚙️ 設定</h2>
+      <div class="setting-item">
+        <span class="setting-label">小数点以下の桁数</span>
+        <div class="decimal-buttons">
+          <button class="decimal-btn" data-decimal="0">0</button>
+          <button class="decimal-btn" data-decimal="1">1</button>
+          <button class="decimal-btn active" data-decimal="2">2</button>
+          <button class="decimal-btn" data-decimal="3">3</button>
+          <button class="decimal-btn" data-decimal="4">4</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 履歴 -->
+    <section class="card" id="history-card">
+      <div class="card-header-row">
+        <h2 class="card-title">📝 変換履歴</h2>
+        <button class="clear-btn" id="clear-history">クリア</button>
+      </div>
+      <div class="history-list" id="history-list">
+        <div class="empty-message">まだ履歴がありません</div>
+      </div>
+    </section>
+
+    <!-- 豆知識 -->
+    <section class="card" id="trivia-card">
+      <div class="card-header-row">
+        <h2 class="card-title">💡 豆知識</h2>
+        <button class="refresh-btn" id="refresh-trivia">更新</button>
+      </div>
+      <p class="trivia-text" id="trivia-text">読み込み中...</p>
+    </section>
+
+  </main>
+
+  <footer class="app-footer">
+    <p>100日アプリチャレンジ / Day 18</p>
+  </footer>
+
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

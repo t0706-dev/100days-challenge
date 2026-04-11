@@ -1,0 +1,20 @@
+{
+  "name": "温度変換 ℃↔℉",
+  "short_name": "温度変換",
+  "description": "体感で理解できる摂氏・華氏の温度変換ツール",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFF8F0",
+  "theme_color": "#FF6B6B",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["utilities", "education"]
+}
