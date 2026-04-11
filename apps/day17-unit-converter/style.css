@@ -24,7 +24,10 @@ body.mode-weight {
   --accent-mid: #a7f3d0;
 }
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
 
 body {
   font-family: var(--font);
@@ -32,14 +35,17 @@ body {
   color: var(--text);
   min-height: 100dvh;
   transition: background 0.3s ease;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 /* ── ヘッダー ─────────────────────────────────────────── */
 .header {
-  background: linear-gradient(135deg, var(--accent) 0%, color-mix(in srgb, var(--accent) 80%, #fff) 100%);
+  background: var(--accent);
   color: white;
   padding: 20px 16px 28px;
   transition: background 0.3s ease;
+  width: 100%;
 }
 .header-inner { max-width: 600px; margin: 0 auto; }
 .header-title {
@@ -57,6 +63,7 @@ body {
 .tabs-wrap {
   background: var(--accent);
   transition: background 0.3s ease;
+  width: 100%;
 }
 .tabs {
   display: flex;
@@ -174,9 +181,11 @@ body {
 .structured-row {
   display: flex;
   gap: 8px;
+  min-width: 0;
 }
 .value-input {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   padding: 12px 14px;
   border: 2px solid var(--text-light);
   border-radius: var(--radius-sm);
@@ -188,18 +197,23 @@ body {
 }
 .value-input:focus { border-color: var(--accent); }
 .unit-select {
-  padding: 12px 10px;
+  flex: 0 0 auto;
+  width: 110px;
+  max-width: 110px;
+  padding: 12px 4px 12px 8px;
   border: 2px solid var(--text-light);
   border-radius: var(--radius-sm);
   font-family: var(--font);
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   outline: none;
   cursor: pointer;
   background: white;
   color: var(--text);
   transition: border-color var(--transition);
-  min-width: 90px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-appearance: auto;
 }
 .unit-select:focus { border-color: var(--accent); }
 
