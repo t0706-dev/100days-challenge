@@ -444,6 +444,22 @@ function bindEvents() {
     }
   });
 
+  // ±ボタン（摂氏）
+  document.getElementById('celsius-sign').addEventListener('click', () => {
+    const val = parseFloat(celsiusInput.value);
+    if (isNaN(val)) return;
+    celsiusInput.value = -val;
+    updateFromCelsius(-val);
+  });
+
+  // ±ボタン（華氏）
+  document.getElementById('fahrenheit-sign').addEventListener('click', () => {
+    const val = parseFloat(fahrenheitInput.value);
+    if (isNaN(val)) return;
+    fahrenheitInput.value = -val;
+    updateFromFahrenheit(-val);
+  });
+
   // スワップボタン
   document.getElementById('swap-btn').addEventListener('click', () => {
     const c = celsiusInput.value;
