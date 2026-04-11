@@ -665,6 +665,7 @@ html, body {
   width: 100%; max-width: 480px;
   box-shadow: var(--shadow-lg);
   animation: modalSlideIn .2s ease;
+  overflow: hidden;
 }
 .modal-small { max-width: 360px; }
 
@@ -713,8 +714,11 @@ textarea {
   outline: none;
   transition: border-color .15s;
   width: 100%;
+  max-width: 100%;
 }
 input:focus, select:focus, textarea:focus { border-color: var(--border-focus); }
+input[type="date"],
+input[type="time"] { -webkit-appearance: none; appearance: none; }
 textarea { resize: vertical; min-height: 52px; }
 .form-error { font-size: .73rem; color: var(--color-danger); min-height: 1em; }
 
