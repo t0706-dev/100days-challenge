@@ -229,14 +229,19 @@ input[type="number"]::-webkit-outer-spin-button {
   color: var(--text-light);
 }
 
-.swap-btn:hover {
-  background: var(--primary);
-  border-color: var(--primary);
-  color: white;
-  transform: rotate(180deg);
+@media (hover: hover) {
+  .swap-btn:hover {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: white;
+    transform: rotate(180deg);
+  }
 }
 
 .swap-btn:active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: white;
   transform: rotate(180deg) scale(0.93);
 }
 
