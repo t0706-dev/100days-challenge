@@ -122,6 +122,40 @@ body {
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
+.label-hint {
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--text-light);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-left: 4px;
+}
+
+/* ── 例示チップ ───────────────────────────────────────── */
+.example-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+.chips-label {
+  font-size: 0.75rem;
+  color: var(--text-sub);
+}
+.chip {
+  padding: 4px 10px;
+  background: var(--accent-light);
+  border: 1px solid var(--accent-mid);
+  border-radius: 20px;
+  font-family: var(--font);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--accent);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.chip:hover, .chip:active { background: var(--accent-mid); }
 
 .natural-row {
   display: flex;
@@ -245,6 +279,20 @@ body {
   color: white;
 }
 .d-btn:hover:not(.active) { border-color: var(--accent); color: var(--accent); }
+
+/* ── 換算結果ヒント ───────────────────────────────────── */
+.results-hint {
+  font-size: 0.78rem;
+  color: var(--text-sub);
+  margin-bottom: 10px;
+}
+
+/* ── 比較モード説明 ───────────────────────────────────── */
+.compare-desc {
+  font-size: 0.82rem;
+  color: var(--text-sub);
+  margin-bottom: 10px;
+}
 
 /* ── セクションヘッダー ───────────────────────────────── */
 .section-header {

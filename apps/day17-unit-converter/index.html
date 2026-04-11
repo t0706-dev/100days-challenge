@@ -38,7 +38,7 @@
       <section class="card input-section">
 
         <div class="natural-area">
-          <label class="label">🔤 自然文で入力</label>
+          <label class="label">🔤 自然文で入力 <span class="label-hint">数値＋単位をそのまま入力</span></label>
           <div class="natural-row">
             <input
               type="text"
@@ -50,6 +50,15 @@
               spellcheck="false"
             >
             <button id="natural-btn" class="natural-btn">変換</button>
+          </div>
+          <div class="example-chips" id="example-chips">
+            <span class="chips-label">例：</span>
+            <button class="chip" data-val="1km">1km</button>
+            <button class="chip" data-val="42.195km">42.195km</button>
+            <button class="chip" data-val="100mile">100mile</button>
+            <button class="chip" data-val="500g">500g</button>
+            <button class="chip" data-val="70kg">70kg</button>
+            <button class="chip" data-val="2.5lb">2.5lb</button>
           </div>
           <div id="parse-msg" class="parse-msg"></div>
         </div>
@@ -90,14 +99,16 @@
       <section class="results-section">
         <div class="section-header">
           <h2 class="section-title">換算結果</h2>
-          <button id="compare-toggle" class="compare-toggle-btn">⚖️ 比較</button>
+          <button id="compare-toggle" class="compare-toggle-btn" title="2つの単位を並べて比率を確認">⚖️ 比較</button>
         </div>
+        <p class="results-hint">☆ でよく使う単位を上に固定　📋 でコピー</p>
         <div id="results-grid" class="results-grid"></div>
       </section>
 
       <!-- 比較モード -->
       <section id="compare-section" class="card compare-section hidden">
         <h2 class="section-title">⚖️ 比較モード</h2>
+        <p class="compare-desc">2つの単位を選んで大きさの比率を確認できます</p>
         <div class="compare-selects">
           <select id="cmp-unit1" class="cmp-select"></select>
           <span class="cmp-vs">vs</span>

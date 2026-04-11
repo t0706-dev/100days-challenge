@@ -674,6 +674,14 @@ function setupEvents() {
     if (e.key === 'Enter') doNaturalParse();
   });
 
+  // 例示チップ
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      el.naturalInput.value = chip.dataset.val;
+      doNaturalParse();
+    });
+  });
+
   // 数値入力
   el.valueInput.addEventListener('input', () => {
     const v = parseFloat(el.valueInput.value);
