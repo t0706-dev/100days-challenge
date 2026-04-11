@@ -464,9 +464,11 @@ function bindEvents() {
   document.getElementById('swap-btn').addEventListener('click', () => {
     const c = celsiusInput.value;
     const f = fahrenheitInput.value;
-    celsiusInput.value = f !== '' ? formatNum(fToC(parseFloat(f)), decimalPlaces) : '';
-    fahrenheitInput.value = c !== '' ? formatNum(cToF(parseFloat(c)), decimalPlaces) : '';
-    if (celsiusInput.value !== '') updateFromCelsius(celsiusInput.value);
+    // 数値をそのまま入れ替え（例: 25℃→25℉として再変換）
+    celsiusInput.value = f;
+    fahrenheitInput.value = c;
+    if (celsiusInput.value !== '') updateFromCelsius(parseFloat(celsiusInput.value));
+    else if (fahrenheitInput.value !== '') updateFromFahrenheit(parseFloat(fahrenheitInput.value));
     else clearUI();
   });
 
