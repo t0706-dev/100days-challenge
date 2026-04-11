@@ -750,14 +750,19 @@ input[type="color"] { width: 100%; height: 36px; border-radius: var(--radius-md)
   .style-tabs { padding: 0 8px; }
   .style-tab { padding: 0 10px; font-size: .76rem; }
 
-  .digital-card .digital-value { font-size: 2.2rem; }
-  .digital-card { min-width: 62px; padding: 10px 12px; }
+  /* デジタル: セパレーターとカードを縮小して1行に収める */
+  .digital-grid { flex-wrap: nowrap; }
+  .digital-card .digital-value { font-size: 1.75rem; }
+  .digital-card { min-width: 48px; padding: 7px 8px; }
+  .digital-sep { font-size: 1.2rem; padding-top: 5px; }
 
-  .flip-unit { width: 62px; height: 76px; }
+  /* フリップ: セパレーターとカードを縮小して1行に収める */
+  .flip-unit { width: 54px; height: 66px; }
+  .flip-separator { font-size: 1.6rem; padding-top: 2px; margin: 0 -4px; }
   .flip-top span,
   .flip-bottom span,
   .flip-anim-top span,
-  .flip-anim-bottom span { font-size: 2.1rem; }
+  .flip-anim-bottom span { font-size: 1.85rem; }
 
   .ring-svg { width: 190px; height: 190px; }
   .analog-svg { width: 180px; height: 180px; }
