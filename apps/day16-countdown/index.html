@@ -1235,7 +1235,7 @@ function calculateCountdown(evt) {
   }
   const diff = target - now;
   const isPast = diff < 0;
-  const absDiff = Math.abs(diff);
+  const absDiff = isPast ? 0 : diff;
   const totalSeconds = Math.floor(absDiff / 1000);
   const days    = Math.floor(totalSeconds / 86400);
   const hours   = Math.floor((totalSeconds % 86400) / 3600);
