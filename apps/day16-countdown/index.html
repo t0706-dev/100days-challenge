@@ -1360,9 +1360,13 @@ function renderFlip(cd) {
       void animTopEl.offsetWidth;
       animTopEl.classList.add('flipping-top');
       animBottomEl.classList.add('flipping-bottom');
-      setTimeout(() => { bottomEl.querySelector('span').textContent = newVal; }, 280);
+      // animTopが裏返しきった280ms時点で両方の静的要素を同時更新
       setTimeout(() => {
-        topEl.querySelector('span').textContent = newVal;
+        topEl.querySelector('span').textContent    = newVal;
+        bottomEl.querySelector('span').textContent = newVal;
+      }, 280);
+      // animBottom終了後にオーバーレイを非表示
+      setTimeout(() => {
         animTopEl.classList.remove('flipping-top');
         animBottomEl.classList.remove('flipping-bottom');
       }, 560);
