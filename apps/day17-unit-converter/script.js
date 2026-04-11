@@ -143,7 +143,7 @@ const state = {
   decimals: 3,
   history: [],
   favorites: { distance: [], weight: [] },
-  compareOpen: false,
+  compareOpen: true,
   cmpUnit1: 'km',
   cmpUnit2: 'm',
   triviaIndex: -1
@@ -373,7 +373,6 @@ const el = {
   decimalLabel:  $('decimal-label'),
   dBtns:         document.querySelectorAll('.d-btn'),
   resultsGrid:   $('results-grid'),
-  compareToggle: $('compare-toggle'),
   compareSection:$('compare-section'),
   cmpUnit1:      $('cmp-unit1'),
   cmpUnit2:      $('cmp-unit2'),
@@ -580,7 +579,7 @@ function renderHistory() {
 
 function fullRender(doHistory = true) {
   renderResults();
-  if (state.compareOpen) renderCompare();
+  renderCompare();
   renderLifeImage();
   if (doHistory) {
     addHistory();
@@ -706,18 +705,11 @@ function setupEvents() {
       state.decimals = parseInt(btn.dataset.d);
       renderDecimalBtns();
       renderResults();
-      if (state.compareOpen) renderCompare();
+      renderCompare();
       saveStorage();
     });
   });
 
-  // 比較モード
-  el.compareToggle.addEventListener('click', () => {
-    state.compareOpen = !state.compareOpen;
-    el.compareSection.classList.toggle('hidden', !state.compareOpen);
-    el.compareToggle.classList.toggle('active', state.compareOpen);
-    if (state.compareOpen) renderCompare();
-  });
 
   el.cmpUnit1.addEventListener('change', () => {
     state.cmpUnit1 = el.cmpUnit1.value;

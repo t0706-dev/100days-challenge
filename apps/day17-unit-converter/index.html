@@ -97,18 +97,15 @@
 
       <!-- 換算結果 -->
       <section class="results-section">
-        <div class="section-header">
-          <h2 class="section-title">換算結果</h2>
-          <button id="compare-toggle" class="compare-toggle-btn" title="2つの単位を並べて比率を確認">⚖️ 比較</button>
-        </div>
+        <h2 class="section-title">換算結果</h2>
         <p class="results-hint">☆ でよく使う単位を上に固定　📋 でコピー</p>
         <div id="results-grid" class="results-grid"></div>
       </section>
 
-      <!-- 比較モード -->
-      <section id="compare-section" class="card compare-section hidden">
-        <h2 class="section-title">⚖️ 比較モード</h2>
-        <p class="compare-desc">2つの単位を選んで大きさの比率を確認できます</p>
+      <!-- 比較モード（常時表示） -->
+      <section id="compare-section" class="card compare-section">
+        <h2 class="section-title">⚖️ 比較</h2>
+        <p class="compare-desc">2つの単位を選んで大きさの比率を確認</p>
         <div class="compare-selects">
           <select id="cmp-unit1" class="cmp-select"></select>
           <span class="cmp-vs">vs</span>

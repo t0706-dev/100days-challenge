@@ -307,23 +307,6 @@ body {
   color: var(--text);
 }
 
-/* ── 比較トグルボタン ─────────────────────────────────── */
-.compare-toggle-btn {
-  padding: 6px 12px;
-  border: 2px solid var(--accent);
-  border-radius: 20px;
-  background: white;
-  color: var(--accent);
-  font-family: var(--font);
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  transition: var(--transition);
-}
-.compare-toggle-btn.active {
-  background: var(--accent);
-  color: white;
-}
 
 /* ── 結果グリッド ─────────────────────────────────────── */
 .results-grid {

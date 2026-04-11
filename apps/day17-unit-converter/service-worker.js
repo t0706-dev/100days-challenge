@@ -1,4 +1,4 @@
-const CACHE = 'unit-converter-v2';
+const CACHE = 'unit-converter-v3';
 const ASSETS = [
   './',
   './index.html',
