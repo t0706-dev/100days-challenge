@@ -1283,7 +1283,7 @@ function setStatusEl(id, cd, evt) {
 }
 
 function renderDigital(cd) {
-  document.querySelector('#dDays .digital-value').textContent    = cd.isPast ? `-${cd.days}` : cd.days;
+  document.querySelector('#dDays .digital-value').textContent    = cd.days;
   document.querySelector('#dHours .digital-value').textContent   = pad2(cd.hours);
   document.querySelector('#dMinutes .digital-value').textContent = pad2(cd.minutes);
   document.querySelector('#dSeconds .digital-value').textContent = pad2(cd.seconds);
@@ -1304,7 +1304,7 @@ function renderRing(cd) {
   if (rp) { rp.classList.remove('is-today','is-urgent','is-past'); if (cls) rp.classList.add(cls); }
   const ringDays = document.getElementById('ringDays');
   const ringTime = document.getElementById('ringTime');
-  if (ringDays) ringDays.textContent = cd.isPast ? `-${cd.days}` : cd.days;
+  if (ringDays) ringDays.textContent = cd.days;
   if (ringTime) ringTime.textContent = `${pad2(cd.hours)}:${pad2(cd.minutes)}:${pad2(cd.seconds)}`;
 }
 
@@ -1320,7 +1320,7 @@ function renderAnalog(cd) {
   setRotate('analogHourHand', hourAngle);
   setRotate('analogMinHand',  minAngle);
   const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.textContent = v; };
-  setVal('analogDaysVal',  cd.isPast ? `-${cd.days}` : cd.days);
+  setVal('analogDaysVal',  cd.days);
   setVal('analogHoursVal', pad2(cd.hours));
   setVal('analogMinsVal',  pad2(cd.minutes));
   setVal('analogSecsVal',  pad2(cd.seconds));
@@ -1338,7 +1338,7 @@ function renderBar(cd, evt) {
   set('barPercent',   `${Math.round(pct)}%`);
   set('barMainValue', cd.isPast ? `${cd.days}日経過` : `あと ${cd.days}日`);
   set('barTimeValue', `${pad2(cd.hours)}:${pad2(cd.minutes)}:${pad2(cd.seconds)}`);
-  set('barDays',  cd.isPast ? `-${cd.days}` : cd.days);
+  set('barDays',  cd.days);
   set('barHours', pad2(cd.hours));
   set('barMins',  pad2(cd.minutes));
   set('barSecs',  pad2(cd.seconds));
