@@ -126,9 +126,11 @@ body {
 .natural-row {
   display: flex;
   gap: 8px;
+  min-width: 0;
 }
 .natural-input {
-  flex: 1;
+  flex: 1 1 0;
+  min-width: 0;
   padding: 12px 14px;
   border: 2px solid var(--text-light);
   border-radius: var(--radius-sm);
@@ -140,7 +142,8 @@ body {
 }
 .natural-input:focus { border-color: var(--accent); background: white; }
 .natural-btn {
-  padding: 12px 18px;
+  flex-shrink: 0;
+  padding: 12px 16px;
   background: var(--accent);
   color: white;
   border: none;
