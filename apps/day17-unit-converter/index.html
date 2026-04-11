@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f97316">
+  <meta name="description" content="距離・重さの単位換算ツール。体感で理解できる生活イメージ付き">
+  <title>単位換算 - 体感でわかる！</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="mode-distance">
+  <div id="app">
+
+    <header class="header">
+      <div class="header-inner">
+        <div>
+          <h1 class="header-title">📏 単位換算</h1>
+          <p class="header-sub">体感でわかる！距離・重さ変換</p>
+        </div>
+      </div>
+    </header>
+
+    <div class="tabs-wrap">
+      <div class="tabs">
+        <button class="tab-btn active" data-mode="distance">📐 距離</button>
+        <button class="tab-btn" data-mode="weight">⚖️ 重さ</button>
+      </div>
+    </div>
+
+    <main class="main">
+
+      <!-- 入力セクション -->
+      <section class="card input-section">
+
+        <div class="natural-area">
+          <label class="label">🔤 自然文で入力</label>
+          <div class="natural-row">
+            <input
+              type="text"
+              id="natural-input"
+              class="natural-input"
+              placeholder="例: 1km / 500g / 2.5lb"
+              autocomplete="off"
+              autocorrect="off"
+              spellcheck="false"
+            >
+            <button id="natural-btn" class="natural-btn">変換</button>
+          </div>
+          <div id="parse-msg" class="parse-msg"></div>
+        </div>
+
+        <div class="divider-line"><span>または</span></div>
+
+        <div class="structured-area">
+          <label class="label">🔢 値と単位を指定</label>
+          <div class="structured-row">
+            <input
+              type="number"
+              id="value-input"
+              class="value-input"
+              value="1"
+              min="0"
+              step="any"
+              placeholder="0"
+            >
+            <select id="unit-select" class="unit-select"></select>
+          </div>
+        </div>
+
+        <div class="decimal-area">
+          <label class="label">🔢 小数桁数: <strong id="decimal-label">3</strong> 桁</label>
+          <div class="decimal-btns">
+            <button class="d-btn" data-d="0">0</button>
+            <button class="d-btn" data-d="1">1</button>
+            <button class="d-btn" data-d="2">2</button>
+            <button class="d-btn active" data-d="3">3</button>
+            <button class="d-btn" data-d="4">4</button>
+            <button class="d-btn" data-d="5">5</button>
+            <button class="d-btn" data-d="6">6</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 換算結果 -->
+      <section class="results-section">
+        <div class="section-header">
+          <h2 class="section-title">換算結果</h2>
+          <button id="compare-toggle" class="compare-toggle-btn">⚖️ 比較</button>
+        </div>
+        <div id="results-grid" class="results-grid"></div>
+      </section>
+
+      <!-- 比較モード -->
+      <section id="compare-section" class="card compare-section hidden">
+        <h2 class="section-title">⚖️ 比較モード</h2>
+        <div class="compare-selects">
+          <select id="cmp-unit1" class="cmp-select"></select>
+          <span class="cmp-vs">vs</span>
+          <select id="cmp-unit2" class="cmp-select"></select>
+        </div>
+        <div id="cmp-result" class="cmp-result"></div>
+      </section>
+
+      <!-- 生活イメージ -->
+      <section class="card life-section">
+        <h2 class="section-title">🌟 生活イメージ</h2>
+        <div id="life-content" class="life-content"></div>
+      </section>
+
+      <!-- 雑学 -->
+      <section class="card trivia-section">
+        <div class="trivia-header">
+          <h2 class="section-title">💡 豆知識</h2>
+          <button id="trivia-refresh" class="refresh-btn" title="別の豆知識を見る">🔄</button>
+        </div>
+        <p id="trivia-text" class="trivia-text"></p>
+      </section>
+
+      <!-- 履歴 -->
+      <section class="card history-section">
+        <div class="history-toggle" id="history-toggle">
+          <h2 class="section-title">🕐 変換履歴</h2>
+          <span class="toggle-icon">▼</span>
+        </div>
+        <div id="history-body" class="history-body hidden">
+          <div id="history-list" class="history-list"></div>
+          <button id="history-clear" class="clear-btn">🗑️ 履歴をクリア</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="toast" class="toast">📋 コピーしました！</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
