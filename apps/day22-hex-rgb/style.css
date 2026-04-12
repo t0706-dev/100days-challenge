@@ -613,6 +613,90 @@ body {
 .section-body { overflow: hidden; }
 .section-body.collapsed { display: none; }
 
+/* ── Confirm Modal ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+}
+.modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+.modal-box {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 28px 20px 20px;
+  width: 100%;
+  max-width: 340px;
+  text-align: center;
+  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.25);
+  transform: translateY(16px) scale(0.97);
+  transition: transform 0.2s ease;
+}
+.modal-overlay.open .modal-box {
+  transform: translateY(0) scale(1);
+}
+.modal-icon { font-size: 36px; margin-bottom: 12px; }
+.modal-title {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+.modal-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin-bottom: 20px;
+}
+.modal-desc .modal-warn {
+  color: var(--error);
+  font-weight: 700;
+}
+.modal-btns {
+  display: flex;
+  gap: 10px;
+}
+.modal-cancel {
+  flex: 1;
+  height: 50px;
+  border: 2px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+  color: var(--text-muted);
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.modal-cancel:hover { background: var(--surface2); border-color: var(--text-muted); }
+.modal-confirm {
+  flex: 1;
+  height: 50px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+  color: white;
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(108, 99, 255, 0.35);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.modal-confirm:hover { transform: translateY(-1px); box-shadow: 0 5px 16px rgba(108,99,255,0.4); }
+.modal-confirm:active { transform: scale(0.97); }
+
 /* ── Scrollbar ── */
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }

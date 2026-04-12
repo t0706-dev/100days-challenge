@@ -296,12 +296,24 @@ function showToast(msg) {
   t._timer = setTimeout(() => t.classList.remove('show'), 2000);
 }
 
-/* ── Palette button ── */
+/* ── Palette Modal ── */
+const paletteModal  = document.getElementById('paletteModal');
+const modalCancel   = document.getElementById('modalCancel');
+const modalConfirm  = document.getElementById('modalConfirm');
+
 document.getElementById('paletteBtn').addEventListener('click', function() {
-  const hex = this.dataset.hex || '6c63ff';
+  paletteModal.classList.add('open');
+});
+modalCancel.addEventListener('click', () => {
+  paletteModal.classList.remove('open');
+});
+paletteModal.addEventListener('click', e => {
+  if (e.target === paletteModal) paletteModal.classList.remove('open');
+});
+modalConfirm.addEventListener('click', () => {
+  paletteModal.classList.remove('open');
+  const hex = document.getElementById('paletteBtn').dataset.hex || '6c63ff';
   const url = PALETTE_URL + '?color=' + encodeURIComponent(hex);
-  // iOS PWA standalone では window.open が同一ウィンドウ遷移になるため
-  // <a> タグを動的生成してクリックする方法が最も安定する
   const a = document.createElement('a');
   a.href = url;
   a.target = '_blank';
