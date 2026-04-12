@@ -75,96 +75,121 @@
       </div>
     </section>
 
-    <!-- ===== REMAINING ===== -->
-    <div id="remaining-bar">
-      <div class="remaining-info">
-        <span class="remaining-label">残り</span>
-        <span id="remaining-count" class="remaining-num">75</span>
-        <span class="remaining-label">件</span>
-      </div>
-      <div class="progress-track">
-        <div id="progress-fill" class="progress-fill"></div>
-      </div>
-    </div>
+    <!-- ===== FS LAYOUT WRAPPER ===== -->
+    <div id="fs-layout">
 
-    <!-- ===== MAIN ===== -->
-    <main id="main">
+      <!-- LEFT COLUMN -->
+      <div id="fs-left">
 
-      <!-- Animation / Result Area -->
-      <div id="anim-area">
+        <!-- ===== REMAINING ===== -->
+        <div id="remaining-bar">
+          <div class="remaining-info">
+            <span class="remaining-label">残り</span>
+            <span id="remaining-count" class="remaining-num">75</span>
+            <span class="remaining-label">件</span>
+          </div>
+          <div class="progress-track">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
 
-        <!-- Slot -->
-        <div id="slot-display" class="anim-view">
-          <div id="slot-reels" class="slot-reels">
-            <div class="slot-reel" id="reel-0">
-              <div class="reel-value">?</div>
+        <!-- ===== MAIN ===== -->
+        <main id="main">
+
+          <!-- Animation / Result Area -->
+          <div id="anim-area">
+
+            <!-- Slot -->
+            <div id="slot-display" class="anim-view">
+              <div class="slot-machine-wrap">
+                <div class="slot-machine-lights">
+                  <span class="sm-light"></span><span class="sm-light"></span><span class="sm-light"></span>
+                  <span class="sm-light"></span><span class="sm-light"></span>
+                </div>
+                <div id="slot-reels" class="slot-reels">
+                  <div class="slot-reel" id="reel-0">
+                    <div class="reel-placeholder">?</div>
+                    <div class="reel-highlight"></div>
+                    <div class="reel-fade top"></div>
+                    <div class="reel-fade bottom"></div>
+                  </div>
+                </div>
+                <div class="slot-machine-label">S L O T</div>
+              </div>
+            </div>
+
+            <!-- Roulette -->
+            <div id="roulette-display" class="anim-view hidden">
+              <div class="roulette-wrap">
+                <div class="roulette-pointer">▼</div>
+                <canvas id="roulette-canvas" width="280" height="280"></canvas>
+                <div id="roulette-result" class="roulette-result"></div>
+              </div>
+              <div id="roulette-cards" class="roulette-cards"></div>
+            </div>
+
+            <!-- Text Random -->
+            <div id="textrand-display" class="anim-view hidden">
+              <div id="textrand-cards" class="textrand-cards">
+                <div class="textrand-card" id="tcard-0">
+                  <div class="textrand-value">?</div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /anim-area -->
+
+          <!-- Controls -->
+          <div id="controls">
+            <div class="sim-row">
+              <span class="ctrl-label">同時抽選：</span>
+              <div class="sim-btns" role="group" aria-label="同時抽選数">
+                <button class="sim-btn active" data-sim="1">1個</button>
+                <button class="sim-btn" data-sim="2">2個</button>
+                <button class="sim-btn" data-sim="3">3個</button>
+              </div>
+            </div>
+            <div class="action-row">
+              <button id="btn-undo" class="act-btn secondary" disabled>↩ Undo</button>
+              <button id="btn-draw" class="act-btn primary">
+                <span class="draw-icon">🎰</span>
+                <span class="draw-label">抽選する</span>
+              </button>
+              <button id="btn-copy" class="act-btn secondary">📋 コピー</button>
             </div>
           </div>
-        </div>
 
-        <!-- Roulette -->
-        <div id="roulette-display" class="anim-view hidden">
-          <div class="roulette-wrap">
-            <div class="roulette-pointer">▼</div>
-            <canvas id="roulette-canvas" width="280" height="280"></canvas>
-            <div id="roulette-result" class="roulette-result"></div>
+        </main><!-- /main -->
+
+        <!-- ===== HISTORY ===== -->
+        <section id="history-section">
+          <div class="section-hd">
+            <h2>📋 抽選履歴</h2>
           </div>
-          <div id="roulette-cards" class="roulette-cards"></div>
-        </div>
-
-        <!-- Text Random -->
-        <div id="textrand-display" class="anim-view hidden">
-          <div id="textrand-cards" class="textrand-cards">
-            <div class="textrand-card" id="tcard-0">
-              <div class="textrand-value">?</div>
-            </div>
+          <div id="history-list" class="history-list">
+            <p class="empty-msg">まだ抽選されていません</p>
           </div>
-        </div>
+        </section>
 
-      </div><!-- /anim-area -->
+      </div><!-- /fs-left -->
 
-      <!-- Controls -->
-      <div id="controls">
-        <div class="sim-row">
-          <span class="ctrl-label">同時抽選：</span>
-          <div class="sim-btns" role="group" aria-label="同時抽選数">
-            <button class="sim-btn active" data-sim="1">1個</button>
-            <button class="sim-btn" data-sim="2">2個</button>
-            <button class="sim-btn" data-sim="3">3個</button>
+      <!-- RIGHT COLUMN -->
+      <div id="fs-right">
+
+        <!-- ===== BOARD ===== -->
+        <section id="board-section">
+          <div class="section-hd">
+            <h2>📊 盤面</h2>
           </div>
-        </div>
-        <div class="action-row">
-          <button id="btn-undo" class="act-btn secondary" disabled>↩ Undo</button>
-          <button id="btn-draw" class="act-btn primary">
-            <span class="draw-icon">🎰</span>
-            <span class="draw-label">抽選する</span>
-          </button>
-          <button id="btn-copy" class="act-btn secondary">📋 コピー</button>
-        </div>
-      </div>
+          <div id="board-wrap">
+            <div id="board-grid" class="board-grid"></div>
+            <p id="board-empty" class="empty-msg hidden">数字モード（〜100）のとき表示されます</p>
+          </div>
+        </section>
 
-    </main><!-- /main -->
+      </div><!-- /fs-right -->
 
-    <!-- ===== HISTORY ===== -->
-    <section id="history-section">
-      <div class="section-hd">
-        <h2>📋 抽選履歴</h2>
-      </div>
-      <div id="history-list" class="history-list">
-        <p class="empty-msg">まだ抽選されていません</p>
-      </div>
-    </section>
-
-    <!-- ===== BOARD ===== -->
-    <section id="board-section">
-      <div class="section-hd">
-        <h2>📊 盤面</h2>
-      </div>
-      <div id="board-wrap">
-        <div id="board-grid" class="board-grid"></div>
-        <p id="board-empty" class="empty-msg hidden">数字モード（〜100）のとき表示されます</p>
-      </div>
-    </section>
+    </div><!-- /fs-layout -->
 
   </div><!-- /app -->
 

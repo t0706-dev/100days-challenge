@@ -191,8 +191,31 @@ function runAnimation(results, poolSnapshot, onComplete) {
 }
 
 // ===================================
-// SLOT Animation
+// SLOT Animation (縦スクロールリール)
 // ===================================
+function buildReelStrip(reel, items, centerVal) {
+  // Build a strip: [rand, rand, centerVal, rand, rand]
+  const strip = document.createElement('div');
+  strip.className = 'reel-strip';
+
+  // Pre-fill with 2 items above + center + 2 items below for 3-row window
+  const above = 2, below = 2;
+  const total = above + 1 + below;
+  for (let n = 0; n < total; n++) {
+    const item = document.createElement('div');
+    item.className = 'reel-item' + (n === above ? ' center' : '');
+    const rv = n === above
+      ? String(centerVal)
+      : String(items[Math.floor(Math.random() * items.length)]);
+    item.textContent = rv;
+    strip.appendChild(item);
+  }
+  reel.appendChild(strip);
+  // Position so center item is visible in the middle (item height = 52px)
+  strip.style.transform = `translateY(-${above * 52}px)`;
+  return strip;
+}
+
 function runSlot(results, onComplete) {
   const count = results.length;
   const reelsEl = $('slot-reels');
@@ -201,11 +224,23 @@ function runSlot(results, onComplete) {
 
   const allItems = getPool();
   const reelEls = [];
+
   for (let i = 0; i < count; i++) {
     const reel = document.createElement('div');
     reel.className = 'slot-reel';
     reel.id = `reel-${i}`;
-    reel.innerHTML = '<div class="reel-value">?</div>';
+    // placeholder strip (all ?)
+    const strip = document.createElement('div');
+    strip.className = 'reel-strip';
+    for (let n = 0; n < 3; n++) {
+      const item = document.createElement('div');
+      item.className = 'reel-item' + (n === 1 ? ' center' : '');
+      item.textContent = '?';
+      strip.appendChild(item);
+    }
+    strip.style.transform = 'translateY(-52px)';
+    reel.appendChild(strip);
+    reel.innerHTML += '<div class="reel-highlight"></div><div class="reel-fade top"></div><div class="reel-fade bottom"></div>';
     reelsEl.appendChild(reel);
     reelEls.push(reel);
   }
@@ -214,42 +249,53 @@ function runSlot(results, onComplete) {
   playSound('start');
 
   let completed = 0;
-  const durations = [1800, 2300, 2800];
+  const durations = [1900, 2500, 3100];
 
   results.forEach((result, i) => {
     const reel = reelEls[i];
-    const valEl = reel.querySelector('.reel-value');
     const duration = durations[i] || durations[0];
     let elapsed = 0;
-    let speed = 50;
+    let speed = 55;
 
-    reel.classList.add('spinning');
-
+    // Spinning: rapidly rebuild strip contents to simulate scroll
     const tick = () => {
       if (animationAbort) {
-        valEl.textContent = String(result);
-        reel.classList.remove('spinning');
+        // Settle immediately
+        reel.innerHTML = '';
+        buildReelStrip(reel, allItems, result);
+        reel.innerHTML += '<div class="reel-highlight"></div><div class="reel-fade top"></div><div class="reel-fade bottom"></div>';
         reel.classList.add('settled');
         completed++;
         if (completed === count) setTimeout(onComplete, 300);
         return;
       }
+
       elapsed += speed;
       const progress = elapsed / duration;
-      // Gradually slow down
-      if      (progress < 0.60) speed = 50;
-      else if (progress < 0.75) speed = 100;
-      else if (progress < 0.87) speed = 200;
-      else if (progress < 0.94) speed = 360;
-      else                      speed = 550;
+      if      (progress < 0.55) speed = 55;
+      else if (progress < 0.70) speed = 110;
+      else if (progress < 0.83) speed = 220;
+      else if (progress < 0.92) speed = 380;
+      else                      speed = 580;
 
       if (elapsed < duration) {
-        const randVal = allItems[Math.floor(Math.random() * allItems.length)];
-        valEl.textContent = String(randVal);
+        // Replace center item with random value for scroll illusion
+        const strip = reel.querySelector('.reel-strip');
+        if (strip) {
+          const items = strip.querySelectorAll('.reel-item');
+          items.forEach(item => {
+            item.textContent = String(allItems[Math.floor(Math.random() * allItems.length)]);
+          });
+          // Animate a slight translateY shift to feel like scrolling
+          const offset = -52 + (progress < 0.9 ? (Math.random() - 0.5) * 10 : 0);
+          strip.style.transform = `translateY(${offset}px)`;
+        }
         setTimeout(tick, speed);
       } else {
-        valEl.textContent = String(result);
-        reel.classList.remove('spinning');
+        // Final settle: rebuild strip with correct center
+        reel.innerHTML = '';
+        buildReelStrip(reel, allItems, result);
+        reel.innerHTML += '<div class="reel-highlight"></div><div class="reel-fade top"></div><div class="reel-fade bottom"></div>';
         reel.classList.add('settled');
         playSound('stop');
         completed++;
@@ -257,8 +303,7 @@ function runSlot(results, onComplete) {
       }
     };
 
-    // Stagger start
-    setTimeout(tick, i * 180);
+    setTimeout(tick, i * 200);
   });
 }
 
@@ -441,7 +486,7 @@ function runTextRand(results, onComplete) {
     const card = document.createElement('div');
     card.className = 'textrand-card';
     card.id = `tcard-${i}`;
-    card.innerHTML = '<div class="textrand-value">?</div>';
+    card.innerHTML = '<div class="textrand-label">DRAWING...</div><div class="textrand-value">?</div>';
     container.appendChild(card);
     cardEls.push(card);
   }
@@ -455,6 +500,7 @@ function runTextRand(results, onComplete) {
   results.forEach((result, i) => {
     const card  = cardEls[i];
     const valEl = card.querySelector('.textrand-value');
+    const lblEl = card.querySelector('.textrand-label');
     const dur   = durations[i] || durations[0];
     let elapsed = 0;
     let speed   = 60;
@@ -464,6 +510,7 @@ function runTextRand(results, onComplete) {
     const tick = () => {
       if (animationAbort) {
         valEl.textContent = String(result);
+        lblEl.textContent = 'RESULT';
         card.classList.remove('cycling');
         card.classList.add('settled');
         completed++;
@@ -476,7 +523,7 @@ function runTextRand(results, onComplete) {
       else if (progress < 0.75) speed = 120;
       else if (progress < 0.88) speed = 250;
       else if (progress < 0.95) speed = 420;
-      else                      speed = 600;
+      else                      speed = 620;
 
       if (elapsed < dur) {
         const rv = allItems[Math.floor(Math.random() * allItems.length)];
@@ -484,6 +531,7 @@ function runTextRand(results, onComplete) {
         setTimeout(tick, speed);
       } else {
         valEl.textContent = String(result);
+        lblEl.textContent = 'RESULT';
         card.classList.remove('cycling');
         card.classList.add('settled');
         playSound('stop');
@@ -506,10 +554,26 @@ function showView(view) {
 }
 
 function resetAnimArea() {
-  // Slot
+  // Slot – rebuild single reel with ? strip
   const reels = $('slot-reels');
-  reels.innerHTML = '<div class="slot-reel" id="reel-0"><div class="reel-value">?</div></div>';
+  reels.innerHTML = '';
   reels.className = 'slot-reels';
+  const reel0 = document.createElement('div');
+  reel0.className = 'slot-reel';
+  reel0.id = 'reel-0';
+  const strip0 = document.createElement('div');
+  strip0.className = 'reel-strip';
+  for (let n = 0; n < 3; n++) {
+    const item = document.createElement('div');
+    item.className = 'reel-item' + (n === 1 ? ' center' : '');
+    item.textContent = '?';
+    strip0.appendChild(item);
+  }
+  strip0.style.transform = 'translateY(-52px)';
+  reel0.appendChild(strip0);
+  reel0.innerHTML += '<div class="reel-highlight"></div><div class="reel-fade top"></div><div class="reel-fade bottom"></div>';
+  reels.appendChild(reel0);
+
   // Roulette
   $('roulette-cards').innerHTML = '';
   $('roulette-result').textContent = '';
@@ -517,8 +581,9 @@ function resetAnimArea() {
   const c = $('roulette-canvas');
   const ctx = c.getContext('2d');
   ctx.clearRect(0, 0, c.width, c.height);
+
   // Text random
-  $('textrand-cards').innerHTML = '<div class="textrand-card" id="tcard-0"><div class="textrand-value">?</div></div>';
+  $('textrand-cards').innerHTML = '<div class="textrand-card" id="tcard-0"><div class="textrand-label">DRAWING</div><div class="textrand-value">?</div></div>';
   showView(state.effectMode);
 }
 
@@ -960,6 +1025,7 @@ function updateFullscreenBtn() {
 function init() {
   loadState();
   syncUI();
+  resetAnimArea(); // rebuild slot reel DOM with proper structure
   updateRemaining();
   renderHistory();
   renderBoard();
