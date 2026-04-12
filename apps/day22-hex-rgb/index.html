@@ -154,10 +154,13 @@
 
   <!-- ── 7. 履歴 ── -->
   <section class="card">
-    <button class="section-toggle" id="historyToggle">
-      <span class="card-title" style="margin:0">最近使った色</span>
-      <span class="section-toggle-icon">▾</span>
-    </button>
+    <div class="history-header">
+      <button class="section-toggle" id="historyToggle" style="flex:1">
+        <span class="card-title" style="margin:0">最近使った色</span>
+        <span class="section-toggle-icon">▾</span>
+      </button>
+      <button class="history-clear-btn" id="historyClearBtn" title="履歴をすべて削除">🗑 全削除</button>
+    </div>
     <div class="section-body" id="historyBody" style="margin-top:12px">
       <div class="history-grid" id="historyGrid">
         <div class="history-empty">まだ履歴がありません</div>

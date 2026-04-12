@@ -338,6 +338,14 @@ document.querySelectorAll('.section-toggle').forEach(btn => {
   });
 });
 
+/* ── History clear ── */
+document.getElementById('historyClearBtn').addEventListener('click', () => {
+  if (!confirm('履歴をすべて削除しますか？')) return;
+  localStorage.removeItem(HISTORY_KEY);
+  renderHistory();
+  showToast('履歴を削除しました');
+});
+
 /* ═══════════════════════════════════════
    HISTORY
 ════════════════════════════════════════ */

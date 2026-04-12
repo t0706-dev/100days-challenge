@@ -591,6 +591,34 @@ body {
   transform: translateX(-50%) translateY(0);
 }
 
+/* ── History header ── */
+.history-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.history-clear-btn {
+  height: 32px;
+  padding: 0 12px;
+  border: 1.5px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface2);
+  color: var(--text-muted);
+  font-family: 'M PLUS Rounded 1c', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+.history-clear-btn:hover {
+  background: #fee2e2;
+  border-color: var(--error);
+  color: var(--error);
+}
+.history-clear-btn:active { transform: scale(0.95); }
+
 /* ── Section toggle ── */
 .section-toggle {
   display: flex;
