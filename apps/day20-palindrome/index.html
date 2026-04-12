@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>回文チェッカー</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#6C63FF" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="回文" />
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app-wrapper">
+    <!-- ヘッダー -->
+    <header class="header">
+      <div class="header-icon">🔁</div>
+      <h1 class="header-title">回文チェッカー</h1>
+      <p class="header-sub">前から読んでも後ろから読んでも同じ！</p>
+    </header>
+
+    <!-- タブ -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="checker">
+        <span class="tab-icon">🔍</span>
+        <span>チェッカー</span>
+      </button>
+      <button class="tab-btn" data-tab="generator">
+        <span class="tab-icon">✨</span>
+        <span>回文生成</span>
+      </button>
+    </div>
+
+    <!-- タブ：チェッカー -->
+    <section class="tab-content active" id="tab-checker">
+      <div class="card">
+        <label class="input-label" for="checker-input">文章を入力してください</label>
+        <textarea
+          id="checker-input"
+          class="text-input"
+          placeholder="例：竹やぶ焼けた"
+          rows="3"
+        ></textarea>
+        <button class="btn btn-primary" id="checker-btn">判定する</button>
+      </div>
+
+      <div class="result-area" id="checker-result" aria-live="polite"></div>
+    </section>
+
+    <!-- タブ：回文生成 -->
+    <section class="tab-content" id="tab-generator">
+      <div class="card">
+        <label class="input-label" for="length-select">文字数を選択してください</label>
+        <div class="select-wrapper">
+          <select id="length-select" class="select-input">
+            <option value="">選んでください</option>
+            <option value="3">3文字</option>
+            <option value="4">4文字</option>
+            <option value="5">5文字</option>
+            <option value="6">6文字</option>
+            <option value="7">7文字</option>
+            <option value="8">8文字</option>
+            <option value="9">9文字</option>
+            <option value="10">10文字</option>
+            <option value="11">11文字</option>
+            <option value="12">12文字</option>
+            <option value="13">13文字</option>
+            <option value="14">14文字</option>
+            <option value="15">15文字</option>
+            <option value="16">16文字</option>
+            <option value="17">17文字</option>
+            <option value="18">18文字</option>
+            <option value="19">19文字</option>
+            <option value="20">20文字</option>
+            <option value="21">21文字</option>
+          </select>
+          <span class="select-arrow">▼</span>
+        </div>
+        <button class="btn btn-primary" id="generate-btn">生成する</button>
+      </div>
+
+      <div class="result-area" id="generator-result" aria-live="polite"></div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
