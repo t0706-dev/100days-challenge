@@ -248,15 +248,15 @@ colorInput.addEventListener('input', () => {
   if (ok) { saveHistory(); saveSession(); }
 });
 
-// input: ドラッグ中もプレビューをリアルタイム更新
+// input: プレビューをリアルタイム更新
+// 履歴保存はデバウンス（操作が止まって800ms後）→ モバイルでもスパム防止
+let pickerHistoryTimer = null;
 colorPicker.addEventListener('input', () => {
   colorInput.value = colorPicker.value;
   processInput(colorPicker.value, true);
   saveSession();
-});
-// change: ドラッグ終了時のみ履歴に保存
-colorPicker.addEventListener('change', () => {
-  saveHistory();
+  clearTimeout(pickerHistoryTimer);
+  pickerHistoryTimer = setTimeout(() => saveHistory(), 800);
 });
 
 alphaSlider.addEventListener('input', () => {
