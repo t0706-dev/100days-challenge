@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HEX↔RGB変換ツール | Day22</title>
+  <meta name="description" content="HEX / RGB / RGBA を瞬時に相互変換。コピーしやすく、実務で使いやすいカラー変換ツール。">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#6c63ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header class="header">
+  <div class="header-inner">
+    <span class="header-icon">🎨</span>
+    <div>
+      <h1>HEX↔RGB変換ツール</h1>
+      <p>Day 22 · Color Converter</p>
+    </div>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- ── 1. 入力 & ピッカー ── -->
+  <section class="card">
+    <div class="card-title">カラーコード入力</div>
+    <div class="input-row">
+      <div class="input-wrapper">
+        <input
+          type="text"
+          id="colorInput"
+          placeholder="#FF5733 / rgb(255,87,51) / ..."
+          autocomplete="off"
+          autocorrect="off"
+          spellcheck="false"
+        >
+      </div>
+      <label class="picker-btn" title="カラーピッカー">
+        <input type="color" id="colorPicker" value="#6c63ff">
+        <span class="picker-icon">🖌</span>
+      </label>
+    </div>
+    <p class="input-hint" id="inputHint">入力例: #FF5733 / rgb(255,87,51) / rgba(255,87,51,0.5)</p>
+
+    <!-- Alpha Slider -->
+    <div class="alpha-row">
+      <span class="alpha-label">透明度</span>
+      <div class="alpha-slider-wrap">
+        <input type="range" id="alphaSlider" min="0" max="1" step="0.01" value="1">
+      </div>
+      <span class="alpha-val" id="alphaVal">1.00</span>
+    </div>
+  </section>
+
+  <!-- ── 2. プレビュー ── -->
+  <section class="card" style="padding: 0; overflow: hidden;">
+    <div class="preview-wrap">
+      <div class="checkerboard" id="checkerboard" style="display:none"></div>
+      <div id="colorPreview">
+        <div class="preview-hex" id="previewHex">#6C63FF</div>
+        <div class="preview-rgb" id="previewRgb">R108 G99 B255</div>
+        <div class="preview-impression" id="previewImpression"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 3. 変換結果 ── -->
+  <section class="card">
+    <div class="card-title">変換結果</div>
+    <div class="result-list">
+      <div class="result-item">
+        <span class="result-label">HEX</span>
+        <span class="result-value" id="resHex">#6C63FF</span>
+        <button class="copy-btn" data-target="resHex" title="コピー">⎘</button>
+      </div>
+      <div class="result-item">
+        <span class="result-label">RGB</span>
+        <span class="result-value" id="resRgb">rgb(108, 99, 255)</span>
+        <button class="copy-btn" data-target="resRgb" title="コピー">⎘</button>
+      </div>
+      <div class="result-item">
+        <span class="result-label">RGBA</span>
+        <span class="result-value" id="resRgba">rgba(108, 99, 255, 1)</span>
+        <button class="copy-btn" data-target="resRgba" title="コピー">⎘</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 4. CSS例 ── -->
+  <section class="card">
+    <button class="section-toggle" id="cssToggle">
+      <span class="card-title" style="margin:0">CSS 実装例</span>
+      <span class="section-toggle-icon">▾</span>
+    </button>
+    <div class="section-body" id="cssBody" style="margin-top:12px">
+      <div class="css-list">
+        <div class="css-item">
+          <div class="css-code" id="cssColor"></div>
+          <button class="css-copy" title="コピー">⎘</button>
+        </div>
+        <div class="css-item">
+          <div class="css-code" id="cssBg"></div>
+          <button class="css-copy" title="コピー">⎘</button>
+        </div>
+        <div class="css-item">
+          <div class="css-code" id="cssBorder"></div>
+          <button class="css-copy" title="コピー">⎘</button>
+        </div>
+        <div class="css-item">
+          <div class="css-code" id="cssBox"></div>
+          <button class="css-copy" title="コピー">⎘</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 5. コントラスト ── -->
+  <section class="card">
+    <button class="section-toggle" id="contrastToggle">
+      <span class="card-title" style="margin:0">コントラスト比（WCAG）</span>
+      <span class="section-toggle-icon">▾</span>
+    </button>
+    <div class="section-body" id="contrastBody" style="margin-top:12px">
+      <div class="contrast-grid">
+        <div class="contrast-item" id="contrastWhite">
+          <div class="contrast-swatch" style="color:#ffffff">Aa 白テキスト</div>
+          <div class="contrast-ratio" style="color:#ffffff">—</div>
+          <div class="contrast-badges"></div>
+        </div>
+        <div class="contrast-item" id="contrastBlack">
+          <div class="contrast-swatch" style="color:#000000">Aa 黒テキスト</div>
+          <div class="contrast-ratio" style="color:#000000">—</div>
+          <div class="contrast-badges"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── 6. カラーパレット連携 ── -->
+  <section class="card">
+    <div class="card-title">配色ツールへ連携</div>
+    <button class="palette-btn" id="paletteBtn" data-hex="6c63ff">
+      🎨 この色で配色を作る → Day09
+    </button>
+  </section>
+
+  <!-- ── 7. 履歴 ── -->
+  <section class="card">
+    <button class="section-toggle" id="historyToggle">
+      <span class="card-title" style="margin:0">最近使った色</span>
+      <span class="section-toggle-icon">▾</span>
+    </button>
+    <div class="section-body" id="historyBody" style="margin-top:12px">
+      <div class="history-grid" id="historyGrid">
+        <div class="history-empty">まだ履歴がありません</div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<!-- ── Toast ── -->
+<div id="toast"></div>
+
+<script src="./script.js"></script>
+</body>
+</html>
