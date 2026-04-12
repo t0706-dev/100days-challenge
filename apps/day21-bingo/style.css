@@ -500,16 +500,16 @@ textarea { resize: vertical; }
   font-size: 2rem;
 }
 
-/* Fade overlays */
+/* Fade overlays — 20% height so edge rows stay visible */
 .reel-fade {
   position: absolute;
   left: 0; right: 0;
-  height: 40%;
+  height: 20%;
   z-index: 6;
   pointer-events: none;
 }
-.reel-fade.top    { top: 0;    background: linear-gradient(to bottom, #060b17 15%, transparent); }
-.reel-fade.bottom { bottom: 0; background: linear-gradient(to top,   #060b17 15%, transparent); }
+.reel-fade.top    { top: 0;    background: linear-gradient(to bottom, #060b17, transparent); }
+.reel-fade.bottom { bottom: 0; background: linear-gradient(to top,   #060b17, transparent); }
 
 /* Center highlight bar */
 .reel-highlight {
@@ -810,11 +810,13 @@ textarea { resize: vertical; }
   color: #fff;
   box-shadow: 0 4px 16px rgba(59,130,246,0.45);
   font-size: 1.05rem;
-  padding: 14px 20px;
+  padding: 14px 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .act-btn.primary:hover:not(:disabled) {
@@ -861,8 +863,14 @@ textarea { resize: vertical; }
   box-shadow: 0 5px 18px rgba(239,68,68,0.45);
 }
 
-.draw-icon { font-size: 1.2rem; }
-.draw-label { font-size: 1.05rem; }
+.draw-icon { font-size: 1.1rem; flex-shrink: 0; }
+.draw-label { font-size: 1rem; white-space: nowrap; }
+
+@media (max-width: 360px) {
+  .draw-icon { display: none; }
+  .draw-label { font-size: 0.95rem; }
+  .act-btn.secondary { min-width: 66px; font-size: 0.8rem; padding: 10px 8px; }
+}
 
 /* Animating state */
 .act-btn.primary.animating {

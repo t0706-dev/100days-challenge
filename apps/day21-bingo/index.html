@@ -193,6 +193,19 @@
 
   </div><!-- /app -->
 
+  <!-- ===== UNDO MODAL ===== -->
+  <div id="undo-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="Undo確認">
+    <div class="modal-box">
+      <div class="modal-icon">↩️</div>
+      <p class="modal-title">直前の抽選を取り消しますか？</p>
+      <p class="modal-sub" id="undo-modal-sub">第〇回の結果が消えます</p>
+      <div class="modal-actions">
+        <button id="undo-modal-cancel" class="act-btn secondary">キャンセル</button>
+        <button id="undo-modal-confirm" class="act-btn primary" style="flex:none;padding:10px 20px">取り消す</button>
+      </div>
+    </div>
+  </div>
+
   <!-- ===== RESET MODAL ===== -->
   <div id="reset-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="リセット確認">
     <div class="modal-box">

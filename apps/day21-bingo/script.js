@@ -151,6 +151,15 @@ function draw() {
 
 function undo() {
   if (isAnimating || state.history.length === 0) return;
+  // Show confirmation dialog
+  const last = state.history[0];
+  const vals = last.items.map(v => formatWithBingo(v)).join(', ');
+  $('undo-modal-sub').textContent = `第${state.history.length}回（${vals}）を取り消します`;
+  $('undo-modal').classList.remove('hidden');
+}
+
+function executeUndo() {
+  if (state.history.length === 0) return;
   const last = state.history.shift();
   last.items.forEach(v => {
     const idx = state.drawn.lastIndexOf(v);
@@ -199,6 +208,7 @@ function buildReelStrip(reel, items, centerVal) {
   strip.className = 'reel-strip';
 
   // Pre-fill with 2 items above + center + 2 items below for 3-row window
+  const CELL = 52; // must match CSS reel-item height
   const above = 2, below = 2;
   const total = above + 1 + below;
   for (let n = 0; n < total; n++) {
@@ -211,8 +221,9 @@ function buildReelStrip(reel, items, centerVal) {
     strip.appendChild(item);
   }
   reel.appendChild(strip);
-  // Position so center item is visible in the middle (item height = 52px)
-  strip.style.transform = `translateY(-${above * 52}px)`;
+  // Center item (index=above) must sit in row 2 (top=52px in a 156px window)
+  // T = 52 - above * CELL = 52 - 2*52 = -52
+  strip.style.transform = `translateY(${CELL - above * CELL}px)`;
   return strip;
 }
 
@@ -238,7 +249,8 @@ function runSlot(results, onComplete) {
       item.textContent = '?';
       strip.appendChild(item);
     }
-    strip.style.transform = 'translateY(-52px)';
+    // 3-item strip: center at index 1 → T = 52*(1-1) = 0
+    strip.style.transform = 'translateY(0px)';
     reel.appendChild(strip);
     reel.innerHTML += '<div class="reel-highlight"></div><div class="reel-fade top"></div><div class="reel-fade bottom"></div>';
     reelsEl.appendChild(reel);
@@ -286,9 +298,9 @@ function runSlot(results, onComplete) {
           items.forEach(item => {
             item.textContent = String(allItems[Math.floor(Math.random() * allItems.length)]);
           });
-          // Animate a slight translateY shift to feel like scrolling
-          const offset = -52 + (progress < 0.9 ? (Math.random() - 0.5) * 10 : 0);
-          strip.style.transform = `translateY(${offset}px)`;
+          // Jiggle around 0 (3-item strip: center idx=1 → T=0)
+          const jiggle = progress < 0.9 ? (Math.random() - 0.5) * 10 : 0;
+          strip.style.transform = `translateY(${jiggle}px)`;
         }
         setTimeout(tick, speed);
       } else {
@@ -569,7 +581,7 @@ function resetAnimArea() {
     item.textContent = '?';
     strip0.appendChild(item);
   }
-  strip0.style.transform = 'translateY(-52px)';
+  strip0.style.transform = 'translateY(0px)'; // 3-item: center idx=1, T=0
   reel0.appendChild(strip0);
   reel0.innerHTML += '<div class="reel-highlight"></div><div class="reel-fade top"></div><div class="reel-fade bottom"></div>';
   reels.appendChild(reel0);
@@ -868,10 +880,22 @@ function speakResults(results) {
 // ===================================
 // Fullscreen
 // ===================================
+function isFullscreenSupported() {
+  return !!(
+    document.documentElement.requestFullscreen ||
+    document.documentElement.webkitRequestFullscreen
+  );
+}
+
 function toggleFullscreen() {
+  if (!isFullscreenSupported()) {
+    showToast('このブラウザはフルスクリーン非対応です');
+    return;
+  }
   if (!document.fullscreenElement && !document.webkitFullscreenElement) {
     const el = document.documentElement;
-    (el.requestFullscreen || el.webkitRequestFullscreen).call(el);
+    (el.requestFullscreen || el.webkitRequestFullscreen).call(el)
+      .catch(() => showToast('フルスクリーンに切り替えられませんでした'));
     $('btn-fullscreen').textContent = '✕';
   } else {
     (document.exitFullscreen || document.webkitExitFullscreen).call(document);
@@ -949,8 +973,18 @@ function setupEvents() {
   // Draw
   $('btn-draw').addEventListener('click', draw);
 
-  // Undo
+  // Undo (with confirmation modal)
   $('btn-undo').addEventListener('click', undo);
+  $('undo-modal-cancel').addEventListener('click', () => {
+    $('undo-modal').classList.add('hidden');
+  });
+  $('undo-modal-confirm').addEventListener('click', () => {
+    $('undo-modal').classList.add('hidden');
+    executeUndo();
+  });
+  $('undo-modal').addEventListener('click', (e) => {
+    if (e.target === $('undo-modal')) $('undo-modal').classList.add('hidden');
+  });
 
   // Copy
   $('btn-copy').addEventListener('click', copyHistory);
@@ -1011,6 +1045,10 @@ function setupEvents() {
       e.preventDefault();
       undo();
     }
+    if (e.code === 'Escape') {
+      $('undo-modal').classList.add('hidden');
+      $('reset-modal').classList.add('hidden');
+    }
   });
 }
 
@@ -1030,6 +1068,11 @@ function init() {
   renderHistory();
   renderBoard();
   setupEvents();
+  // Dim fullscreen button if not supported (e.g. iOS Safari)
+  if (!isFullscreenSupported()) {
+    $('btn-fullscreen').style.opacity = '0.4';
+    $('btn-fullscreen').title = 'フルスクリーン非対応';
+  }
 
   // Register Service Worker
   if ('serviceWorker' in navigator) {
