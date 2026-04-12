@@ -245,12 +245,17 @@ function processInput(val, silent) {
 ════════════════════════════════════════ */
 colorInput.addEventListener('input', () => {
   const ok = processInput(colorInput.value, false);
-  if (ok) saveHistory();
+  if (ok) { saveHistory(); saveSession(); }
 });
 
+// input: ドラッグ中もプレビューをリアルタイム更新
 colorPicker.addEventListener('input', () => {
   colorInput.value = colorPicker.value;
   processInput(colorPicker.value, true);
+  saveSession();
+});
+// change: ドラッグ終了時のみ履歴に保存
+colorPicker.addEventListener('change', () => {
   saveHistory();
 });
 
@@ -258,6 +263,7 @@ alphaSlider.addEventListener('input', () => {
   currentA = parseFloat(alphaSlider.value);
   alphaVal.textContent = currentA.toFixed(2);
   updateUI(currentR, currentG, currentB, currentA);
+  saveSession();
 });
 
 /* ── Copy buttons ── */
@@ -381,9 +387,20 @@ function renderHistory() {
 }
 
 /* ═══════════════════════════════════════
+   SESSION（遷移後に戻ったときの色を保持）
+════════════════════════════════════════ */
+function saveSession() {
+  sessionStorage.setItem('hexrgb_session', JSON.stringify({
+    value: colorInput.value,
+    alpha: currentA
+  }));
+}
+
+/* ═══════════════════════════════════════
    URL PARAMS
 ════════════════════════════════════════ */
 function initFromURL() {
+  // 1. URLパラメータ優先
   const params = new URLSearchParams(location.search);
   const c = params.get('color');
   if (c) {
@@ -392,7 +409,19 @@ function initFromURL() {
     processInput(val, false);
     return;
   }
-  // default
+  // 2. sessionStorage（遷移後に戻った場合）
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('hexrgb_session'));
+    if (saved && saved.value) {
+      currentA = saved.alpha ?? 1;
+      alphaSlider.value = currentA;
+      alphaVal.textContent = currentA.toFixed(2);
+      colorInput.value = saved.value;
+      processInput(saved.value, false);
+      return;
+    }
+  } catch {}
+  // 3. デフォルト
   processInput('#6C63FF', true);
 }
 
