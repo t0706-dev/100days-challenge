@@ -364,10 +364,38 @@ function registerServiceWorker() {
 }
 
 // ==============================
+// ダークモード
+// ==============================
+function initDarkMode() {
+  const btn = document.getElementById('dark-toggle');
+  const html = document.documentElement;
+
+  // ローカルストレージから復元
+  if (localStorage.getItem('theme') === 'dark') {
+    html.dataset.theme = 'dark';
+    btn.textContent = '☀️';
+  }
+
+  btn.addEventListener('click', () => {
+    const isDark = html.dataset.theme === 'dark';
+    if (isDark) {
+      delete html.dataset.theme;
+      btn.textContent = '🌙';
+      localStorage.setItem('theme', 'light');
+    } else {
+      html.dataset.theme = 'dark';
+      btn.textContent = '☀️';
+      localStorage.setItem('theme', 'dark');
+    }
+  });
+}
+
+// ==============================
 // 初期化
 // ==============================
 document.addEventListener('DOMContentLoaded', () => {
   initTabs();
   initEvents();
+  initDarkMode();
   registerServiceWorker();
 });

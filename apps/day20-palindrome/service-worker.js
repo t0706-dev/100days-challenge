@@ -2,7 +2,7 @@
    Service Worker - 回文チェッカー
 ============================== */
 
-const CACHE_NAME = 'palindrome-checker-v1';
+const CACHE_NAME = 'palindrome-checker-v2';
 
 // キャッシュ対象ファイル
 const CACHE_FILES = [

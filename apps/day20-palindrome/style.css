@@ -445,6 +445,51 @@ body {
 }
 
 /* ==============================
+   ダークモード変数（:root より後に宣言してオーバーライド）
+============================== */
+[data-theme="dark"] {
+  --color-bg:         #1A1830;
+  --color-card:       #252340;
+  --color-text:       #E8E6FF;
+  --color-sub:        #9B99C8;
+  --color-border:     #3A3760;
+  --color-ok-bg:      #1A2E1A;
+  --color-ng-bg:      #2E1A1A;
+  --color-suggest-bg: #2E2010;
+}
+
+/* ==============================
+   ダークモードトグルボタン
+============================== */
+.dark-toggle {
+  position: absolute;
+  right: 0;
+  top: 16px;
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  background: var(--color-card);
+  box-shadow: var(--shadow-card);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s, background 0.3s;
+  z-index: 10;
+}
+
+.dark-toggle:active {
+  transform: scale(0.9);
+}
+
+/* ヘッダーを相対位置にしてトグルを配置 */
+.header {
+  position: relative;
+}
+
+/* ==============================
    スマホ追加最適化
 ============================== */
 @media (max-width: 400px) {
