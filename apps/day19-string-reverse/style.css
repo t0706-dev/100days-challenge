@@ -274,7 +274,8 @@ body {
   background: var(--surface-2);
   color: var(--text-primary);
   transition: border-color var(--transition), background-color var(--transition), box-shadow var(--transition);
-  min-height: 80px;
+  height: 100px;
+  overflow-y: auto;
 }
 
 .input-textarea:focus {
@@ -423,6 +424,13 @@ body {
   flex-shrink: 0;
 }
 
+/* シフト数が「-5」など2桁になっても収まるよう幅を広げる */
+.range-output--wide {
+  width: 38px;
+  border-radius: var(--radius-sm);
+  font-size: 0.78rem;
+}
+
 .select-input {
   font-family: inherit;
   font-size: 0.85rem;
@@ -445,7 +453,8 @@ body {
    出力エリア
    ------------------------------------------------------------ */
 .output-area {
-  min-height: 80px;
+  height: 100px;
+  overflow-y: auto;
   padding: var(--sp-md);
   background: var(--surface-2);
   border: 2px solid var(--border);

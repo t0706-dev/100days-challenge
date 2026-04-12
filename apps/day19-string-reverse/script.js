@@ -180,17 +180,21 @@ function transformMirror(str) {
  * [5] 暗号風変換（シーザー暗号）
  * 英字のみ指定シフト数だけ文字コードをずらす。
  * 大文字・小文字をそれぞれ保持。
+ * マイナスシフトにすると逆方向にずれるため、暗号化した文字を復号できる。
+ *   例: shift +1 → hello → ifmmp  /  shift -1 → ifmmp → hello
  *
  * @param {string} str   入力文字列
- * @param {number} shift シフト数（1〜5）
+ * @param {number} shift シフト数（-5〜+5）負の値で逆方向（復号）
  */
 function transformCipher(str, shift) {
+  // ((n % 26) + 26) % 26 で負の剰余を正しく扱う
+  const normalized = ((shift % 26) + 26) % 26;
   return str.split('').map(ch => {
     if (ch >= 'a' && ch <= 'z') {
-      return String.fromCharCode(((ch.charCodeAt(0) - 97 + shift) % 26) + 97);
+      return String.fromCharCode(((ch.charCodeAt(0) - 97 + normalized) % 26) + 97);
     }
     if (ch >= 'A' && ch <= 'Z') {
-      return String.fromCharCode(((ch.charCodeAt(0) - 65 + shift) % 26) + 65);
+      return String.fromCharCode(((ch.charCodeAt(0) - 65 + normalized) % 26) + 65);
     }
     return ch;
   }).join('');
@@ -823,7 +827,9 @@ document.querySelectorAll('.sample-btn').forEach(btn => {
 
 /** シーザー暗号シフト数スライダー */
 $cipherShift.addEventListener('input', () => {
-  $cipherShiftDisplay.textContent = $cipherShift.value;
+  const val = parseInt($cipherShift.value, 10);
+  // 正の値は「+」を付けて表示。0 や負の値はそのまま
+  $cipherShiftDisplay.textContent = val > 0 ? `+${val}` : String(val);
   updateOutput();
 });
 

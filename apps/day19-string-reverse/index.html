@@ -69,20 +69,21 @@
 
       <!-- シーザー暗号オプション（暗号風変換モード時のみ表示） -->
       <div class="extra-option" id="cipherOptions" hidden>
-        <div class="option-desc">🔐 <strong>暗号風変換モード</strong>専用：英字を指定した数だけずらします（例：シフト1 → A→B, hello→ifmmp）</div>
+        <div class="option-desc">🔐 <strong>暗号風変換モード</strong>専用：英字を指定した数だけずらします（例：+1 → hello→ifmmp）。<strong>マイナス方向にすると逆にずらして復号できます</strong>（例：-1 → ifmmp→hello）</div>
         <div class="option-row">
           <label for="cipherShift" class="option-label">シフト数：</label>
           <div class="range-wrapper">
             <input
               type="range"
               id="cipherShift"
-              min="1"
+              min="-5"
               max="5"
               value="1"
+              step="1"
               class="range-input"
-              aria-label="シーザー暗号シフト数"
+              aria-label="シーザー暗号シフト数（マイナスで逆方向・復号化）"
             >
-            <output id="cipherShiftDisplay" class="range-output" for="cipherShift">1</output>
+            <output id="cipherShiftDisplay" class="range-output range-output--wide" for="cipherShift">+1</output>
           </div>
         </div>
       </div>
