@@ -106,9 +106,7 @@ const $cipherShiftDisplay = document.getElementById('cipherShiftDisplay');
 const $snsOptions        = document.getElementById('snsOptions');
 const $snsDecoration     = document.getElementById('snsDecoration');
 const $copyBtn           = document.getElementById('copyBtn');
-const $clearBtn          = document.getElementById('clearBtn');
 const $inputClearBtn     = document.getElementById('inputClearBtn');
-const $saveHistoryBtn    = document.getElementById('saveHistoryBtn');
 const $reshuffleBtn      = document.getElementById('reshuffleBtn');
 const $clearHistoryBtn   = document.getElementById('clearHistoryBtn');
 const $darkModeBtn       = document.getElementById('darkModeBtn');
@@ -414,6 +412,24 @@ function checkPalindrome(str) {
 // ============================================================
 
 /**
+ * 自動保存スケジューラー
+ * 入力が止まってから 1.5 秒後に履歴へ保存する。
+ * キーを押すたびに保存が走らないようデバウンス処理を使う。
+ */
+let autoSaveTimer = null;
+
+function scheduleAutoSave() {
+  if (autoSaveTimer) clearTimeout(autoSaveTimer);
+  autoSaveTimer = setTimeout(() => {
+    const input  = $inputText.value;
+    const output = $outputArea.textContent;
+    if (input.trim() && $outputArea.dataset.empty !== 'true') {
+      addHistoryItem(input, currentMode, output);
+    }
+  }, 1500);
+}
+
+/**
  * 出力エリア・統計・回文チェックを一括更新する。
  * 入力変更・モード変更のたびに呼び出す。
  */
@@ -444,6 +460,9 @@ function updateOutput() {
 
   // ---- 回文チェックの更新 ----
   updatePalindromeDisplay(input);
+
+  // ---- 自動保存のスケジュール ----
+  scheduleAutoSave();
 }
 
 /**
@@ -773,32 +792,6 @@ $inputClearBtn.addEventListener('click', () => {
   $inputText.value = '';
   updateOutput();
   $inputText.focus();
-});
-
-/** クリアボタン（出力エリア下） */
-$clearBtn.addEventListener('click', () => {
-  $inputText.value = '';
-  updateOutput();
-  $inputText.focus();
-  showToast('🗑️ クリアしました');
-});
-
-/** 履歴保存ボタン */
-$saveHistoryBtn.addEventListener('click', () => {
-  const input  = $inputText.value;
-  const output = $outputArea.textContent;
-
-  if (!input.trim()) {
-    showToast('⚠️ 入力テキストが空です');
-    return;
-  }
-  if ($outputArea.dataset.empty === 'true') {
-    showToast('⚠️ 変換結果がありません');
-    return;
-  }
-
-  addHistoryItem(input, currentMode, output);
-  showToast('💾 履歴に保存しました');
 });
 
 /** 再シャッフルボタン（シャッフルモード専用） */
