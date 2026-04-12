@@ -707,6 +707,14 @@ function init() {
     if (e.key === 'Escape') closeModal();
   });
 
+  // URLパラメータから色を読み込む（day22連携など）
+  const params = new URLSearchParams(location.search);
+  const colorParam = params.get('color');
+  if (colorParam) {
+    const hex = colorParam.startsWith('#') ? colorParam : '#' + colorParam;
+    syncColor(hex);
+  }
+
   // 初期表示（ページロード時に即座に提案を出す）
   generate();
 }

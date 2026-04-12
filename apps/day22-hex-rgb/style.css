@@ -21,6 +21,22 @@
   --shadow-md: 0 4px 24px rgba(108,99,255,0.14);
 }
 
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #13131f;
+    --surface: #1e1e2e;
+    --surface2: #252538;
+    --border: #2e2e45;
+    --accent: #837dff;
+    --accent-light: #2a2550;
+    --accent-dark: #6c63ff;
+    --text: #e2e2f0;
+    --text-muted: #7070a0;
+    --shadow: 0 2px 12px rgba(0,0,0,0.3);
+    --shadow-md: 0 4px 24px rgba(0,0,0,0.4);
+  }
+}
+
 body {
   font-family: 'M PLUS Rounded 1c', sans-serif;
   background: var(--bg);
@@ -345,13 +361,16 @@ body {
   gap: 6px;
 }
 .css-item {
-  background: #1e1e2e;
+  background: #141422;
   border-radius: var(--radius-sm);
   padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  .css-item { background: #0d0d1a; }
 }
 .css-code {
   font-size: 12px;

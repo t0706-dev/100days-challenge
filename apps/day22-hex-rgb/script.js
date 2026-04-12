@@ -299,7 +299,7 @@ function showToast(msg) {
 /* ── Palette button ── */
 document.getElementById('paletteBtn').addEventListener('click', function() {
   const hex = this.dataset.hex || '6c63ff';
-  location.href = PALETTE_URL + '?color=' + encodeURIComponent(hex);
+  window.open(PALETTE_URL + '?color=' + encodeURIComponent(hex), '_blank');
 });
 
 /* ── Section toggles ── */
