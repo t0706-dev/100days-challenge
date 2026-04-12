@@ -295,9 +295,32 @@ body {
    ------------------------------------------------------------ */
 .text-stats {
   display: flex;
+  align-items: center;
   gap: var(--sp-md);
   margin-top: var(--sp-sm);
   flex-wrap: wrap;
+}
+
+/* 入力エリア内のクリアボタン（統計バー右端） */
+.input-clear-btn {
+  margin-left: auto;
+  font-family: inherit;
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  background: var(--danger-light);
+  color: var(--danger);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--transition), color var(--transition), transform var(--transition);
+  white-space: nowrap;
+}
+
+.input-clear-btn:hover {
+  background: var(--danger);
+  color: white;
+  transform: translateY(-1px);
 }
 
 .stat-item {

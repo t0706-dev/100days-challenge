@@ -107,6 +107,7 @@ const $snsOptions        = document.getElementById('snsOptions');
 const $snsDecoration     = document.getElementById('snsDecoration');
 const $copyBtn           = document.getElementById('copyBtn');
 const $clearBtn          = document.getElementById('clearBtn');
+const $inputClearBtn     = document.getElementById('inputClearBtn');
 const $saveHistoryBtn    = document.getElementById('saveHistoryBtn');
 const $reshuffleBtn      = document.getElementById('reshuffleBtn');
 const $clearHistoryBtn   = document.getElementById('clearHistoryBtn');
@@ -767,7 +768,14 @@ $copyBtn.addEventListener('click', async () => {
   }
 });
 
-/** クリアボタン */
+/** 入力エリアのクリアボタン（入力欄の統計バー右端） */
+$inputClearBtn.addEventListener('click', () => {
+  $inputText.value = '';
+  updateOutput();
+  $inputText.focus();
+});
+
+/** クリアボタン（出力エリア下） */
 $clearBtn.addEventListener('click', () => {
   $inputText.value = '';
   updateOutput();
