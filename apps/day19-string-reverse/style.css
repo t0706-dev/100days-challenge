@@ -115,6 +115,9 @@ body {
   transition: background-color var(--transition), color var(--transition);
 }
 
+/* [hidden] 属性は CSS の display 指定より優先する */
+[hidden] { display: none !important; }
+
 /* フォーカスリング（アクセシビリティ） */
 :focus-visible {
   outline: 2px solid var(--primary);
@@ -271,7 +274,7 @@ body {
   background: var(--surface-2);
   color: var(--text-primary);
   transition: border-color var(--transition), background-color var(--transition), box-shadow var(--transition);
-  min-height: 120px;
+  min-height: 80px;
 }
 
 .input-textarea:focus {
@@ -364,10 +367,24 @@ body {
   border-radius: var(--radius-md);
   border: 1px solid var(--border);
   display: flex;
+  flex-direction: column;
+  gap: var(--sp-sm);
+  transition: background-color var(--transition);
+}
+
+/* オプション説明文 */
+.option-desc {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+/* ラベル＋コントロールの横並び行 */
+.option-row {
+  display: flex;
   align-items: center;
   gap: var(--sp-md);
   flex-wrap: wrap;
-  transition: background-color var(--transition);
 }
 
 .option-label {

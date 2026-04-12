@@ -42,7 +42,7 @@
         id="inputText"
         class="input-textarea"
         placeholder="ここに文字を入力してください…&#10;複数行もOKです"
-        rows="6"
+        rows="3"
         aria-label="変換する文字を入力"
         autocomplete="off"
         autocorrect="off"
@@ -69,24 +69,29 @@
 
       <!-- シーザー暗号オプション（暗号風変換モード時のみ表示） -->
       <div class="extra-option" id="cipherOptions" hidden>
-        <label for="cipherShift" class="option-label">🔐 シフト数：</label>
-        <div class="range-wrapper">
-          <input
-            type="range"
-            id="cipherShift"
-            min="1"
-            max="5"
-            value="1"
-            class="range-input"
-            aria-label="シーザー暗号シフト数"
-          >
-          <output id="cipherShiftDisplay" class="range-output" for="cipherShift">1</output>
+        <div class="option-desc">🔐 <strong>暗号風変換モード</strong>専用：英字を指定した数だけずらします（例：シフト1 → A→B, hello→ifmmp）</div>
+        <div class="option-row">
+          <label for="cipherShift" class="option-label">シフト数：</label>
+          <div class="range-wrapper">
+            <input
+              type="range"
+              id="cipherShift"
+              min="1"
+              max="5"
+              value="1"
+              class="range-input"
+              aria-label="シーザー暗号シフト数"
+            >
+            <output id="cipherShiftDisplay" class="range-output" for="cipherShift">1</output>
+          </div>
         </div>
       </div>
 
       <!-- SNS装飾オプション（SNS映えモード時のみ表示） -->
       <div class="extra-option" id="snsOptions" hidden>
-        <label for="snsDecoration" class="option-label">💅 装飾：</label>
+        <div class="option-desc">📱 <strong>SNS映えモード</strong>専用：変換結果に選んだ装飾を付けて出力します</div>
+        <div class="option-row">
+        <label for="snsDecoration" class="option-label">装飾パターン：</label>
         <select id="snsDecoration" class="select-input" aria-label="SNS装飾パターン選択">
           <option value="random">🎲 ランダム</option>
           <option value="star">★ text ★</option>
@@ -98,6 +103,7 @@
           <option value="heart">♡ text ♡</option>
           <option value="wave">〜 text 〜</option>
         </select>
+        </div>
       </div>
     </section>
 
