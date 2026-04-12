@@ -376,8 +376,30 @@ function initFromURL() {
 }
 
 /* ═══════════════════════════════════════
+   THEME TOGGLE
+════════════════════════════════════════ */
+function initTheme() {
+  const saved = localStorage.getItem('hexrgb_theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const isDark = saved ? saved === 'dark' : prefersDark;
+  applyTheme(isDark ? 'dark' : 'light');
+}
+function applyTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeToggle');
+  btn.textContent = theme === 'dark' ? '☀️' : '🌙';
+  btn.title = theme === 'dark' ? 'ライトモードに切替' : 'ダークモードに切替';
+  localStorage.setItem('hexrgb_theme', theme);
+}
+document.getElementById('themeToggle').addEventListener('click', () => {
+  const current = document.documentElement.getAttribute('data-theme');
+  applyTheme(current === 'dark' ? 'light' : 'dark');
+});
+
+/* ═══════════════════════════════════════
    INIT
 ════════════════════════════════════════ */
+initTheme();
 renderHistory();
 initFromURL();
 
