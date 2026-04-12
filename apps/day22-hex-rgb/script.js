@@ -299,7 +299,16 @@ function showToast(msg) {
 /* ── Palette button ── */
 document.getElementById('paletteBtn').addEventListener('click', function() {
   const hex = this.dataset.hex || '6c63ff';
-  window.open(PALETTE_URL + '?color=' + encodeURIComponent(hex), '_blank');
+  const url = PALETTE_URL + '?color=' + encodeURIComponent(hex);
+  // iOS PWA standalone では window.open が同一ウィンドウ遷移になるため
+  // <a> タグを動的生成してクリックする方法が最も安定する
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank';
+  a.rel = 'noreferrer noopener';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 });
 
 /* ── Section toggles ── */
