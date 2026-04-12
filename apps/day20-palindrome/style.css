@@ -458,6 +458,20 @@ body {
   --color-suggest-bg: #2E2010;
 }
 
+/* ダークモード：gen-card の背景と文字色を上書き */
+[data-theme="dark"] .gen-card {
+  background: linear-gradient(135deg, #2A2550 0%, #3A2040 100%);
+  border-color: #3A3760;
+}
+
+[data-theme="dark"] .gen-label-text {
+  color: #E8E6FF;
+}
+
+[data-theme="dark"] .gen-chars {
+  color: #9B99C8;
+}
+
 /* ==============================
    ダークモードトグルボタン
 ============================== */
