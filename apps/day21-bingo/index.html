@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#3B82F6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="抽選ツール">
+  <meta name="description" content="ビンゴ抽選 & ランダム抽選ツール。イベントやくじ引きに最適。">
+  <title>🎰 ビンゴ & 抽選ツール</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- ===== HEADER ===== -->
+    <header id="header">
+      <div class="header-top">
+        <div class="title-block">
+          <span class="title-icon">🎰</span>
+          <h1 class="app-title">抽選ツール</h1>
+        </div>
+        <div class="header-actions">
+          <button class="icon-btn" id="btn-sound" title="効果音 ON/OFF" aria-label="効果音">🔊</button>
+          <button class="icon-btn" id="btn-speech" title="読み上げ ON/OFF" aria-label="読み上げ">🗣️</button>
+          <button class="icon-btn" id="btn-theme" title="ダークモード切替" aria-label="テーマ切替">🌙</button>
+          <button class="icon-btn" id="btn-fullscreen" title="フルスクリーン" aria-label="フルスクリーン">⛶</button>
+          <button class="icon-btn danger" id="btn-reset" title="リセット" aria-label="リセット">↺</button>
+        </div>
+      </div>
+      <div class="header-controls">
+        <div class="seg-group" id="mode-control" role="group" aria-label="抽選モード">
+          <button class="seg-btn active" data-mode="number">🔢 数字</button>
+          <button class="seg-btn" data-mode="text">📝 テキスト</button>
+        </div>
+        <div class="seg-group" id="effect-control" role="group" aria-label="演出モード">
+          <button class="seg-btn" data-effect="slot">🎰 スロット</button>
+          <button class="seg-btn" data-effect="roulette">🎡 ルーレット</button>
+          <button class="seg-btn" data-effect="textrand">✨ ランダム</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===== SETTINGS ===== -->
+    <section id="settings">
+      <!-- Number Settings -->
+      <div id="number-settings">
+        <div class="range-row">
+          <div class="range-field">
+            <label for="range-min">最小値</label>
+            <input type="number" id="range-min" value="1" min="0" max="9999" inputmode="numeric">
+          </div>
+          <span class="range-sep">〜</span>
+          <div class="range-field">
+            <label for="range-max">最大値</label>
+            <input type="number" id="range-max" value="75" min="1" max="9999" inputmode="numeric">
+          </div>
+          <div id="bingo-badge" class="bingo-badge" title="BINGO モード有効">BINGO</div>
+        </div>
+      </div>
+      <!-- Text Settings -->
+      <div id="text-settings" class="hidden">
+        <textarea id="text-input"
+          placeholder="候補を1行ずつ入力&#10;&#10;例：&#10;田中&#10;佐藤&#10;鈴木&#10;&#10;（空行は無視されます）"
+          rows="5"
+          spellcheck="false"></textarea>
+        <div class="text-meta">
+          候補数：<span id="text-count" class="text-count-num">0</span> 件
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== REMAINING ===== -->
+    <div id="remaining-bar">
+      <div class="remaining-info">
+        <span class="remaining-label">残り</span>
+        <span id="remaining-count" class="remaining-num">75</span>
+        <span class="remaining-label">件</span>
+      </div>
+      <div class="progress-track">
+        <div id="progress-fill" class="progress-fill"></div>
+      </div>
+    </div>
+
+    <!-- ===== MAIN ===== -->
+    <main id="main">
+
+      <!-- Animation / Result Area -->
+      <div id="anim-area">
+
+        <!-- Slot -->
+        <div id="slot-display" class="anim-view">
+          <div id="slot-reels" class="slot-reels">
+            <div class="slot-reel" id="reel-0">
+              <div class="reel-value">?</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Roulette -->
+        <div id="roulette-display" class="anim-view hidden">
+          <div class="roulette-wrap">
+            <div class="roulette-pointer">▼</div>
+            <canvas id="roulette-canvas" width="280" height="280"></canvas>
+            <div id="roulette-result" class="roulette-result"></div>
+          </div>
+          <div id="roulette-cards" class="roulette-cards"></div>
+        </div>
+
+        <!-- Text Random -->
+        <div id="textrand-display" class="anim-view hidden">
+          <div id="textrand-cards" class="textrand-cards">
+            <div class="textrand-card" id="tcard-0">
+              <div class="textrand-value">?</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /anim-area -->
+
+      <!-- Controls -->
+      <div id="controls">
+        <div class="sim-row">
+          <span class="ctrl-label">同時抽選：</span>
+          <div class="sim-btns" role="group" aria-label="同時抽選数">
+            <button class="sim-btn active" data-sim="1">1個</button>
+            <button class="sim-btn" data-sim="2">2個</button>
+            <button class="sim-btn" data-sim="3">3個</button>
+          </div>
+        </div>
+        <div class="action-row">
+          <button id="btn-undo" class="act-btn secondary" disabled>↩ Undo</button>
+          <button id="btn-draw" class="act-btn primary">
+            <span class="draw-icon">🎰</span>
+            <span class="draw-label">抽選する</span>
+          </button>
+          <button id="btn-copy" class="act-btn secondary">📋 コピー</button>
+        </div>
+      </div>
+
+    </main><!-- /main -->
+
+    <!-- ===== HISTORY ===== -->
+    <section id="history-section">
+      <div class="section-hd">
+        <h2>📋 抽選履歴</h2>
+      </div>
+      <div id="history-list" class="history-list">
+        <p class="empty-msg">まだ抽選されていません</p>
+      </div>
+    </section>
+
+    <!-- ===== BOARD ===== -->
+    <section id="board-section">
+      <div class="section-hd">
+        <h2>📊 盤面</h2>
+      </div>
+      <div id="board-wrap">
+        <div id="board-grid" class="board-grid"></div>
+        <p id="board-empty" class="empty-msg hidden">数字モード（〜100）のとき表示されます</p>
+      </div>
+    </section>
+
+  </div><!-- /app -->
+
+  <!-- ===== RESET MODAL ===== -->
+  <div id="reset-modal" class="modal-overlay hidden" role="dialog" aria-modal="true" aria-label="リセット確認">
+    <div class="modal-box">
+      <div class="modal-icon">🔄</div>
+      <p class="modal-title">リセットしますか？</p>
+      <p class="modal-sub">履歴・抽選済みデータがすべて消えます</p>
+      <div class="modal-actions">
+        <button id="modal-cancel" class="act-btn secondary">キャンセル</button>
+        <button id="modal-confirm" class="act-btn danger">リセット</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast" class="toast" role="alert" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
