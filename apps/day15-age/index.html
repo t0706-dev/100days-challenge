@@ -820,6 +820,7 @@ function clearStorage() {
    API 呼び出し
 ===================================================== */
 const GEOCODING_URL = 'https://geocoding-api.open-meteo.com/v1/search';
+const GSI_GEOCODING_URL = 'https://msearch.gsi.go.jp/address-search/AddressSearch';
 const WEATHER_URL   = 'https://archive-api.open-meteo.com/v1/archive';
 const CACHE_KEY_PREFIX = 'day15_weather_';
 const API_TIMEOUT_MS = 12000;
@@ -843,10 +844,32 @@ async function fetchWithTimeout(url, ms = API_TIMEOUT_MS) {
 
 /**
  * 地名からジオコーディング候補を取得
+ * 1. 国土地理院API（日本全市区町村対応）で検索
+ * 2. 結果がなければ Open-Meteo Geocoding にフォールバック
  * @param {string} place - 地名文字列
- * @returns {Array} 候補リスト
+ * @returns {Array} 候補リスト { name, admin1, admin2, country, latitude, longitude }
  */
 async function geocodePlace(place) {
+  // 国土地理院APIで試みる（日本の住所に強い）
+  try {
+    const gsiUrl = `${GSI_GEOCODING_URL}?q=${encodeURIComponent(place)}`;
+    const gsiData = await fetchWithTimeout(gsiUrl);
+    if (Array.isArray(gsiData) && gsiData.length > 0) {
+      return gsiData.slice(0, 10).map(f => {
+        const title = f.properties.title || '';
+        const [lng, lat] = f.geometry.coordinates;
+        // "兵庫県高砂市" → admin1="兵庫県", name="高砂市"
+        const prefMatch = title.match(/^(.{2,3}[都道府県])(.*)/);
+        const name   = prefMatch ? (prefMatch[2] || prefMatch[1]) : title;
+        const admin1 = prefMatch ? prefMatch[1] : '';
+        return { name, admin1, admin2: '', country: '日本', latitude: lat, longitude: lng };
+      });
+    }
+  } catch (e) {
+    // GSI失敗時はフォールバックへ
+  }
+
+  // Open-Meteo Geocoding にフォールバック
   const params = new URLSearchParams({
     name: place,
     count: 10,
