@@ -3,7 +3,7 @@
    ============================================= */
 const CIRCUMFERENCE   = 552.92; // 2π × 88
 const RING_CYCLE_MS   = 10000;  // Normal mode: 10s per ring cycle
-const HOLD_DURATION   = 400;    // ms to hold for stop
+const HOLD_DURATION   = 400;    // unused (kept for future use)
 const SWIPE_THRESHOLD = 50;     // px to trigger swipe
 
 /* =============================================
@@ -175,17 +175,17 @@ function updateChallengeRing(elapsed) {
 /* =============================================
    NORMAL MODE
    ============================================= */
-function normalLoop() {
+function normalTick() {
   n.elapsed = performance.now() - n.startTime;
   normalTime.textContent = fmt(n.elapsed);
   updateNormalRing(n.elapsed);
-  n.rafId = requestAnimationFrame(normalLoop);
 }
 
 function normalStart() {
   n.startTime = performance.now() - n.elapsed;
   n.running = true;
-  n.rafId = requestAnimationFrame(normalLoop);
+  clearInterval(n.rafId);
+  n.rafId = setInterval(normalTick, 16);
   normalRingWrap.classList.add('running');
   normalStatus.textContent = '計測中';
   setBtn(startStopBtn, 'running', 'STOP');
@@ -194,7 +194,8 @@ function normalStart() {
 }
 
 function normalStop() {
-  cancelAnimationFrame(n.rafId);
+  clearInterval(n.rafId);
+  n.rafId = null;
   n.running = false;
   normalRingWrap.classList.remove('running');
   normalStatus.textContent = '一時停止';
@@ -203,7 +204,7 @@ function normalStop() {
 }
 
 function normalReset() {
-  cancelAnimationFrame(n.rafId);
+  clearInterval(n.rafId);
   Object.assign(n, { running: false, elapsed: 0, laps: [], rafId: null });
   normalRingWrap.classList.remove('running');
   normalTime.textContent   = '00:00.00';
@@ -253,11 +254,10 @@ function saveNormalHistory() {
 /* =============================================
    CHALLENGE MODE
    ============================================= */
-function challengeLoop() {
+function challengeTick() {
   c.elapsed = performance.now() - c.startTime;
   challengeTime.textContent = fmt(c.elapsed);
   updateChallengeRing(c.elapsed);
-  c.rafId = requestAnimationFrame(challengeLoop);
 }
 
 function challengeStart() {
@@ -265,7 +265,8 @@ function challengeStart() {
   c.elapsed   = 0;
   c.running   = true;
   c.hasResult = false;
-  c.rafId = requestAnimationFrame(challengeLoop);
+  clearInterval(c.rafId);
+  c.rafId = setInterval(challengeTick, 16);
   challengeRingWrap.classList.add('running');
   challengeRing.classList.remove('over-target');
   challengeTargetLabel.textContent = `目標: ${c.target.toFixed(2)}秒`;
@@ -276,7 +277,8 @@ function challengeStart() {
 }
 
 function challengeStop() {
-  cancelAnimationFrame(c.rafId);
+  clearInterval(c.rafId);
+  c.rafId = null;
   c.running   = false;
   c.hasResult = true;
   challengeRingWrap.classList.remove('running');
@@ -307,7 +309,7 @@ function challengeStop() {
 }
 
 function challengeReset() {
-  cancelAnimationFrame(c.rafId);
+  clearInterval(c.rafId);
   Object.assign(c, { running: false, elapsed: 0, hasResult: false, rafId: null });
   challengeRingWrap.classList.remove('running');
   challengeRing.classList.remove('over-target');
@@ -383,56 +385,23 @@ function setBtn(btn, state, label) {
   btn.textContent   = label;
 }
 
-function startHold(btn, callback) {
-  hold.btn   = btn;
-  hold.start = performance.now();
-  btn.style.setProperty('--hold-active', 1);
+function bindToggleBtn(btn, startFn, stopFn) {
+  let lastFired = 0;
 
-  (function animate() {
-    const p = Math.min((performance.now() - hold.start) / HOLD_DURATION, 1);
-    btn.style.setProperty('--hold-p', p);
-    if (p < 1) hold.rafId = requestAnimationFrame(animate);
-  })();
-
-  hold.timer = setTimeout(() => {
-    clearHold();
-    callback();
-  }, HOLD_DURATION);
-}
-
-function clearHold() {
-  clearTimeout(hold.timer);
-  cancelAnimationFrame(hold.rafId);
-  if (hold.btn) {
-    hold.btn.style.setProperty('--hold-p', 0);
-    hold.btn.style.setProperty('--hold-active', 0);
-    hold.btn = null;
+  function fire() {
+    const now = Date.now();
+    if (now - lastFired < 300) return; // debounce
+    lastFired = now;
+    if (btn.dataset.state !== 'running') startFn();
+    else stopFn();
   }
-  hold.timer = hold.rafId = null;
-}
 
-function bindHoldStop(btn, startFn, stopFn) {
-  let pressing = false;
-
-  function onDown(e) {
+  btn.addEventListener('touchend', (e) => {
     e.preventDefault();
-    if (btn.dataset.state !== 'running') {
-      startFn();
-    } else {
-      pressing = true;
-      startHold(btn, () => { pressing = false; stopFn(); });
-    }
-  }
-  function onUp() {
-    if (pressing) { pressing = false; clearHold(); }
-  }
+    fire();
+  }, { passive: false });
 
-  btn.addEventListener('touchstart',  onDown, { passive: false });
-  btn.addEventListener('mousedown',   onDown);
-  btn.addEventListener('touchend',    onUp);
-  btn.addEventListener('touchcancel', onUp);
-  btn.addEventListener('mouseup',     onUp);
-  btn.addEventListener('mouseleave',  onUp);
+  btn.addEventListener('click', fire);
 }
 
 /* =============================================
@@ -584,8 +553,8 @@ function showToast(msg) {
    EVENT BINDING
    ============================================= */
 function bindEvents() {
-  // Normal: hold-to-stop on start/stop button
-  bindHoldStop(startStopBtn, normalStart, normalStop);
+  // Normal: tap to start/stop
+  bindToggleBtn(startStopBtn, normalStart, normalStop);
 
   // Normal: lap
   lapBtn.addEventListener('click', normalLap);
@@ -598,8 +567,8 @@ function bindEvents() {
   lapsClose.addEventListener('click',   () => closeOverlay(lapsOverlay));
   lapsOverlay.addEventListener('click', (e) => { if (e.target === lapsOverlay) closeOverlay(lapsOverlay); });
 
-  // Challenge: hold-to-stop on start button
-  bindHoldStop(challengeStartBtn, challengeStart, challengeStop);
+  // Challenge: tap to start/stop
+  bindToggleBtn(challengeStartBtn, challengeStart, challengeStop);
 
   // Challenge: retry
   retryBtn.addEventListener('click', () => { challengeReset(); setTimeout(challengeStart, 30); });
