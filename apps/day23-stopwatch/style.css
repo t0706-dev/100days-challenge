@@ -124,8 +124,8 @@ body {
 #app {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
-  height: 100vh; /* fallback */
+  height: 100vh;   /* fallback */
+  height: 100dvh;  /* dynamic: excludes browser chrome on iOS */
   overflow: hidden;
   background: var(--bg);
   color: var(--text-primary);
@@ -139,7 +139,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 16px 6px;
+  padding: 6px 14px 4px;
   background: var(--header-bg);
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
@@ -189,8 +189,8 @@ body {
 .mode-labelbar {
   display: flex;
   justify-content: center;
-  gap: 24px;
-  padding: 6px 0 2px;
+  gap: 20px;
+  padding: 4px 0 2px;
   flex-shrink: 0;
 }
 .mlabel {
@@ -229,7 +229,7 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 8px 16px 12px;
+  padding: 4px 14px 8px;
   overflow: hidden;
 }
 
@@ -246,13 +246,14 @@ body {
 
 .challenge-timer-area {
   flex: none;
-  height: clamp(160px, 38vmin, 220px);
+  height: clamp(140px, 32vmin, 190px);
 }
 
+/* モバイルファースト: デフォルトは小さめ */
 .ring-wrap {
   position: relative;
-  width: clamp(140px, 46vmin, 210px);
-  height: clamp(140px, 46vmin, 210px);
+  width: clamp(120px, 40vmin, 175px);
+  height: clamp(120px, 40vmin, 175px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -333,37 +334,37 @@ body {
    ============================================= */
 .sub-info {
   display: flex;
-  gap: 8px;
-  margin: 8px 0;
+  gap: 6px;
+  margin: 4px 0;
   flex-shrink: 0;
 }
 
 .chip {
   flex: 1;
   background: var(--bg-chip);
-  border-radius: 12px;
-  padding: 8px 6px;
+  border-radius: 10px;
+  padding: 6px 4px;
   text-align: center;
   transition: background 0.3s;
 }
 .chip.best { border: 1px solid var(--accent-dim); }
 
 .chip-label {
-  font-size: 10px;
+  font-size: 9px;
   color: var(--text-sub);
   font-weight: 500;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
   white-space: nowrap;
 }
 
 .chip-val {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--text-primary);
   transition: color 0.3s;
 }
 .chip-val.mono {
-  font-size: 12px;
+  font-size: 11px;
   font-variant-numeric: tabular-nums;
 }
 .chip.best .chip-val { color: var(--accent); }
@@ -373,11 +374,11 @@ body {
    ============================================= */
 .btn-row {
   display: flex;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-  margin: 4px 0;
+  margin: 4px 0 2px;
 }
 
 .btn {
@@ -398,9 +399,9 @@ body {
 .btn.primary {
   background: var(--btn-primary);
   color: var(--btn-primary-t);
-  width: 80px;
-  height: 80px;
-  font-size: 14px;
+  width: 72px;
+  height: 72px;
+  font-size: 13px;
   border-radius: 50%;
   box-shadow: 0 4px 16px var(--accent-glow);
   position: relative;
@@ -418,9 +419,9 @@ body {
 .btn.secondary {
   background: var(--btn-sec);
   color: var(--btn-sec-t);
-  width: 64px;
-  height: 64px;
-  font-size: 11px;
+  width: 58px;
+  height: 58px;
+  font-size: 10px;
   border-radius: 50%;
 }
 
@@ -923,43 +924,27 @@ body {
 }
 
 /* =============================================
-   RESPONSIVE
+   RESPONSIVE (モバイルファースト)
    ============================================= */
 
-/* Small phones (iPhone SE: 667px height or less) */
-@media (max-height: 680px) {
-  .mode-panel { padding: 4px 14px 6px; }
+/* タブレット・PC: 余裕があれば大きく */
+@media (min-height: 750px) and (min-width: 480px) {
   .ring-wrap {
-    width: clamp(120px, 38vmin, 160px);
-    height: clamp(120px, 38vmin, 160px);
+    width: clamp(160px, 40vmin, 220px);
+    height: clamp(160px, 40vmin, 220px);
   }
-  .challenge-timer-area { height: clamp(130px, 32vmin, 170px); }
-  .time-display { font-size: clamp(20px, 6.5vw, 30px); }
-  .sub-info { margin: 4px 0; gap: 6px; }
-  .chip { padding: 5px 4px; }
-  .chip-val { font-size: 13px; }
-  .btn-row { margin: 2px 0; gap: 10px; }
-  .btn.primary { width: 70px; height: 70px; font-size: 13px; }
-  .btn.secondary { width: 56px; height: 56px; font-size: 10px; }
-  .target-area { padding: 7px 12px 6px; }
-  .target-input { font-size: 24px; }
-  .preview-bar { margin-top: 2px; }
-  .mode-labelbar { padding: 4px 0 0; }
-}
-
-/* Normal and large phones */
-@media (min-height: 700px) {
-  .btn.primary { width: 86px; height: 86px; font-size: 15px; }
-  .btn.secondary { width: 68px; height: 68px; }
-}
-
-@media (min-width: 480px) {
-  .mode-panel { padding: 12px 24px 16px; }
-  .sub-info { gap: 12px; }
+  .challenge-timer-area { height: clamp(160px, 36vmin, 210px); }
+  .btn.primary { width: 82px; height: 82px; font-size: 14px; }
+  .btn.secondary { width: 66px; height: 66px; font-size: 11px; }
+  .chip { padding: 8px 6px; }
+  .chip-val { font-size: 15px; }
+  .chip-val.mono { font-size: 12px; }
+  .sub-info { margin: 8px 0; gap: 8px; }
+  .mode-panel { padding: 8px 20px 12px; }
 }
 
 /* Safe area for notch / home indicator */
 @supports (padding-bottom: env(safe-area-inset-bottom)) {
-  .mode-panel { padding-bottom: calc(10px + env(safe-area-inset-bottom)); }
+  .mode-panel { padding-bottom: calc(8px + env(safe-area-inset-bottom)); }
   .sheet { padding-bottom: calc(32px + env(safe-area-inset-bottom)); }
 }
