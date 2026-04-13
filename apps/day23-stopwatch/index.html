@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#48bb78" id="metaThemeColor">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="StopWatch">
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=2">
+  <title>ストップウォッチ</title>
+</head>
+<body>
+  <div id="app" class="theme-simple">
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-left">
+        <button class="icon-btn" id="themeBtn" aria-label="テーマ切替">🎨</button>
+        <button class="icon-btn" id="darkModeBtn" aria-label="ダークモード切替">🌙</button>
+      </div>
+      <div class="mode-dots">
+        <span class="dot active" data-mode="0"></span>
+        <span class="dot" data-mode="1"></span>
+      </div>
+      <button class="icon-btn" id="historyBtn" aria-label="履歴">📋</button>
+    </header>
+
+    <!-- Mode label bar -->
+    <div class="mode-labelbar">
+      <span class="mlabel active" data-mode="0">⏱ ウォッチ</span>
+      <span class="mlabel" data-mode="1">🎯 チャレンジ</span>
+    </div>
+
+    <!-- Swipe container -->
+    <div class="swipe-wrapper" id="swipeWrapper">
+      <div class="swipe-track" id="swipeTrack">
+
+        <!-- ===== NORMAL MODE PANEL ===== -->
+        <div class="mode-panel" id="normalPanel">
+
+          <!-- Ring + Time -->
+          <div class="timer-area">
+            <div class="ring-wrap" id="normalRingWrap">
+              <svg class="ring-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle class="ring-bg" cx="100" cy="100" r="88"/>
+                <circle class="ring-fill" id="normalRing" cx="100" cy="100" r="88"
+                  stroke-dasharray="552.92" stroke-dashoffset="552.92"/>
+              </svg>
+              <div class="time-center">
+                <div class="time-display" id="normalTime">00:00.00</div>
+                <div class="time-status" id="normalStatus">待機中</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub info chips -->
+          <div class="sub-info" id="normalSubInfo">
+            <div class="chip">
+              <div class="chip-label">ラップ</div>
+              <div class="chip-val" id="lapCount">0</div>
+            </div>
+            <div class="chip">
+              <div class="chip-label">最新ラップ</div>
+              <div class="chip-val mono" id="lastLapTime">--:--.--</div>
+            </div>
+            <div class="chip best">
+              <div class="chip-label">最速</div>
+              <div class="chip-val mono" id="bestLapTime">--:--.--</div>
+            </div>
+          </div>
+
+          <!-- Control buttons -->
+          <div class="btn-row">
+            <button class="btn secondary" id="lapBtn" disabled>LAP</button>
+            <button class="btn primary hold-btn" id="startStopBtn"
+              data-state="idle">START</button>
+            <button class="btn secondary" id="resetBtn" disabled>RESET</button>
+          </div>
+
+          <!-- Lap preview bar -->
+          <div class="preview-bar" id="lapPreviewBar" style="display:none">
+            <button class="preview-btn" id="showLapsBtn">
+              <span id="lapPreviewText">ラップを見る</span>
+              <span class="chevron">▲</span>
+            </button>
+          </div>
+
+        </div>
+
+        <!-- ===== CHALLENGE MODE PANEL ===== -->
+        <div class="mode-panel" id="challengePanel">
+
+          <!-- Target setting area -->
+          <div class="target-area" id="targetArea">
+            <div class="target-title">目標タイム</div>
+            <div class="target-row">
+              <button class="adj-btn" id="minusBtn">－</button>
+              <div class="target-input-wrap">
+                <input type="number" class="target-input" id="targetInput"
+                  min="1.00" max="99.99" step="0.01" value="5.00">
+                <span class="target-unit">秒</span>
+              </div>
+              <button class="adj-btn" id="plusBtn">＋</button>
+            </div>
+            <div class="preset-row">
+              <button class="preset" data-sec="3">3秒</button>
+              <button class="preset" data-sec="5">5秒</button>
+              <button class="preset" data-sec="7">7秒</button>
+              <button class="preset" data-sec="10">10秒</button>
+              <button class="preset" data-sec="30">30秒</button>
+            </div>
+          </div>
+
+          <!-- Ring + Time -->
+          <div class="timer-area challenge-timer-area">
+            <div class="ring-wrap" id="challengeRingWrap">
+              <svg class="ring-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle class="ring-bg" cx="100" cy="100" r="88"/>
+                <circle class="ring-fill" id="challengeRing" cx="100" cy="100" r="88"
+                  stroke-dasharray="552.92" stroke-dashoffset="552.92"/>
+              </svg>
+              <div class="time-center">
+                <div class="time-display" id="challengeTime">00:00.00</div>
+                <div class="time-status" id="challengeTargetLabel">目標: 5.00秒</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result panel -->
+          <div class="result-panel" id="resultPanel" style="display:none">
+            <div class="result-judge" id="resultJudge"></div>
+            <div class="result-grid">
+              <div class="result-cell">
+                <span class="rc-label">目標</span>
+                <span class="rc-val" id="rTarget">-</span>
+              </div>
+              <div class="result-cell">
+                <span class="rc-label">結果</span>
+                <span class="rc-val" id="rActual">-</span>
+              </div>
+              <div class="result-cell">
+                <span class="rc-label">誤差</span>
+                <span class="rc-val" id="rDiff">-</span>
+              </div>
+              <div class="result-cell">
+                <span class="rc-label">前回差</span>
+                <span class="rc-val" id="rPrevDiff">-</span>
+              </div>
+            </div>
+            <div class="result-msg" id="resultMsg"></div>
+            <div class="best-badge" id="bestBadge" style="display:none">🏆 ベスト更新！</div>
+          </div>
+
+          <!-- Sub info chips -->
+          <div class="sub-info" id="challengeSubInfo">
+            <div class="chip">
+              <div class="chip-label">挑戦回数</div>
+              <div class="chip-val" id="challengeCount">0</div>
+            </div>
+            <div class="chip best">
+              <div class="chip-label">ベスト誤差</div>
+              <div class="chip-val mono" id="bestDiffDisplay">-</div>
+            </div>
+            <div class="chip">
+              <div class="chip-label">前回誤差</div>
+              <div class="chip-val mono" id="lastDiffDisplay">-</div>
+            </div>
+          </div>
+
+          <!-- Control buttons -->
+          <div class="btn-row">
+            <button class="btn secondary" id="retryBtn" style="visibility:hidden">もう一回</button>
+            <button class="btn primary hold-btn" id="challengeStartBtn"
+              data-state="idle">START</button>
+            <button class="btn secondary" id="challengeResetBtn">RESET</button>
+          </div>
+
+        </div>
+
+      </div><!-- / swipe-track -->
+    </div><!-- / swipe-wrapper -->
+
+    <!-- Swipe hint overlay -->
+    <div class="swipe-hint" id="swipeHint">
+      <div class="hint-box">
+        <span class="hint-arrow left">←</span>
+        <span class="hint-text">スワイプでモード切替</span>
+        <span class="hint-arrow right">→</span>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- === BOTTOM SHEETS === -->
+
+    <!-- Theme sheet -->
+    <div class="overlay" id="themeOverlay">
+      <div class="sheet" id="themeSheet">
+        <div class="sheet-handle"></div>
+        <h3 class="sheet-title">テーマ</h3>
+        <div class="theme-grid">
+          <button class="theme-card" data-theme="simple">
+            <div class="swatch simple-sw"></div>
+            <span>シンプル</span>
+          </button>
+          <button class="theme-card" data-theme="sports">
+            <div class="swatch sports-sw"></div>
+            <span>スポーツ</span>
+          </button>
+          <button class="theme-card" data-theme="neon">
+            <div class="swatch neon-sw"></div>
+            <span>ネオン</span>
+          </button>
+          <button class="theme-card" data-theme="lab">
+            <div class="swatch lab-sw"></div>
+            <span>研究室</span>
+          </button>
+        </div>
+        <button class="sheet-close" id="themeClose">閉じる</button>
+      </div>
+    </div>
+
+    <!-- Laps sheet -->
+    <div class="overlay" id="lapsOverlay">
+      <div class="sheet" id="lapsSheet">
+        <div class="sheet-handle"></div>
+        <h3 class="sheet-title">ラップ一覧</h3>
+        <div class="sheet-scroll" id="lapListContent"></div>
+        <button class="sheet-close" id="lapsClose">閉じる</button>
+      </div>
+    </div>
+
+    <!-- History sheet -->
+    <div class="overlay" id="historyOverlay">
+      <div class="sheet" id="historySheet">
+        <div class="sheet-handle"></div>
+        <h3 class="sheet-title">記録履歴</h3>
+        <div class="history-tabs">
+          <button class="htab active" data-htab="normal">ウォッチ</button>
+          <button class="htab" data-htab="challenge">チャレンジ</button>
+        </div>
+        <div class="sheet-scroll" id="historyContent"></div>
+        <button class="sheet-close" id="historyClose">閉じる</button>
+      </div>
+    </div>
+
+  </div><!-- / #app -->
+  <script src="script.js?v=2"></script>
+</body>
+</html>
