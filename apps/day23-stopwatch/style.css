@@ -245,8 +245,18 @@ body {
 }
 
 .challenge-timer-area {
-  flex: none;
-  height: clamp(140px, 32vmin, 190px);
+  flex: 1;
+  min-height: clamp(120px, 28vmin, 175px);
+}
+
+/* challenge-top: variable height (target-area or result-panel) */
+.challenge-top {
+  flex-shrink: 0;
+}
+
+/* challenge-bottom: chips + buttons — pinned to bottom of panel */
+.challenge-bottom {
+  flex-shrink: 0;
 }
 
 /* モバイルファースト: デフォルトは小さめ */
@@ -933,7 +943,7 @@ body {
     width: clamp(160px, 40vmin, 220px);
     height: clamp(160px, 40vmin, 220px);
   }
-  .challenge-timer-area { height: clamp(160px, 36vmin, 210px); }
+  .challenge-timer-area { min-height: clamp(150px, 34vmin, 200px); }
   .btn.primary { width: 82px; height: 82px; font-size: 14px; }
   .btn.secondary { width: 66px; height: 66px; font-size: 11px; }
   .chip { padding: 8px 6px; }

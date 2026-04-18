@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
   <title>ストップウォッチ</title>
 </head>
 <body>
@@ -96,28 +96,58 @@
         <!-- ===== CHALLENGE MODE PANEL ===== -->
         <div class="mode-panel" id="challengePanel">
 
-          <!-- Target setting area -->
-          <div class="target-area" id="targetArea">
-            <div class="target-title">目標タイム</div>
-            <div class="target-row">
-              <button class="adj-btn" id="minusBtn">－</button>
-              <div class="target-input-wrap">
-                <input type="number" class="target-input" id="targetInput"
-                  min="1.00" max="99.99" step="0.01" value="5.00">
-                <span class="target-unit">秒</span>
-              </div>
-              <button class="adj-btn" id="plusBtn">＋</button>
-            </div>
-            <div class="preset-row">
-              <button class="preset" data-sec="3">3秒</button>
-              <button class="preset" data-sec="5">5秒</button>
-              <button class="preset" data-sec="7">7秒</button>
-              <button class="preset" data-sec="10">10秒</button>
-              <button class="preset" data-sec="30">30秒</button>
-            </div>
-          </div>
+          <!-- Top section: target setting or result (variable height) -->
+          <div class="challenge-top">
 
-          <!-- Ring + Time -->
+            <!-- Target setting area -->
+            <div class="target-area" id="targetArea">
+              <div class="target-title">目標タイム</div>
+              <div class="target-row">
+                <button class="adj-btn" id="minusBtn">－</button>
+                <div class="target-input-wrap">
+                  <input type="number" class="target-input" id="targetInput"
+                    min="1.00" max="99.99" step="0.01" value="5.00">
+                  <span class="target-unit">秒</span>
+                </div>
+                <button class="adj-btn" id="plusBtn">＋</button>
+              </div>
+              <div class="preset-row">
+                <button class="preset" data-sec="3">3秒</button>
+                <button class="preset" data-sec="5">5秒</button>
+                <button class="preset" data-sec="7">7秒</button>
+                <button class="preset" data-sec="10">10秒</button>
+                <button class="preset" data-sec="30">30秒</button>
+              </div>
+            </div>
+
+            <!-- Result panel -->
+            <div class="result-panel" id="resultPanel" style="display:none">
+              <div class="result-judge" id="resultJudge"></div>
+              <div class="result-grid">
+                <div class="result-cell">
+                  <span class="rc-label">目標</span>
+                  <span class="rc-val" id="rTarget">-</span>
+                </div>
+                <div class="result-cell">
+                  <span class="rc-label">結果</span>
+                  <span class="rc-val" id="rActual">-</span>
+                </div>
+                <div class="result-cell">
+                  <span class="rc-label">誤差</span>
+                  <span class="rc-val" id="rDiff">-</span>
+                </div>
+                <div class="result-cell">
+                  <span class="rc-label">前回差</span>
+                  <span class="rc-val" id="rPrevDiff">-</span>
+                </div>
+              </div>
+              <div class="result-msg" id="resultMsg"></div>
+              <div class="best-badge" id="bestBadge" style="display:none">🏆 ベスト更新！</div>
+            </div>
+
+          </div><!-- / challenge-top -->
+
+          <!-- Ring + Time (flex:1 → absorbs variable space from top section) -->
           <div class="timer-area challenge-timer-area">
             <div class="ring-wrap" id="challengeRingWrap">
               <svg class="ring-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -132,54 +162,34 @@
             </div>
           </div>
 
-          <!-- Result panel -->
-          <div class="result-panel" id="resultPanel" style="display:none">
-            <div class="result-judge" id="resultJudge"></div>
-            <div class="result-grid">
-              <div class="result-cell">
-                <span class="rc-label">目標</span>
-                <span class="rc-val" id="rTarget">-</span>
-              </div>
-              <div class="result-cell">
-                <span class="rc-label">結果</span>
-                <span class="rc-val" id="rActual">-</span>
-              </div>
-              <div class="result-cell">
-                <span class="rc-label">誤差</span>
-                <span class="rc-val" id="rDiff">-</span>
-              </div>
-              <div class="result-cell">
-                <span class="rc-label">前回差</span>
-                <span class="rc-val" id="rPrevDiff">-</span>
-              </div>
-            </div>
-            <div class="result-msg" id="resultMsg"></div>
-            <div class="best-badge" id="bestBadge" style="display:none">🏆 ベスト更新！</div>
-          </div>
+          <!-- Bottom section: chips + buttons (always at bottom, fixed position) -->
+          <div class="challenge-bottom">
 
-          <!-- Sub info chips -->
-          <div class="sub-info" id="challengeSubInfo">
-            <div class="chip">
-              <div class="chip-label">挑戦回数</div>
-              <div class="chip-val" id="challengeCount">0</div>
+            <!-- Sub info chips -->
+            <div class="sub-info" id="challengeSubInfo">
+              <div class="chip">
+                <div class="chip-label">挑戦回数</div>
+                <div class="chip-val" id="challengeCount">0</div>
+              </div>
+              <div class="chip best">
+                <div class="chip-label">ベスト誤差</div>
+                <div class="chip-val mono" id="bestDiffDisplay">-</div>
+              </div>
+              <div class="chip">
+                <div class="chip-label">前回誤差</div>
+                <div class="chip-val mono" id="lastDiffDisplay">-</div>
+              </div>
             </div>
-            <div class="chip best">
-              <div class="chip-label">ベスト誤差</div>
-              <div class="chip-val mono" id="bestDiffDisplay">-</div>
-            </div>
-            <div class="chip">
-              <div class="chip-label">前回誤差</div>
-              <div class="chip-val mono" id="lastDiffDisplay">-</div>
-            </div>
-          </div>
 
-          <!-- Control buttons -->
-          <div class="btn-row">
-            <button class="btn secondary" id="retryBtn" style="visibility:hidden">もう一回</button>
-            <button class="btn primary hold-btn" id="challengeStartBtn"
-              data-state="idle">START</button>
-            <button class="btn secondary" id="challengeResetBtn">RESET</button>
-          </div>
+            <!-- Control buttons -->
+            <div class="btn-row">
+              <button class="btn secondary" id="retryBtn" style="visibility:hidden">もう一回</button>
+              <button class="btn primary hold-btn" id="challengeStartBtn"
+                data-state="idle">START</button>
+              <button class="btn secondary" id="challengeResetBtn">RESET</button>
+            </div>
+
+          </div><!-- / challenge-bottom -->
 
         </div>
 
@@ -252,6 +262,6 @@
     </div>
 
   </div><!-- / #app -->
-  <script src="script.js?v=3"></script>
+  <script src="script.js?v=5"></script>
 </body>
 </html>
