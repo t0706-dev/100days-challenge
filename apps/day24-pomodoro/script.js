@@ -2,12 +2,12 @@
 
 // ── Constants ──────────────────────────────────────────────
 const STAGES = [
-  { name: '種',     emoji: '🌰', req: 0  },
-  { name: '芽',     emoji: '🌱', req: 1  },
-  { name: '葉',     emoji: '🪴', req: 3  },
-  { name: 'つぼみ', emoji: '🌿', req: 6  },
-  { name: '花',     emoji: '🌸', req: 10 },
-  { name: '成熟',   emoji: '🌳', req: 15 },
+  { name: '種',     emoji: '__seed__', req: 0  },
+  { name: '芽',     emoji: '🌱',      req: 1  },
+  { name: '葉',     emoji: '🪴',      req: 3  },
+  { name: 'つぼみ', emoji: '🌿',      req: 6  },
+  { name: '花',     emoji: '🌸',      req: 10 },
+  { name: '成熟',   emoji: '🌳',      req: 15 },
 ];
 
 const MISSIONS_POOL = [
@@ -260,6 +260,7 @@ function onTimerEnd() {
       setTimeout(() => {
         closeOverlay();
         setMode(0);
+        startTimer();
       }, 2000);
     }
   }
@@ -507,7 +508,13 @@ function renderRing() {
 
 function renderModeLabel() {
   document.getElementById('mode-label').textContent = MODES[state.mode].label;
-  document.getElementById('set-label').textContent = `${state.setCount % 4}/4 セット`;
+  if (state.mode === 0) {
+    const cur = (state.setCount % 4) + 1;
+    document.getElementById('set-label').textContent = `${cur}/4 回目`;
+  } else {
+    const done = state.setCount % 4 || 4;
+    document.getElementById('set-label').textContent = `${done}/4 完了`;
+  }
 }
 
 function updateModePills() {
@@ -536,7 +543,12 @@ function renderLevel() {
 
 function renderPlant() {
   const stage = STAGES[state.plant.stageIdx];
-  document.getElementById('plant-emoji').textContent = stage.emoji;
+  const el = document.getElementById('plant-emoji');
+  if (stage.emoji === '__seed__') {
+    el.innerHTML = '<span class="seed-shape"></span>';
+  } else {
+    el.textContent = stage.emoji;
+  }
   document.getElementById('plant-stage-name').textContent = stage.name + ' 段階';
 
   // dots
