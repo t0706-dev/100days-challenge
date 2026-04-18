@@ -622,6 +622,13 @@ function renderAll() {
   renderRecords();
   renderFocusType();
   renderSettings();
+  renderHowto();
+}
+
+function renderHowto() {
+  document.getElementById('howto-focus').textContent = state.focusMin;
+  document.getElementById('howto-short').textContent = state.shortMin;
+  document.getElementById('howto-long').textContent  = state.longMin;
 }
 
 function renderSettings() {
@@ -723,17 +730,17 @@ function init() {
   document.getElementById('set-focus').addEventListener('change', e => {
     state.focusMin = Math.max(1, parseInt(e.target.value) || 25);
     if (state.mode === 0) setMode(0);
-    save();
+    renderHowto(); save();
   });
   document.getElementById('set-short').addEventListener('change', e => {
     state.shortMin = Math.max(1, parseInt(e.target.value) || 5);
     if (state.mode === 1) setMode(1);
-    save();
+    renderHowto(); save();
   });
   document.getElementById('set-long').addEventListener('change', e => {
     state.longMin = Math.max(1, parseInt(e.target.value) || 20);
     if (state.mode === 2) setMode(2);
-    save();
+    renderHowto(); save();
   });
   document.getElementById('toggle-auto').addEventListener('click', e => {
     state.autoSwitch = !state.autoSwitch;
