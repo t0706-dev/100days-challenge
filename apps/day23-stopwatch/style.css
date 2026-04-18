@@ -247,7 +247,7 @@ body {
 .challenge-timer-area {
   flex: 1;
   min-height: clamp(150px, 30vmin, 210px);
-  max-height: clamp(220px, 40dvh, 320px); /* prevent excessive empty space on tall phones */
+  /* max-height は設定しない — 設定するとボタン行の位置がずれる */
 }
 
 /* challenge-top: variable height (target-area or result-panel) */
@@ -260,22 +260,12 @@ body {
   flex-shrink: 0;
 }
 
-/* Challenge ring: larger than normal mode to properly contain the time display */
-#challengeRingWrap {
-  width: clamp(175px, 48vmin, 240px);
-  height: clamp(175px, 48vmin, 240px);
-}
 
-/* Slightly smaller time font in challenge mode to fit inside the ring */
-#challengePanel .time-display {
-  font-size: clamp(20px, 5.5vw, 30px);
-}
-
-/* モバイルファースト: デフォルトは小さめ */
+/* モバイルファースト */
 .ring-wrap {
   position: relative;
-  width: clamp(120px, 40vmin, 175px);
-  height: clamp(120px, 40vmin, 175px);
+  width: clamp(175px, 48vmin, 240px);
+  height: clamp(175px, 48vmin, 240px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -331,7 +321,7 @@ body {
 }
 
 .time-display {
-  font-size: clamp(24px, 7.5vw, 38px);
+  font-size: clamp(20px, 5.5vw, 30px);
   font-weight: 900;
   letter-spacing: 1px;
   color: var(--text-primary);
@@ -952,11 +942,10 @@ body {
 /* タブレット・PC: 余裕があれば大きく */
 @media (min-height: 750px) and (min-width: 480px) {
   .ring-wrap {
-    width: clamp(160px, 40vmin, 220px);
-    height: clamp(160px, 40vmin, 220px);
+    width: clamp(200px, 52vmin, 280px);
+    height: clamp(200px, 52vmin, 280px);
   }
-  .challenge-timer-area { min-height: clamp(180px, 34vmin, 240px); max-height: clamp(240px, 45dvh, 360px); }
-  #challengeRingWrap { width: clamp(200px, 52vmin, 280px); height: clamp(200px, 52vmin, 280px); }
+  .challenge-timer-area { min-height: clamp(180px, 34vmin, 240px); }
   .btn.primary { width: 82px; height: 82px; font-size: 14px; }
   .btn.secondary { width: 66px; height: 66px; font-size: 11px; }
   .chip { padding: 8px 6px; }
