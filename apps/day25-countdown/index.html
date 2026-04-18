@@ -9,15 +9,16 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=2">
 </head>
 <body>
   <!-- Header -->
   <header class="header">
     <div class="header-left">
-      <h1 class="app-title" data-i18n="appName">⏱ タイマー</h1>
+      <h1 class="app-title" data-i18n="appName">⏱ カウントダウンタイマー</h1>
     </div>
     <div class="header-right">
+      <button class="icon-btn" id="helpToggle" title="Help">❓</button>
       <button class="icon-btn" id="langToggle" title="Language">🌐</button>
       <button class="icon-btn" id="soundToggle" title="Sound">🔔</button>
       <button class="icon-btn" id="darkToggle" title="Dark Mode">🌙</button>
@@ -82,7 +83,7 @@
       </div>
       <div class="btn-row">
         <button class="btn btn-secondary" id="normalReset" data-i18n="reset">リセット</button>
-        <button class="btn btn-primary" id="normalStart" data-i18n="start">スタート</button>
+        <button class="btn btn-primary" id="normalStart">スタート</button>
       </div>
     </section>
 
@@ -104,18 +105,35 @@
         </div>
         <div class="btn-row">
           <button class="btn btn-secondary btn-sm" id="routineReset" data-i18n="reset">リセット</button>
-          <button class="btn btn-primary btn-sm" id="routineStart" data-i18n="start">スタート</button>
+          <button class="btn btn-primary btn-sm" id="routineStart">スタート</button>
           <button class="btn btn-icon" id="routineLoop" title="Loop">🔁</button>
         </div>
       </div>
       <div class="routine-steps" id="routineSteps">
         <div class="empty-state" data-i18n="addStepHint">＋ ステップを追加してください</div>
       </div>
-      <div class="add-step-form">
-        <input type="text" id="stepTitle" data-i18n-placeholder="stepTitlePlaceholder" placeholder="ステップ名" maxlength="20">
-        <input type="number" id="stepMin" min="0" max="99" value="1" placeholder="分">
-        <input type="number" id="stepSec" min="0" max="59" value="0" placeholder="秒">
-        <button class="btn btn-accent btn-sm" id="addStep" data-i18n="addStep">追加</button>
+      <!-- Add Step Form: 2-row layout for mobile -->
+      <div class="add-form-card">
+        <div class="add-form-row">
+          <input type="text" id="stepTitle" data-i18n-placeholder="stepTitlePlaceholder" placeholder="ステップ名" maxlength="20" class="add-name-input">
+          <button class="btn btn-accent btn-sm" id="addStep" data-i18n="addStep">追加</button>
+        </div>
+        <div class="add-form-row time-row">
+          <div class="time-input-group small">
+            <input type="number" id="stepH" min="0" max="23" value="0" placeholder="0">
+            <label data-i18n="hours">時間</label>
+          </div>
+          <span class="colon small-colon">:</span>
+          <div class="time-input-group small">
+            <input type="number" id="stepMin" min="0" max="59" value="1" placeholder="0">
+            <label data-i18n="minutes">分</label>
+          </div>
+          <span class="colon small-colon">:</span>
+          <div class="time-input-group small">
+            <input type="number" id="stepSec" min="0" max="59" value="0" placeholder="0">
+            <label data-i18n="seconds">秒</label>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -124,13 +142,30 @@
       <div class="multi-timers" id="multiTimers">
         <div class="empty-state" data-i18n="addTimerHint">＋ タイマーを追加してください</div>
       </div>
-      <div class="add-multi-form">
-        <input type="text" id="multiName" data-i18n-placeholder="timerNamePlaceholder" placeholder="タイマー名" maxlength="12">
-        <input type="number" id="multiMin" min="0" max="99" value="3" placeholder="分">
-        <input type="number" id="multiSec" min="0" max="59" value="0" placeholder="秒">
-        <button class="btn btn-accent btn-sm" id="addMulti" data-i18n="add">追加</button>
+      <!-- Add Multi Form: 2-row layout for mobile -->
+      <div class="add-form-card">
+        <div class="add-form-row">
+          <input type="text" id="multiName" data-i18n-placeholder="timerNamePlaceholder" placeholder="タイマー名" maxlength="12" class="add-name-input">
+          <button class="btn btn-accent btn-sm" id="addMulti" data-i18n="add">追加</button>
+        </div>
+        <div class="add-form-row time-row">
+          <div class="time-input-group small">
+            <input type="number" id="multiH" min="0" max="23" value="0" placeholder="0">
+            <label data-i18n="hours">時間</label>
+          </div>
+          <span class="colon small-colon">:</span>
+          <div class="time-input-group small">
+            <input type="number" id="multiMin" min="0" max="59" value="3" placeholder="0">
+            <label data-i18n="minutes">分</label>
+          </div>
+          <span class="colon small-colon">:</span>
+          <div class="time-input-group small">
+            <input type="number" id="multiSec" min="0" max="59" value="0" placeholder="0">
+            <label data-i18n="seconds">秒</label>
+          </div>
+        </div>
       </div>
-      <div class="btn-row mt-8">
+      <div class="btn-row">
         <button class="btn btn-secondary btn-sm" id="multiResetAll" data-i18n="resetAll">全リセット</button>
         <button class="btn btn-primary btn-sm" id="multiStartAll" data-i18n="startAll">全スタート</button>
       </div>
@@ -155,7 +190,7 @@
       </div>
       <div class="btn-row">
         <button class="btn btn-secondary" id="pomoReset" data-i18n="reset">リセット</button>
-        <button class="btn btn-primary" id="pomoStart" data-i18n="start">スタート</button>
+        <button class="btn btn-primary" id="pomoStart">スタート</button>
       </div>
       <div class="pomo-settings">
         <div class="pomo-setting-item">
@@ -194,6 +229,47 @@
     </div>
   </div>
 
+  <!-- Help Modal -->
+  <div class="modal-overlay" id="helpOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 data-i18n="helpTitle">使い方</h2>
+        <button class="close-btn" id="closeHelp">✕</button>
+      </div>
+      <div class="help-content" id="helpContent"></div>
+    </div>
+  </div>
+
+  <!-- Step Edit Modal -->
+  <div class="modal-overlay" id="stepEditOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 data-i18n="editStep">ステップ編集</h2>
+        <button class="close-btn" id="closeStepEdit">✕</button>
+      </div>
+      <div class="step-edit-body">
+        <input type="text" id="editStepTitle" class="edit-title-input" maxlength="20">
+        <div class="input-row">
+          <div class="time-input-group">
+            <input type="number" id="editStepH" min="0" max="23" value="0">
+            <label data-i18n="hours">時間</label>
+          </div>
+          <span class="colon">:</span>
+          <div class="time-input-group">
+            <input type="number" id="editStepM" min="0" max="59" value="0">
+            <label data-i18n="minutes">分</label>
+          </div>
+          <span class="colon">:</span>
+          <div class="time-input-group">
+            <input type="number" id="editStepS" min="0" max="59" value="0">
+            <label data-i18n="seconds">秒</label>
+          </div>
+        </div>
+        <button class="btn btn-primary" id="saveStepEdit" data-i18n="save">保存</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Countdown Overlay (3,2,1) -->
   <div class="countdown-overlay" id="countdownOverlay">
     <div class="countdown-num" id="countdownNum"></div>
@@ -219,6 +295,6 @@
     </div>
   </div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=2"></script>
 </body>
 </html>

@@ -1,12 +1,14 @@
 /* ========== i18n ========== */
 const LANG = {
   ja: {
-    appName: '⏱ タイマー',
+    appName: '⏱ カウントダウンタイマー',
     modeNormal: '通常', modeRoutine: 'ルーチン', modeMulti: 'マルチ', modePomodoro: 'ポモドーロ',
     achToday: '今日', achStreak: '連続', achTotal: '累計',
     presetBtn: 'プリセット', presetTitle: 'プリセット',
+    helpTitle: '使い方',
     start: 'スタート', pause: '一時停止', resume: '再開', reset: 'リセット',
     resetAll: '全リセット', startAll: '全スタート', add: '追加', addStep: '追加',
+    save: '保存', editStep: 'ステップ編集',
     hours: '時間', minutes: '分', seconds: '秒', minUnit: '分',
     ready: '準備完了', running: '実行中', paused: '一時停止中',
     noSteps: 'ステップなし', addStepHint: '＋ ステップを追加してください',
@@ -17,21 +19,30 @@ const LANG = {
     complete: '完了！', soundSelect: 'サウンド選択',
     soundBell: '🔔 ベル', soundElec: '📟 電子音', soundGentle: '🎵 やさしい',
     loopOn: 'ループON', loopOff: 'ループOFF',
+    helpSections: [
+      { icon: '⏱', title: '通常タイマー', body: ['時間・分・秒を設定してカウントダウン', 'スタート → 一時停止 → 再開が可能', 'ラスト10秒で赤くなり完了音が鳴る'] },
+      { icon: '📋', title: 'ルーチンタイマー', body: ['複数のステップを順番に自動実行', 'ステップの追加・並び替え・時間編集が可能', '🔁 ループONで繰り返し実行'] },
+      { icon: '⏲', title: 'マルチタイマー', body: ['複数のタイマーを同時に起動', '色分けで見やすく管理', '全スタート・全リセットで一括操作'] },
+      { icon: '🍅', title: 'ポモドーロ', body: ['作業・休憩・長休憩のサイクルを自動管理', '作業時間・休憩時間・セット数をカスタマイズ', 'セッションドットで進捗を確認'] },
+      { icon: '⚡', title: 'その他機能', body: ['プリセットでよく使う設定を一発呼出', 'ダークモード・日英切替に対応', '完了回数を今日・連続・累計で記録', 'PWA対応：ホーム画面に追加してオフライン使用可'] },
+    ],
     presets: [
       { emoji: '📚', name: '勉強（ポモドーロ）', desc: '25分作業 + 5分休憩', mode: 'pomodoro', config: { work: 25, brk: 5, lng: 15, sets: 4 } },
-      { emoji: '💪', name: '筋トレ（インターバル）', desc: '40秒 × 8セット + 20秒休憩', mode: 'routine', config: { steps: [{ name: '筋トレ', sec: 40 }, { name: '休憩', sec: 20 }], loop: true, loopCount: 8 } },
+      { emoji: '💪', name: '筋トレ（インターバル）', desc: '40秒 × 8セット + 20秒休憩', mode: 'routine', config: { steps: [{ name: '筋トレ', sec: 40 }, { name: '休憩', sec: 20 }], loop: true } },
       { emoji: '🍜', name: 'ラーメン', desc: '3分', mode: 'normal', config: { h: 0, m: 3, s: 0 } },
       { emoji: '😴', name: '仮眠', desc: '15分', mode: 'normal', config: { h: 0, m: 15, s: 0 } },
       { emoji: '🪥', name: '歯みがき', desc: '3分', mode: 'normal', config: { h: 0, m: 3, s: 0 } },
     ]
   },
   en: {
-    appName: '⏱ Timer',
+    appName: '⏱ Countdown Timer',
     modeNormal: 'Normal', modeRoutine: 'Routine', modeMulti: 'Multi', modePomodoro: 'Pomodoro',
     achToday: 'Today', achStreak: 'Streak', achTotal: 'Total',
     presetBtn: 'Presets', presetTitle: 'Presets',
+    helpTitle: 'How to Use',
     start: 'Start', pause: 'Pause', resume: 'Resume', reset: 'Reset',
     resetAll: 'Reset All', startAll: 'Start All', add: 'Add', addStep: 'Add',
+    save: 'Save', editStep: 'Edit Step',
     hours: 'h', minutes: 'm', seconds: 's', minUnit: 'min',
     ready: 'Ready', running: 'Running', paused: 'Paused',
     noSteps: 'No steps', addStepHint: '+ Add a step',
@@ -42,9 +53,16 @@ const LANG = {
     complete: 'Done!', soundSelect: 'Select Sound',
     soundBell: '🔔 Bell', soundElec: '📟 Electronic', soundGentle: '🎵 Gentle',
     loopOn: 'Loop ON', loopOff: 'Loop OFF',
+    helpSections: [
+      { icon: '⏱', title: 'Normal Timer', body: ['Set hours, minutes, seconds and count down', 'Start → Pause → Resume supported', 'Turns red in last 10 seconds with sound'] },
+      { icon: '📋', title: 'Routine Timer', body: ['Auto-run multiple steps in sequence', 'Add, reorder, and edit step times', '🔁 Loop ON to repeat the routine'] },
+      { icon: '⏲', title: 'Multi Timer', body: ['Run multiple timers at the same time', 'Color-coded for easy identification', 'Start All / Reset All for batch control'] },
+      { icon: '🍅', title: 'Pomodoro', body: ['Auto-cycle between work, break, long break', 'Customize work time, break time, sets', 'Track progress with session dots'] },
+      { icon: '⚡', title: 'Other Features', body: ['Presets for quick setup of common routines', 'Dark mode & Japanese/English language toggle', 'Track completions: today, streak, total', 'PWA: add to home screen for offline use'] },
+    ],
     presets: [
       { emoji: '📚', name: 'Study (Pomodoro)', desc: '25min work + 5min break', mode: 'pomodoro', config: { work: 25, brk: 5, lng: 15, sets: 4 } },
-      { emoji: '💪', name: 'Workout (Interval)', desc: '40s × 8 sets + 20s rest', mode: 'routine', config: { steps: [{ name: 'Exercise', sec: 40 }, { name: 'Rest', sec: 20 }], loop: true, loopCount: 8 } },
+      { emoji: '💪', name: 'Workout (Interval)', desc: '40s × 8 sets + 20s rest', mode: 'routine', config: { steps: [{ name: 'Exercise', sec: 40 }, { name: 'Rest', sec: 20 }], loop: true } },
       { emoji: '🍜', name: 'Ramen', desc: '3 minutes', mode: 'normal', config: { h: 0, m: 3, s: 0 } },
       { emoji: '😴', name: 'Nap', desc: '15 minutes', mode: 'normal', config: { h: 0, m: 15, s: 0 } },
       { emoji: '🪥', name: 'Toothbrush', desc: '3 minutes', mode: 'normal', config: { h: 0, m: 3, s: 0 } },
@@ -67,8 +85,7 @@ const state = {
   multi: { timers: [] },
   pomodoro: {
     running: false, timer: null, phase: 'work',
-    currentSet: 0,
-    remaining: 0,
+    currentSet: 0, remaining: 0,
     work: 25, brk: 5, lng: 15, sets: 4
   },
 
@@ -100,7 +117,8 @@ function applyTheme() {
 function applyLang() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (LANG[state.lang][key]) el.textContent = LANG[state.lang][key];
+    if (LANG[state.lang][key] !== undefined && typeof LANG[state.lang][key] === 'string')
+      el.textContent = LANG[state.lang][key];
   });
   document.querySelectorAll('[data-i18n-tab]').forEach(el => {
     const key = el.getAttribute('data-i18n-tab');
@@ -111,6 +129,29 @@ function applyLang() {
     if (LANG[state.lang][key]) el.placeholder = LANG[state.lang][key];
   });
   localStorage.setItem('lang', state.lang);
+  // Restore running-state button labels after translation
+  syncButtonStates();
+}
+
+/* Sync start/pause/resume button text to match current running state */
+function syncButtonStates() {
+  const n = state.normal;
+  const normalBtn = document.getElementById('normalStart');
+  if (n.running) normalBtn.textContent = t('pause');
+  else if (n.remaining > 0 && n.remaining < n.duration) normalBtn.textContent = t('resume');
+  else normalBtn.textContent = t('start');
+
+  const r = state.routine;
+  const routineBtn = document.getElementById('routineStart');
+  if (r.running) routineBtn.textContent = t('pause');
+  else if (r.remaining > 0) routineBtn.textContent = t('resume');
+  else routineBtn.textContent = t('start');
+
+  const p = state.pomodoro;
+  const pomoBtn = document.getElementById('pomoStart');
+  if (p.running) pomoBtn.textContent = t('pause');
+  else if (p.remaining > 0 && p.remaining < pomoGetPhaseDuration()) pomoBtn.textContent = t('resume');
+  else pomoBtn.textContent = t('start');
 }
 
 /* ========== Sound ========== */
@@ -131,10 +172,10 @@ function playSound(type = state.soundType) {
         osc.connect(gain); gain.connect(ctx.destination);
         osc.frequency.value = freq;
         osc.type = 'sine';
-        const t = ctx.currentTime + i * 0.15;
-        gain.gain.setValueAtTime(0.4, t);
-        gain.gain.exponentialRampToValueAtTime(0.001, t + 0.6);
-        osc.start(t); osc.stop(t + 0.7);
+        const at = ctx.currentTime + i * 0.15;
+        gain.gain.setValueAtTime(0.4, at);
+        gain.gain.exponentialRampToValueAtTime(0.001, at + 0.6);
+        osc.start(at); osc.stop(at + 0.7);
       });
     } else if (type === 'electronic') {
       const osc = ctx.createOscillator();
@@ -226,7 +267,7 @@ function showCountdown(cb) {
     } else {
       num.textContent = c;
       num.style.animation = 'none';
-      num.offsetHeight;
+      num.offsetHeight; // reflow
       num.style.animation = 'popIn 0.4s ease';
       playTick();
     }
@@ -236,7 +277,7 @@ function showCountdown(cb) {
 /* ========== Mode Switch ========== */
 function switchMode(mode) {
   state.mode = mode;
-  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.mode === mode));
+  document.querySelectorAll('.tab').forEach(tab => tab.classList.toggle('active', tab.dataset.mode === mode));
   document.querySelectorAll('.mode-section').forEach(s => s.classList.toggle('active', s.id === `mode-${mode}`));
 }
 
@@ -256,7 +297,7 @@ function normalUpdate() {
   }
   if (n.remaining <= 10) normalRing.classList.add('danger');
   else if (n.remaining <= 30) { normalRing.classList.remove('danger'); normalRing.classList.add('warning'); }
-  else normalRing.classList.remove('warning','danger');
+  else normalRing.classList.remove('warning', 'danger');
   label.textContent = n.running ? t('running') : (n.remaining < n.duration ? t('paused') : t('ready'));
 }
 
@@ -308,7 +349,7 @@ function normalReset() {
   setRing(normalRing, 1);
   document.getElementById('normalTime').textContent = '00:00';
   document.getElementById('normalLabel').textContent = t('ready');
-  normalRing.classList.remove('warning','danger');
+  normalRing.classList.remove('warning', 'danger');
   document.getElementById('normalStart').textContent = t('start');
 }
 
@@ -318,22 +359,52 @@ setRing(normalRing, 1);
 
 /* ========== Routine Timer ========== */
 const routineRing = document.getElementById('routineRing');
+let editingStepIdx = -1;
 
 function renderRoutineSteps() {
   const container = document.getElementById('routineSteps');
   const r = state.routine;
   if (r.steps.length === 0) {
-    container.innerHTML = `<div class="empty-state" data-i18n="addStepHint">${t('addStepHint')}</div>`;
+    container.innerHTML = `<div class="empty-state">${t('addStepHint')}</div>`;
     return;
   }
   container.innerHTML = r.steps.map((s, i) => `
     <div class="step-item ${i === r.currentStep && r.running ? 'current' : ''}" data-idx="${i}">
-      <span class="step-num">${i+1}</span>
+      <span class="step-num">${i + 1}</span>
       <span class="step-name">${s.name}</span>
       <span class="step-time">${fmt(s.sec)}</span>
-      ${!r.running ? `<button class="step-del" data-del="${i}">✕</button>` : ''}
+      ${!r.running ? `
+        <div class="step-actions">
+          <button class="step-action-btn" data-up="${i}" title="↑">↑</button>
+          <button class="step-action-btn" data-down="${i}" title="↓">↓</button>
+          <button class="step-action-btn" data-edit="${i}" title="✏">✏</button>
+          <button class="step-action-btn del" data-del="${i}" title="✕">✕</button>
+        </div>
+      ` : ''}
     </div>
   `).join('');
+
+  container.querySelectorAll('[data-up]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.up);
+      if (idx > 0) {
+        [r.steps[idx - 1], r.steps[idx]] = [r.steps[idx], r.steps[idx - 1]];
+        renderRoutineSteps();
+      }
+    });
+  });
+  container.querySelectorAll('[data-down]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.down);
+      if (idx < r.steps.length - 1) {
+        [r.steps[idx], r.steps[idx + 1]] = [r.steps[idx + 1], r.steps[idx]];
+        renderRoutineSteps();
+      }
+    });
+  });
+  container.querySelectorAll('[data-edit]').forEach(btn => {
+    btn.addEventListener('click', () => openStepEdit(parseInt(btn.dataset.edit)));
+  });
   container.querySelectorAll('[data-del]').forEach(btn => {
     btn.addEventListener('click', () => {
       r.steps.splice(parseInt(btn.dataset.del), 1);
@@ -341,6 +412,37 @@ function renderRoutineSteps() {
     });
   });
 }
+
+function openStepEdit(idx) {
+  editingStepIdx = idx;
+  const step = state.routine.steps[idx];
+  const h = Math.floor(step.sec / 3600);
+  const m = Math.floor((step.sec % 3600) / 60);
+  const s = step.sec % 60;
+  document.getElementById('editStepTitle').value = step.name;
+  document.getElementById('editStepH').value = h;
+  document.getElementById('editStepM').value = m;
+  document.getElementById('editStepS').value = s;
+  document.getElementById('stepEditOverlay').classList.add('open');
+}
+
+document.getElementById('saveStepEdit').addEventListener('click', () => {
+  if (editingStepIdx < 0) return;
+  const name = document.getElementById('editStepTitle').value.trim() || state.routine.steps[editingStepIdx].name;
+  const h = parseInt(document.getElementById('editStepH').value) || 0;
+  const m = parseInt(document.getElementById('editStepM').value) || 0;
+  const s = parseInt(document.getElementById('editStepS').value) || 0;
+  const total = h * 3600 + m * 60 + s;
+  if (total <= 0) return;
+  state.routine.steps[editingStepIdx] = { name, sec: total };
+  document.getElementById('stepEditOverlay').classList.remove('open');
+  editingStepIdx = -1;
+  renderRoutineSteps();
+});
+document.getElementById('closeStepEdit').addEventListener('click', () => {
+  document.getElementById('stepEditOverlay').classList.remove('open');
+  editingStepIdx = -1;
+});
 
 function routineUpdateDisplay() {
   const r = state.routine;
@@ -438,12 +540,14 @@ document.getElementById('routineLoop').addEventListener('click', function() {
 
 document.getElementById('addStep').addEventListener('click', () => {
   const title = document.getElementById('stepTitle').value.trim() || 'Step';
+  const h = parseInt(document.getElementById('stepH').value) || 0;
   const min = parseInt(document.getElementById('stepMin').value) || 0;
   const sec = parseInt(document.getElementById('stepSec').value) || 0;
-  const total = min * 60 + sec;
+  const total = h * 3600 + min * 60 + sec;
   if (total <= 0) return;
   state.routine.steps.push({ name: title, sec: total });
   document.getElementById('stepTitle').value = '';
+  document.getElementById('stepH').value = '0';
   document.getElementById('stepMin').value = '1';
   document.getElementById('stepSec').value = '0';
   renderRoutineSteps();
@@ -532,13 +636,15 @@ function multiDelete(idx) {
 
 document.getElementById('addMulti').addEventListener('click', () => {
   const name = document.getElementById('multiName').value.trim() || `Timer ${state.multi.timers.length + 1}`;
+  const h = parseInt(document.getElementById('multiH').value) || 0;
   const min = parseInt(document.getElementById('multiMin').value) || 0;
   const sec = parseInt(document.getElementById('multiSec').value) || 0;
-  const total = min * 60 + sec;
+  const total = h * 3600 + min * 60 + sec;
   if (total <= 0) return;
   const color = COLORS[state.multi.timers.length % COLORS.length];
   state.multi.timers.push({ name, duration: total, remaining: total, running: false, started: false, color, interval: null });
   document.getElementById('multiName').value = '';
+  document.getElementById('multiH').value = '0';
   document.getElementById('multiMin').value = '3';
   document.getElementById('multiSec').value = '0';
   renderMultiTimers();
@@ -570,7 +676,7 @@ function pomoUpdateDisplay() {
   const p = state.pomodoro;
   document.getElementById('pomoTime').textContent = fmt(p.remaining);
   const total = pomoGetPhaseDuration();
-  setRing(pomoRing, p.remaining / total);
+  setRing(pomoRing, total > 0 ? p.remaining / total : 1);
   document.getElementById('pomoPhaseLabel').textContent =
     p.phase === 'work' ? t('work') : (p.phase === 'longbreak' ? t('longBreak') : t('breakTime'));
   document.getElementById('pomoSetsDisplay').textContent = `${p.currentSet + 1} / ${p.sets}`;
@@ -730,6 +836,29 @@ document.getElementById('closePreset').addEventListener('click', () => {
 document.getElementById('presetOverlay').addEventListener('click', e => {
   if (e.target === document.getElementById('presetOverlay'))
     document.getElementById('presetOverlay').classList.remove('open');
+});
+
+/* ========== Help Modal ========== */
+function renderHelp() {
+  const sections = LANG[state.lang].helpSections;
+  document.getElementById('helpContent').innerHTML = sections.map(s => `
+    <div class="help-section">
+      <div class="help-section-title">${s.icon} ${s.title}</div>
+      <div class="help-section-body"><ul>${s.body.map(b => `<li>${b}</li>`).join('')}</ul></div>
+    </div>
+  `).join('');
+}
+
+document.getElementById('helpToggle').addEventListener('click', () => {
+  renderHelp();
+  document.getElementById('helpOverlay').classList.add('open');
+});
+document.getElementById('closeHelp').addEventListener('click', () => {
+  document.getElementById('helpOverlay').classList.remove('open');
+});
+document.getElementById('helpOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('helpOverlay'))
+    document.getElementById('helpOverlay').classList.remove('open');
 });
 
 /* ========== Sound Toggle ========== */
