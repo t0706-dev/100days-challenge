@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>カウントダウンタイマー</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6c63ff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-left">
+      <h1 class="app-title" data-i18n="appName">⏱ タイマー</h1>
+    </div>
+    <div class="header-right">
+      <button class="icon-btn" id="langToggle" title="Language">🌐</button>
+      <button class="icon-btn" id="soundToggle" title="Sound">🔔</button>
+      <button class="icon-btn" id="darkToggle" title="Dark Mode">🌙</button>
+    </div>
+  </header>
+
+  <!-- Achievement Bar -->
+  <div class="achievement-bar">
+    <div class="achievement-item">
+      <span class="ach-num" id="achToday">0</span>
+      <span class="ach-label" data-i18n="achToday">今日</span>
+    </div>
+    <div class="achievement-item">
+      <span class="ach-num" id="achStreak">0</span>
+      <span class="ach-label" data-i18n="achStreak">連続</span>
+    </div>
+    <div class="achievement-item">
+      <span class="ach-num" id="achTotal">0</span>
+      <span class="ach-label" data-i18n="achTotal">累計</span>
+    </div>
+    <button class="preset-btn" id="openPreset" data-i18n="presetBtn">プリセット</button>
+  </div>
+
+  <!-- Mode Tabs -->
+  <nav class="mode-tabs">
+    <button class="tab active" data-mode="normal" data-i18n-tab="modeNormal">通常</button>
+    <button class="tab" data-mode="routine" data-i18n-tab="modeRoutine">ルーチン</button>
+    <button class="tab" data-mode="multi" data-i18n-tab="modeMulti">マルチ</button>
+    <button class="tab" data-mode="pomodoro" data-i18n-tab="modePomodoro">ポモドーロ</button>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main" id="mainContent">
+
+    <!-- ① Normal Timer -->
+    <section class="mode-section active" id="mode-normal">
+      <div class="circle-container">
+        <svg class="progress-ring" viewBox="0 0 220 220">
+          <circle class="ring-bg" cx="110" cy="110" r="95"/>
+          <circle class="ring-fill" id="normalRing" cx="110" cy="110" r="95"/>
+        </svg>
+        <div class="circle-inner">
+          <div class="time-display" id="normalTime">00:00</div>
+          <div class="time-label" id="normalLabel" data-i18n="ready">準備完了</div>
+        </div>
+      </div>
+      <div class="input-row">
+        <div class="time-input-group">
+          <input type="number" id="inputH" min="0" max="99" value="0" placeholder="0">
+          <label data-i18n="hours">時間</label>
+        </div>
+        <span class="colon">:</span>
+        <div class="time-input-group">
+          <input type="number" id="inputM" min="0" max="59" value="5" placeholder="0">
+          <label data-i18n="minutes">分</label>
+        </div>
+        <span class="colon">:</span>
+        <div class="time-input-group">
+          <input type="number" id="inputS" min="0" max="59" value="0" placeholder="0">
+          <label data-i18n="seconds">秒</label>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="normalReset" data-i18n="reset">リセット</button>
+        <button class="btn btn-primary" id="normalStart" data-i18n="start">スタート</button>
+      </div>
+    </section>
+
+    <!-- ② Routine Timer -->
+    <section class="mode-section" id="mode-routine">
+      <div class="routine-top">
+        <div class="step-info">
+          <div class="current-step-name" id="routineStepName" data-i18n="noSteps">ステップなし</div>
+          <div class="next-step-info" id="routineNextName"></div>
+        </div>
+        <div class="circle-container small">
+          <svg class="progress-ring" viewBox="0 0 220 220">
+            <circle class="ring-bg" cx="110" cy="110" r="95"/>
+            <circle class="ring-fill" id="routineRing" cx="110" cy="110" r="95"/>
+          </svg>
+          <div class="circle-inner">
+            <div class="time-display" id="routineTime">--:--</div>
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-secondary btn-sm" id="routineReset" data-i18n="reset">リセット</button>
+          <button class="btn btn-primary btn-sm" id="routineStart" data-i18n="start">スタート</button>
+          <button class="btn btn-icon" id="routineLoop" title="Loop">🔁</button>
+        </div>
+      </div>
+      <div class="routine-steps" id="routineSteps">
+        <div class="empty-state" data-i18n="addStepHint">＋ ステップを追加してください</div>
+      </div>
+      <div class="add-step-form">
+        <input type="text" id="stepTitle" data-i18n-placeholder="stepTitlePlaceholder" placeholder="ステップ名" maxlength="20">
+        <input type="number" id="stepMin" min="0" max="99" value="1" placeholder="分">
+        <input type="number" id="stepSec" min="0" max="59" value="0" placeholder="秒">
+        <button class="btn btn-accent btn-sm" id="addStep" data-i18n="addStep">追加</button>
+      </div>
+    </section>
+
+    <!-- ③ Multi Timer -->
+    <section class="mode-section" id="mode-multi">
+      <div class="multi-timers" id="multiTimers">
+        <div class="empty-state" data-i18n="addTimerHint">＋ タイマーを追加してください</div>
+      </div>
+      <div class="add-multi-form">
+        <input type="text" id="multiName" data-i18n-placeholder="timerNamePlaceholder" placeholder="タイマー名" maxlength="12">
+        <input type="number" id="multiMin" min="0" max="99" value="3" placeholder="分">
+        <input type="number" id="multiSec" min="0" max="59" value="0" placeholder="秒">
+        <button class="btn btn-accent btn-sm" id="addMulti" data-i18n="add">追加</button>
+      </div>
+      <div class="btn-row mt-8">
+        <button class="btn btn-secondary btn-sm" id="multiResetAll" data-i18n="resetAll">全リセット</button>
+        <button class="btn btn-primary btn-sm" id="multiStartAll" data-i18n="startAll">全スタート</button>
+      </div>
+    </section>
+
+    <!-- ④ Pomodoro -->
+    <section class="mode-section" id="mode-pomodoro">
+      <div class="pomo-phase-indicator">
+        <div class="phase-dot active" id="pomoPhaseWork"></div>
+        <div class="phase-dot" id="pomoPhaseBreak"></div>
+      </div>
+      <div class="pomo-phase-label" id="pomoPhaseLabel" data-i18n="work">作業</div>
+      <div class="circle-container">
+        <svg class="progress-ring" viewBox="0 0 220 220">
+          <circle class="ring-bg" cx="110" cy="110" r="95"/>
+          <circle class="ring-fill pomo-ring" id="pomoRing" cx="110" cy="110" r="95"/>
+        </svg>
+        <div class="circle-inner">
+          <div class="time-display" id="pomoTime">25:00</div>
+          <div class="pomo-sets" id="pomoSetsDisplay">1 / 4</div>
+        </div>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" id="pomoReset" data-i18n="reset">リセット</button>
+        <button class="btn btn-primary" id="pomoStart" data-i18n="start">スタート</button>
+      </div>
+      <div class="pomo-settings">
+        <div class="pomo-setting-item">
+          <label data-i18n="workTime">作業</label>
+          <input type="number" id="pomoWorkMin" min="1" max="99" value="25">
+          <span data-i18n="minUnit">分</span>
+        </div>
+        <div class="pomo-setting-item">
+          <label data-i18n="breakTime">休憩</label>
+          <input type="number" id="pomoBreakMin" min="1" max="30" value="5">
+          <span data-i18n="minUnit">分</span>
+        </div>
+        <div class="pomo-setting-item">
+          <label data-i18n="longBreak">長休憩</label>
+          <input type="number" id="pomoLongMin" min="1" max="60" value="15">
+          <span data-i18n="minUnit">分</span>
+        </div>
+        <div class="pomo-setting-item">
+          <label data-i18n="sets">セット</label>
+          <input type="number" id="pomoSets" min="1" max="12" value="4">
+        </div>
+      </div>
+      <div class="pomo-session-dots" id="pomoSessionDots"></div>
+    </section>
+
+  </main>
+
+  <!-- Preset Modal -->
+  <div class="modal-overlay" id="presetOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 data-i18n="presetTitle">プリセット</h2>
+        <button class="close-btn" id="closePreset">✕</button>
+      </div>
+      <div class="preset-list" id="presetList"></div>
+    </div>
+  </div>
+
+  <!-- Countdown Overlay (3,2,1) -->
+  <div class="countdown-overlay" id="countdownOverlay">
+    <div class="countdown-num" id="countdownNum"></div>
+  </div>
+
+  <!-- Complete Overlay -->
+  <div class="complete-overlay" id="completeOverlay">
+    <div class="complete-inner">
+      <div class="complete-icon">🎉</div>
+      <div class="complete-text" id="completeText" data-i18n="complete">完了！</div>
+    </div>
+  </div>
+
+  <!-- Sound Selector -->
+  <div class="sound-panel" id="soundPanel">
+    <div class="sound-panel-inner">
+      <div class="sound-title" data-i18n="soundSelect">サウンド選択</div>
+      <div class="sound-options">
+        <button class="sound-opt active" data-sound="bell" data-i18n="soundBell">🔔 ベル</button>
+        <button class="sound-opt" data-sound="electronic" data-i18n="soundElec">📟 電子音</button>
+        <button class="sound-opt" data-sound="gentle" data-i18n="soundGentle">🎵 やさしい</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
