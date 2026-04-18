@@ -502,7 +502,7 @@ function renderRing() {
   const pct = state.totalDuration > 0 ? state.timeLeft / state.totalDuration : 1;
   ring.style.strokeDasharray = circ;
   ring.style.strokeDashoffset = circ * (1 - pct);
-  ring.className = 'ring-progress ' + (MODES[state.mode].ring || '');
+  ring.setAttribute('class', 'ring-progress ' + (MODES[state.mode].ring || ''));
 }
 
 function renderModeLabel() {
