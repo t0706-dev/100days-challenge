@@ -160,36 +160,68 @@ html, body {
   box-shadow: 0 2px 8px var(--shadow);
 }
 
-/* Seed shape */
+/* Sunflower seed shape */
 .seed-shape {
   display: inline-block;
-  width: 72px;
-  height: 96px;
-  background: radial-gradient(ellipse at 38% 32%, #C8956A, #7A4E2A);
-  border-radius: 50% 50% 46% 54% / 32% 32% 68% 68%;
-  transform: rotate(-18deg);
-  box-shadow: inset -5px -5px 12px rgba(0,0,0,0.25), 2px 4px 10px rgba(0,0,0,0.15);
+  width: 52px;
+  height: 86px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(210,200,175,0.18) 0px,
+      rgba(210,200,175,0.18) 2px,
+      transparent 2px,
+      transparent 9px
+    ),
+    linear-gradient(160deg, #3E3B34, #111009);
+  border-radius: 50% 50% 46% 54% / 28% 28% 72% 72%;
+  transform: rotate(-10deg);
+  box-shadow:
+    inset -4px -6px 14px rgba(0,0,0,0.55),
+    inset 4px 3px 8px rgba(255,255,255,0.07),
+    2px 5px 14px rgba(0,0,0,0.22);
   position: relative;
+  overflow: hidden;
+}
+.seed-shape::before {
+  content: '';
+  position: absolute;
+  top: 6%;
+  left: 12%;
+  width: 26%;
+  height: 42%;
+  background: rgba(255,255,255,0.11);
+  border-radius: 50%;
+  transform: rotate(8deg);
 }
 .seed-shape::after {
   content: '';
   position: absolute;
-  top: 18%;
-  left: 25%;
-  width: 28%;
-  height: 45%;
-  background: rgba(255,255,255,0.18);
+  bottom: 4%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 35%;
+  height: 8%;
+  background: rgba(200,190,160,0.25);
   border-radius: 50%;
-  transform: rotate(15deg);
 }
 .seed-shape-sm {
   display: inline-block;
-  width: 28px;
-  height: 36px;
-  background: radial-gradient(ellipse at 38% 32%, #C8956A, #7A4E2A);
-  border-radius: 50% 50% 46% 54% / 32% 32% 68% 68%;
-  transform: rotate(-18deg);
-  box-shadow: inset -2px -2px 5px rgba(0,0,0,0.25);
+  width: 20px;
+  height: 33px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      rgba(210,200,175,0.18) 0px,
+      rgba(210,200,175,0.18) 1px,
+      transparent 1px,
+      transparent 5px
+    ),
+    linear-gradient(160deg, #3E3B34, #111009);
+  border-radius: 50% 50% 46% 54% / 28% 28% 72% 72%;
+  transform: rotate(-10deg);
+  box-shadow: inset -2px -3px 6px rgba(0,0,0,0.5), inset 1px 1px 3px rgba(255,255,255,0.07);
+  overflow: hidden;
 }
 
 /* Ring Timer */
