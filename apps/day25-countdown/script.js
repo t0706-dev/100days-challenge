@@ -9,6 +9,13 @@ const LANG = {
     start: 'スタート', pause: '一時停止', resume: '再開', reset: 'リセット',
     resetAll: '全リセット', startAll: '全スタート', add: '追加', addStep: '追加',
     save: '保存', editStep: 'ステップ編集',
+    saveRoutine: '保存', loadRoutine: '呼出',
+    saveRoutineTitle: 'ルーチンを保存', loadRoutineTitle: '保存済みルーチン',
+    routineNamePlaceholder: 'ルーチン名（例：朝の運動）',
+    routineSaveHint: (n) => `${n}ステップを保存します`,
+    noSavedRoutines: '保存済みルーチンがありません',
+    routineLoadBtn: '読み込む', routineDelBtn: '削除',
+    routineLoopLabel: 'ループあり',
     hours: '時間', minutes: '分', seconds: '秒', minUnit: '分',
     ready: '準備完了', running: '実行中', paused: '一時停止中',
     noSteps: 'ステップなし', addStepHint: '＋ ステップを追加してください',
@@ -43,6 +50,13 @@ const LANG = {
     start: 'Start', pause: 'Pause', resume: 'Resume', reset: 'Reset',
     resetAll: 'Reset All', startAll: 'Start All', add: 'Add', addStep: 'Add',
     save: 'Save', editStep: 'Edit Step',
+    saveRoutine: 'Save', loadRoutine: 'Load',
+    saveRoutineTitle: 'Save Routine', loadRoutineTitle: 'Saved Routines',
+    routineNamePlaceholder: 'Routine name (e.g. Morning workout)',
+    routineSaveHint: (n) => `Save ${n} step(s)`,
+    noSavedRoutines: 'No saved routines',
+    routineLoadBtn: 'Load', routineDelBtn: 'Delete',
+    routineLoopLabel: 'Loop',
     hours: 'h', minutes: 'm', seconds: 's', minUnit: 'min',
     ready: 'Ready', running: 'Running', paused: 'Paused',
     noSteps: 'No steps', addStepHint: '+ Add a step',
@@ -89,7 +103,8 @@ const state = {
     work: 25, brk: 5, lng: 15, sets: 4
   },
 
-  achievements: JSON.parse(localStorage.getItem('achievements') || '{"today":0,"streak":0,"total":0,"lastDate":""}')
+  achievements: JSON.parse(localStorage.getItem('achievements') || '{"today":0,"streak":0,"total":0,"lastDate":""}'),
+  savedRoutines: JSON.parse(localStorage.getItem('savedRoutines') || '[]')
 };
 
 /* ========== Utils ========== */
@@ -117,8 +132,9 @@ function applyTheme() {
 function applyLang() {
   document.querySelectorAll('[data-i18n]').forEach(el => {
     const key = el.getAttribute('data-i18n');
-    if (LANG[state.lang][key] !== undefined && typeof LANG[state.lang][key] === 'string')
-      el.textContent = LANG[state.lang][key];
+    const val = LANG[state.lang][key];
+    if (val !== undefined && typeof val === 'string')
+      el.textContent = val;
   });
   document.querySelectorAll('[data-i18n-tab]').forEach(el => {
     const key = el.getAttribute('data-i18n-tab');
@@ -536,6 +552,99 @@ document.getElementById('routineLoop').addEventListener('click', function() {
   state.routine.loop = !state.routine.loop;
   this.classList.toggle('active', state.routine.loop);
   this.title = state.routine.loop ? t('loopOn') : t('loopOff');
+});
+
+/* ========== Routine Save / Load ========== */
+function persistSavedRoutines() {
+  localStorage.setItem('savedRoutines', JSON.stringify(state.savedRoutines));
+}
+
+function fmtTotalSec(steps) {
+  return fmt(steps.reduce((s, st) => s + st.sec, 0));
+}
+
+function renderSavedRoutines() {
+  const container = document.getElementById('savedRoutineList');
+  const list = state.savedRoutines;
+  if (list.length === 0) {
+    container.innerHTML = `<div class="empty-state">${t('noSavedRoutines')}</div>`;
+    return;
+  }
+  container.innerHTML = list.map((r, i) => `
+    <div class="saved-routine-item">
+      <div class="saved-routine-info">
+        <div class="saved-routine-name">${r.name}</div>
+        <div class="saved-routine-meta">
+          ${r.steps.length}${state.lang === 'ja' ? 'ステップ' : ' steps'} · ${fmtTotalSec(r.steps)}
+          ${r.loop ? ` · 🔁 ${t('routineLoopLabel')}` : ''}
+        </div>
+      </div>
+      <div class="saved-routine-actions">
+        <button class="saved-routine-load" data-load="${i}">${t('routineLoadBtn')}</button>
+        <button class="saved-routine-del" data-del="${i}">🗑</button>
+      </div>
+    </div>
+  `).join('');
+
+  container.querySelectorAll('[data-load]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const r = state.savedRoutines[parseInt(btn.dataset.load)];
+      state.routine.steps = r.steps.map(s => ({ ...s }));
+      state.routine.loop = r.loop;
+      document.getElementById('routineLoop').classList.toggle('active', r.loop);
+      routineReset();
+      document.getElementById('routineLoadOverlay').classList.remove('open');
+    });
+  });
+  container.querySelectorAll('[data-del]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.savedRoutines.splice(parseInt(btn.dataset.del), 1);
+      persistSavedRoutines();
+      renderSavedRoutines();
+    });
+  });
+}
+
+document.getElementById('routineSaveBtn').addEventListener('click', () => {
+  if (state.routine.steps.length === 0) return;
+  const hintFn = LANG[state.lang].routineSaveHint;
+  document.getElementById('routineSaveHint').textContent = hintFn(state.routine.steps.length);
+  document.getElementById('routineSaveName').value = '';
+  document.getElementById('routineSaveOverlay').classList.add('open');
+  setTimeout(() => document.getElementById('routineSaveName').focus(), 300);
+});
+
+document.getElementById('closeRoutineSave').addEventListener('click', () => {
+  document.getElementById('routineSaveOverlay').classList.remove('open');
+});
+document.getElementById('routineSaveOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('routineSaveOverlay'))
+    document.getElementById('routineSaveOverlay').classList.remove('open');
+});
+
+document.getElementById('confirmRoutineSave').addEventListener('click', () => {
+  const name = document.getElementById('routineSaveName').value.trim();
+  if (!name) return;
+  state.savedRoutines.push({
+    name,
+    steps: state.routine.steps.map(s => ({ ...s })),
+    loop: state.routine.loop
+  });
+  persistSavedRoutines();
+  document.getElementById('routineSaveOverlay').classList.remove('open');
+});
+
+document.getElementById('routineLoadBtn').addEventListener('click', () => {
+  renderSavedRoutines();
+  document.getElementById('routineLoadOverlay').classList.add('open');
+});
+
+document.getElementById('closeRoutineLoad').addEventListener('click', () => {
+  document.getElementById('routineLoadOverlay').classList.remove('open');
+});
+document.getElementById('routineLoadOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('routineLoadOverlay'))
+    document.getElementById('routineLoadOverlay').classList.remove('open');
 });
 
 document.getElementById('addStep').addEventListener('click', () => {

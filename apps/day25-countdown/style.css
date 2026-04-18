@@ -350,6 +350,75 @@ button { cursor: pointer; border: none; background: none; font-family: var(--fon
   padding: 24px;
 }
 
+/* ===== Routine Save/Load ===== */
+.routine-save-row {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+  justify-content: flex-end;
+}
+.routine-save-body {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.routine-save-hint {
+  font-size: 0.82rem;
+  color: var(--text2);
+  background: var(--surface2);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.saved-routine-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.saved-routine-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 14px;
+  transition: border-color 0.2s;
+}
+.saved-routine-info { flex: 1; min-width: 0; }
+.saved-routine-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.saved-routine-meta {
+  font-size: 0.72rem;
+  color: var(--text2);
+  margin-top: 3px;
+}
+.saved-routine-actions { display: flex; gap: 6px; flex-shrink: 0; }
+.saved-routine-load {
+  padding: 7px 14px;
+  border-radius: 20px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.78rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.saved-routine-del {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 0.85rem;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text2);
+}
+.saved-routine-del:active { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+
 /* ===== Step Edit Modal ===== */
 .step-edit-body {
   display: flex;

@@ -9,7 +9,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=2">
+  <link rel="stylesheet" href="style.css?v=3">
 </head>
 <body>
   <!-- Header -->
@@ -111,6 +111,11 @@
       </div>
       <div class="routine-steps" id="routineSteps">
         <div class="empty-state" data-i18n="addStepHint">＋ ステップを追加してください</div>
+      </div>
+      <!-- Routine Save/Load buttons -->
+      <div class="routine-save-row">
+        <button class="btn btn-secondary btn-sm" id="routineLoadBtn">📂 <span data-i18n="loadRoutine">呼出</span></button>
+        <button class="btn btn-secondary btn-sm" id="routineSaveBtn">💾 <span data-i18n="saveRoutine">保存</span></button>
       </div>
       <!-- Add Step Form: 2-row layout for mobile -->
       <div class="add-form-card">
@@ -240,6 +245,32 @@
     </div>
   </div>
 
+  <!-- Save Routine Modal -->
+  <div class="modal-overlay" id="routineSaveOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 data-i18n="saveRoutineTitle">ルーチンを保存</h2>
+        <button class="close-btn" id="closeRoutineSave">✕</button>
+      </div>
+      <div class="routine-save-body">
+        <p class="routine-save-hint" id="routineSaveHint"></p>
+        <input type="text" id="routineSaveName" class="edit-title-input" maxlength="30" data-i18n-placeholder="routineNamePlaceholder" placeholder="ルーチン名">
+        <button class="btn btn-primary" id="confirmRoutineSave" data-i18n="save">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Load Routine Modal -->
+  <div class="modal-overlay" id="routineLoadOverlay">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 data-i18n="loadRoutineTitle">保存済みルーチン</h2>
+        <button class="close-btn" id="closeRoutineLoad">✕</button>
+      </div>
+      <div class="saved-routine-list" id="savedRoutineList"></div>
+    </div>
+  </div>
+
   <!-- Step Edit Modal -->
   <div class="modal-overlay" id="stepEditOverlay">
     <div class="modal">
@@ -295,6 +326,6 @@
     </div>
   </div>
 
-  <script src="script.js?v=2"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>
