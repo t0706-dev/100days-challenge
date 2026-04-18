@@ -1,0 +1,22 @@
+{
+  "name": "ポモドーロ植物タイマー",
+  "short_name": "集中タイマー",
+  "description": "集中すると植物が育つポモドーロタイマー",
+  "display": "standalone",
+  "start_url": ".",
+  "background_color": "#F7F7F5",
+  "theme_color": "#7BAE7F",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "icon-512.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

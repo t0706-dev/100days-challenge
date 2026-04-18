@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#7BAE7F">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="集中タイマー">
+  <title>ポモドーロ植物タイマー</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon-192.svg">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ── Screens ── -->
+  <div id="screens">
+
+    <!-- Screen 1: Timer -->
+    <div class="screen active" id="screen-timer">
+
+      <!-- Mode Pills -->
+      <div class="mode-pills">
+        <button class="mode-pill active">集中</button>
+        <button class="mode-pill">短い休憩</button>
+        <button class="mode-pill">長い休憩</button>
+      </div>
+
+      <!-- Ring Timer -->
+      <div class="timer-ring-wrap">
+        <svg class="timer-ring-svg" viewBox="0 0 240 240">
+          <circle class="ring-bg" cx="120" cy="120" r="108"/>
+          <circle id="ring-progress" class="ring-progress" cx="120" cy="120" r="108"/>
+        </svg>
+        <div class="timer-center">
+          <div class="timer-mode-label" id="mode-label">集中</div>
+          <div class="timer-time" id="timer-time">25:00</div>
+          <div class="timer-set-label" id="set-label">0/4 セット</div>
+        </div>
+      </div>
+
+      <!-- Controls -->
+      <div class="timer-controls">
+        <button class="btn-icon" id="btn-reset" title="リセット">↺</button>
+        <button class="btn-main" id="btn-main">▶</button>
+        <button class="btn-icon" id="btn-skip" title="スキップ">⏭</button>
+      </div>
+
+      <!-- Stats Row -->
+      <div class="stats-row">
+        <div class="stat-card">
+          <div class="stat-val" id="stat-today">0</div>
+          <div class="stat-lbl">今日</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-total">0</div>
+          <div class="stat-lbl">累計</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-val" id="stat-time">0h0m</div>
+          <div class="stat-lbl">集中時間</div>
+        </div>
+      </div>
+
+      <!-- Level Bar -->
+      <div class="level-bar-wrap">
+        <div class="level-row">
+          <span class="level-label" id="level-label">Lv.1 集中者</span>
+          <span class="level-xp" id="level-xp">0 / 100 XP</span>
+        </div>
+        <div class="xp-bar">
+          <div class="xp-fill" id="xp-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <!-- BGM Row -->
+      <div class="bgm-row">
+        <button class="bgm-toggle" id="bgm-toggle">🔇</button>
+        <select class="bgm-select" id="bgm-select">
+          <option value="0">🌧 雨音</option>
+          <option value="1">☕ カフェ</option>
+          <option value="2">🎵 Lo-fi</option>
+          <option value="3">🌊 波音</option>
+          <option value="4">🌲 森の音</option>
+          <option value="5">🔥 焚き火</option>
+        </select>
+        <input type="range" class="bgm-vol" id="bgm-vol" min="0" max="1" step="0.05" value="0.3">
+      </div>
+
+    </div><!-- /screen-timer -->
+
+    <!-- Screen 2: Plant -->
+    <div class="screen" id="screen-plant">
+
+      <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:4px;">🌿 植物育成</div>
+
+      <div class="plant-stage-label" id="plant-stage-name">種 段階</div>
+
+      <div class="plant-stage-badges">
+        <div class="stage-dot current"></div>
+        <div class="stage-dot"></div>
+        <div class="stage-dot"></div>
+        <div class="stage-dot"></div>
+        <div class="stage-dot"></div>
+        <div class="stage-dot"></div>
+      </div>
+
+      <div class="plant-display">
+        <span class="plant-emoji" id="plant-emoji">🌰</span>
+      </div>
+
+      <div class="growth-bar-wrap">
+        <div class="growth-bar-label">
+          <span id="growth-stage-label">種 → 芽</span>
+          <span id="growth-pct">0%</span>
+        </div>
+        <div class="growth-bar">
+          <div class="growth-fill" id="growth-fill" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="stages-grid">
+        <div class="stage-card current unlocked">
+          <div class="stage-card-emoji">🌰</div>
+          <div class="stage-card-name">種</div>
+          <div class="stage-card-req">スタート</div>
+        </div>
+        <div class="stage-card">
+          <div class="stage-card-emoji">🌱</div>
+          <div class="stage-card-name">芽</div>
+          <div class="stage-card-req">1回達成</div>
+        </div>
+        <div class="stage-card">
+          <div class="stage-card-emoji">🪴</div>
+          <div class="stage-card-name">葉</div>
+          <div class="stage-card-req">3回達成</div>
+        </div>
+        <div class="stage-card">
+          <div class="stage-card-emoji">🌿</div>
+          <div class="stage-card-name">つぼみ</div>
+          <div class="stage-card-req">6回達成</div>
+        </div>
+        <div class="stage-card">
+          <div class="stage-card-emoji">🌸</div>
+          <div class="stage-card-name">花</div>
+          <div class="stage-card-req">10回達成</div>
+        </div>
+        <div class="stage-card">
+          <div class="stage-card-emoji">🌳</div>
+          <div class="stage-card-name">成熟</div>
+          <div class="stage-card-req">15回達成</div>
+        </div>
+      </div>
+
+    </div><!-- /screen-plant -->
+
+    <!-- Screen 3: Records / Mission -->
+    <div class="screen" id="screen-records">
+
+      <!-- Streak -->
+      <div class="streak-card">
+        <div class="streak-fire">🔥</div>
+        <div class="streak-info">
+          <div class="streak-days" id="streak-days">0日</div>
+          <div class="streak-label">連続集中ストリーク</div>
+          <div class="streak-best" id="streak-best">最長記録: 0日</div>
+        </div>
+      </div>
+
+      <!-- Records -->
+      <div class="section-title">📊 記録</div>
+      <div class="record-cards">
+        <div class="record-card">
+          <div class="record-val" id="rec-today">0</div>
+          <div class="record-lbl">今日のポモドーロ</div>
+        </div>
+        <div class="record-card">
+          <div class="record-val" id="rec-total">0</div>
+          <div class="record-lbl">累計回数</div>
+        </div>
+        <div class="record-card">
+          <div class="record-val" id="rec-time">0分</div>
+          <div class="record-lbl">総集中時間</div>
+        </div>
+        <div class="record-card">
+          <div class="record-val" id="rec-streak">0</div>
+          <div class="record-lbl">現在のストリーク</div>
+        </div>
+      </div>
+
+      <!-- Missions -->
+      <div class="section-title">🎯 デイリーミッション</div>
+      <div class="missions-list" id="missions-list"></div>
+
+      <!-- Focus Type -->
+      <div class="section-title">🧠 集中タイプ診断</div>
+      <div class="type-card">
+        <div class="type-emoji" id="type-emoji">🌱</div>
+        <div class="type-name" id="type-name">初心者</div>
+        <div class="type-desc" id="type-desc">これから習慣を育てましょう！毎日1回からスタート。</div>
+      </div>
+
+    </div><!-- /screen-records -->
+
+    <!-- Screen 4: Settings -->
+    <div class="screen" id="screen-settings">
+
+      <div style="font-size:20px;font-weight:800;color:var(--text);margin-bottom:16px;">⚙️ 設定</div>
+
+      <!-- Timer settings -->
+      <div class="settings-group">
+        <div class="settings-group-title">タイマー</div>
+        <div class="setting-row">
+          <div class="setting-icon">🍅</div>
+          <div class="setting-label">集中時間</div>
+          <input type="number" class="setting-input" id="set-focus" value="25" min="1" max="60">
+          <div class="setting-val">分</div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon">☕</div>
+          <div class="setting-label">短い休憩</div>
+          <input type="number" class="setting-input" id="set-short" value="5" min="1" max="30">
+          <div class="setting-val">分</div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon">🛋️</div>
+          <div class="setting-label">長い休憩</div>
+          <input type="number" class="setting-input" id="set-long" value="20" min="1" max="60">
+          <div class="setting-val">分</div>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon">🔄</div>
+          <div class="setting-label">
+            自動切替
+            <div class="setting-sub">集中→休憩を自動で切替</div>
+          </div>
+          <button class="toggle on" id="toggle-auto"></button>
+        </div>
+        <div class="setting-row">
+          <div class="setting-icon">🔔</div>
+          <div class="setting-label">終了音</div>
+          <button class="toggle on" id="toggle-sound"></button>
+        </div>
+      </div>
+
+      <!-- Theme -->
+      <div class="settings-group">
+        <div class="settings-group-title">テーマ</div>
+        <div class="setting-row" style="flex-direction:column;align-items:flex-start;gap:10px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="setting-icon">🎨</div>
+            <div class="setting-label">カラーモード</div>
+          </div>
+          <div class="theme-btns" style="padding-left:40px;flex-wrap:wrap;">
+            <button class="theme-btn active" data-theme="light">☀️ ライト</button>
+            <button class="theme-btn" data-theme="dark">🌙 ダーク</button>
+            <button class="theme-btn" data-theme="system">自動</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Data -->
+      <div class="settings-group">
+        <div class="settings-group-title">データ</div>
+        <div class="setting-row">
+          <div class="setting-icon">💾</div>
+          <div class="setting-label">保存先</div>
+          <div class="setting-val">ローカル</div>
+        </div>
+      </div>
+
+      <button class="danger-btn" id="btn-reset-all">🗑 すべてのデータをリセット</button>
+
+    </div><!-- /screen-settings -->
+
+  </div><!-- /screens -->
+
+  <!-- ── Tab Bar ── -->
+  <nav id="tab-bar">
+    <button class="tab-btn active">
+      <span class="tab-icon">🍅</span>
+      <span>タイマー</span>
+    </button>
+    <button class="tab-btn">
+      <span class="tab-icon">🌱</span>
+      <span>植物</span>
+    </button>
+    <button class="tab-btn">
+      <span class="tab-icon">📊</span>
+      <span>記録</span>
+    </button>
+    <button class="tab-btn">
+      <span class="tab-icon">⚙️</span>
+      <span>設定</span>
+    </button>
+  </nav>
+
+</div><!-- /app -->
+
+<!-- Complete Overlay -->
+<div class="complete-overlay" id="complete-overlay">
+  <div class="complete-card">
+    <div class="complete-emoji" id="complete-emoji">🎉</div>
+    <div class="complete-title" id="complete-title">集中完了！</div>
+    <div class="complete-sub" id="complete-sub"></div>
+    <button class="btn-complete" id="btn-close-overlay">続ける</button>
+  </div>
+</div>
+
+<!-- Particle Container -->
+<div class="particle-container" id="particles"></div>
+
+<!-- Toast Container -->
+<div class="toast-container" id="toast-container"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
