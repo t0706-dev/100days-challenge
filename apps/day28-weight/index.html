@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>たいじゅうノート</title>
+  <title data-i18n="appTitle">たいじゅうノート</title>
   <meta name="description" content="やさしく続けられる体重記録アプリ" />
   <meta name="theme-color" content="#4caf82" id="meta-theme-color" />
   <link rel="manifest" href="manifest.json" />
@@ -20,36 +20,43 @@
   <!-- ナビゲーション -->
   <nav class="nav">
     <div class="nav-inner">
-      <span class="nav-title">たいじゅうノート</span>
+      <span class="nav-title" data-i18n="appTitle">たいじゅうノート</span>
       <div class="nav-actions">
+        <button class="btn-icon" id="btn-manual" aria-label="使い方">❓</button>
+        <button class="btn-icon btn-lang" id="btn-lang">EN</button>
         <button class="btn-icon" id="btn-theme" aria-label="テーマ切替">🌙</button>
       </div>
     </div>
     <div class="nav-tabs">
-      <button class="tab-btn active" data-tab="home">ホーム</button>
-      <button class="tab-btn" data-tab="graph">グラフ</button>
-      <button class="tab-btn" data-tab="history">記録</button>
-      <button class="tab-btn" data-tab="settings">設定</button>
+      <button class="tab-btn active" data-tab="home" data-i18n="navHome">ホーム</button>
+      <button class="tab-btn" data-tab="graph" data-i18n="navGraph">グラフ</button>
+      <button class="tab-btn" data-tab="history" data-i18n="navHistory">記録</button>
+      <button class="tab-btn" data-tab="settings" data-i18n="navSettings">設定</button>
     </div>
   </nav>
 
   <main class="main">
     <!-- ホームタブ -->
     <section class="tab-content active" id="tab-home">
-      <!-- 今日の入力カード -->
+      <!-- 入力カード -->
       <div class="card card-input">
-        <div class="card-label" id="today-label">今日の体重</div>
+        <!-- 日付セレクター -->
+        <div class="date-selector-wrap">
+          <button class="date-nav-btn" id="date-prev" aria-label="前の日">‹</button>
+          <input type="date" id="record-date" class="date-input" />
+          <button class="date-nav-btn" id="date-next" aria-label="次の日">›</button>
+        </div>
+        <div class="card-label" id="today-label" data-i18n="todayWeight">今日の体重</div>
 
-        <!-- 体重表示 (タップで直接入力) -->
+        <!-- 体重表示 -->
         <div class="weight-display-wrap">
           <input
-            type="number"
+            type="text"
             id="weight-input"
             class="weight-display"
-            step="0.1"
-            min="20"
-            max="300"
             inputmode="decimal"
+            pattern="[0-9]*\.?[0-9]?"
+            maxlength="6"
             aria-label="体重（kg）"
           />
           <span class="weight-unit">kg</span>
@@ -68,11 +75,11 @@
 
         <!-- メモ -->
         <div class="memo-wrap">
-          <input type="text" id="memo-input" class="memo-input" placeholder="ひとことメモ（任意）" maxlength="50" />
+          <input type="text" id="memo-input" class="memo-input" data-i18n-placeholder="memoPlaceholder" placeholder="ひとことメモ（任意）" maxlength="50" />
         </div>
 
         <!-- 保存ボタン -->
-        <button class="btn-save" id="btn-save">今日の体重を記録する</button>
+        <button class="btn-save" id="btn-save" data-i18n="saveBtn">体重を記録する</button>
 
         <!-- やさしいメッセージ -->
         <div class="gentle-message" id="gentle-message"></div>
@@ -81,17 +88,17 @@
       <!-- サマリーカード -->
       <div class="cards-row">
         <div class="card card-stat">
-          <div class="stat-label">7日平均</div>
+          <div class="stat-label" data-i18n="avg7">7日平均</div>
           <div class="stat-value" id="avg7">—</div>
           <div class="stat-unit">kg</div>
         </div>
         <div class="card card-stat">
-          <div class="stat-label">連続記録</div>
+          <div class="stat-label" data-i18n="streak">連続記録</div>
           <div class="stat-value" id="streak">0</div>
-          <div class="stat-unit">日</div>
+          <div class="stat-unit" data-i18n="streakUnit">日</div>
         </div>
         <div class="card card-stat">
-          <div class="stat-label">目標まで</div>
+          <div class="stat-label" data-i18n="goalDiff">目標まで</div>
           <div class="stat-value" id="goal-diff">—</div>
           <div class="stat-unit" id="goal-diff-unit">kg</div>
         </div>
@@ -100,14 +107,14 @@
       <!-- ミニグラフ -->
       <div class="card card-minigraph">
         <div class="card-header-row">
-          <span class="card-header-label">直近14日の推移</span>
+          <span class="card-header-label" data-i18n="miniChartTitle">直近14日の推移</span>
         </div>
         <canvas id="mini-chart" height="120"></canvas>
       </div>
 
       <!-- 週間ふり返り -->
       <div class="card card-weekly">
-        <div class="card-header-label">今週のふり返り</div>
+        <div class="card-header-label" data-i18n="weeklyTitle">今週のふり返り</div>
         <div class="weekly-grid" id="weekly-summary"></div>
       </div>
 
@@ -126,21 +133,19 @@
     <section class="tab-content" id="tab-graph">
       <div class="card">
         <div class="graph-range-btns">
-          <button class="range-btn active" data-range="7">7日</button>
-          <button class="range-btn" data-range="30">30日</button>
-          <button class="range-btn" data-range="90">90日</button>
-          <button class="range-btn" data-range="0">全期間</button>
+          <button class="range-btn active" data-range="7" data-i18n="range7">7日</button>
+          <button class="range-btn" data-range="30" data-i18n="range30">30日</button>
+          <button class="range-btn" data-range="90" data-i18n="range90">90日</button>
+          <button class="range-btn" data-range="0" data-i18n="rangeAll">全期間</button>
         </div>
         <canvas id="main-chart" height="240"></canvas>
         <div class="chart-legend">
-          <span class="legend-dot legend-dot-avg"></span>7日移動平均
-          <span class="legend-dot legend-dot-raw" style="margin-left:12px"></span>実測値
+          <span class="legend-dot legend-dot-avg"></span><span data-i18n="legend7avg">7日移動平均</span>
+          <span class="legend-dot legend-dot-raw" style="margin-left:12px"></span><span data-i18n="legendRaw">実測値</span>
         </div>
       </div>
-
-      <!-- 統計サマリー -->
       <div class="card">
-        <div class="card-header-label">期間の統計</div>
+        <div class="card-header-label" data-i18n="statsTitle">期間の統計</div>
         <div class="stats-grid" id="stats-grid"></div>
       </div>
     </section>
@@ -149,41 +154,38 @@
     <section class="tab-content" id="tab-history">
       <div class="card" style="padding:0;overflow:hidden;">
         <div class="history-list" id="history-list"></div>
-        <div class="history-empty" id="history-empty" style="display:none;">記録がまだありません</div>
+        <div class="history-empty" id="history-empty" style="display:none;" data-i18n="historyEmpty">記録がまだありません</div>
       </div>
     </section>
 
     <!-- 設定タブ -->
     <section class="tab-content" id="tab-settings">
       <div class="card">
-        <div class="setting-label">目標体重（kg）</div>
+        <div class="setting-label" data-i18n="settingGoal">目標体重（kg）</div>
         <div class="setting-row">
-          <input type="number" id="goal-input" class="setting-input" step="0.1" min="20" max="300" placeholder="例：65.0" inputmode="decimal" />
-          <button class="btn-small" id="btn-save-goal">保存</button>
+          <input type="text" id="goal-input" class="setting-input" inputmode="decimal" data-i18n-placeholder="goalPlaceholder" placeholder="例：65.0" />
+          <button class="btn-small" id="btn-save-goal" data-i18n="saveBtn2">保存</button>
         </div>
       </div>
-
       <div class="card">
-        <div class="setting-label">身長（cm）</div>
+        <div class="setting-label" data-i18n="settingHeight">身長（cm）</div>
         <div class="setting-row">
-          <input type="number" id="height-input" class="setting-input" step="0.1" min="100" max="250" placeholder="例：170.0" inputmode="decimal" />
-          <button class="btn-small" id="btn-save-height">保存</button>
+          <input type="text" id="height-input" class="setting-input" inputmode="decimal" data-i18n-placeholder="heightPlaceholder" placeholder="例：170.0" />
+          <button class="btn-small" id="btn-save-height" data-i18n="saveBtn2">保存</button>
         </div>
         <div class="bmi-info" id="bmi-info"></div>
       </div>
-
       <div class="card">
-        <div class="setting-label">データ管理</div>
+        <div class="setting-label" data-i18n="settingData">データ管理</div>
         <div class="data-btns">
-          <button class="btn-outline" id="btn-export">CSVエクスポート</button>
-          <label class="btn-outline" for="csv-import">CSVインポート</label>
+          <button class="btn-outline" id="btn-export" data-i18n="exportCSV">CSVエクスポート</button>
+          <label class="btn-outline" for="csv-import" data-i18n="importCSV">CSVインポート</label>
           <input type="file" id="csv-import" accept=".csv" style="display:none" />
         </div>
       </div>
-
       <div class="card card-danger">
-        <div class="setting-label">危険ゾーン</div>
-        <button class="btn-danger" id="btn-clear-all">すべての記録を削除</button>
+        <div class="setting-label" data-i18n="dangerZone">危険ゾーン</div>
+        <button class="btn-danger" id="btn-clear-all" data-i18n="clearAll">すべての記録を削除</button>
       </div>
     </section>
   </main>
@@ -191,24 +193,35 @@
   <!-- 編集モーダル -->
   <div class="modal-overlay" id="edit-modal" style="display:none;">
     <div class="modal">
-      <h3 class="modal-title">記録を編集</h3>
+      <h3 class="modal-title" data-i18n="editModalTitle">記録を編集</h3>
       <input type="hidden" id="edit-id" />
       <div class="modal-field">
-        <label>日付</label>
+        <label data-i18n="editDateLabel">日付</label>
         <input type="date" id="edit-date" class="setting-input" />
       </div>
       <div class="modal-field">
-        <label>体重（kg）</label>
-        <input type="number" id="edit-weight" class="setting-input" step="0.1" min="20" max="300" inputmode="decimal" />
+        <label data-i18n="editWeightLabel">体重（kg）</label>
+        <input type="text" id="edit-weight" class="setting-input" inputmode="decimal" />
       </div>
       <div class="modal-field">
-        <label>メモ</label>
+        <label data-i18n="editMemoLabel">メモ</label>
         <input type="text" id="edit-memo" class="setting-input" maxlength="50" />
       </div>
       <div class="modal-actions">
-        <button class="btn-outline" id="btn-edit-cancel">キャンセル</button>
-        <button class="btn-save" id="btn-edit-save">保存</button>
+        <button class="btn-outline" id="btn-edit-cancel" data-i18n="cancelBtn">キャンセル</button>
+        <button class="btn-save" id="btn-edit-save" data-i18n="saveBtn2">保存</button>
       </div>
+    </div>
+  </div>
+
+  <!-- 操作マニュアルモーダル -->
+  <div class="modal-overlay" id="manual-modal" style="display:none;">
+    <div class="modal modal-manual">
+      <div class="manual-header">
+        <h3 class="modal-title" data-i18n="manualTitle">使い方ガイド</h3>
+        <button class="btn-icon" id="btn-manual-close">✕</button>
+      </div>
+      <div class="manual-content" id="manual-content"></div>
     </div>
   </div>
 
