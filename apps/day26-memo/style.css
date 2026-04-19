@@ -829,6 +829,11 @@ button {
   outline: none;
   transition: border-color var(--transition);
   width: 100%;
+  /* iOS でdatetime-localがはみ出さないよう制限 */
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  -webkit-appearance: none;
 }
 
 .form-input:focus {
