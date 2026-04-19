@@ -1,0 +1,12 @@
+{
+  "name": "とけい学習 / Clock Learning",
+  "short_name": "Clock",
+  "description": "アナログ時計の読み方を学ぶアプリ",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#e8f4fd",
+  "theme_color": "#4299e1",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192">
+  <rect width="192" height="192" rx="32" fill="#4299e1"/>
+  <circle cx="96" cy="96" r="72" fill="white" stroke="#2b6cb0" stroke-width="6"/>
+  <circle cx="96" cy="96" r="6" fill="#2b6cb0"/>
+  <!-- hour hand pointing ~10 o'clock -->
+  <line x1="96" y1="96" x2="62" y2="54" stroke="#2b6cb0" stroke-width="8" stroke-linecap="round"/>
+  <!-- minute hand pointing ~12 o'clock -->
+  <line x1="96" y1="96" x2="96" y2="38" stroke="#4299e1" stroke-width="5" stroke-linecap="round"/>
+  <!-- tick marks -->
+  <line x1="96" y1="28" x2="96" y2="36" stroke="#2b6cb0" stroke-width="4"/>
+  <line x1="164" y1="96" x2="156" y2="96" stroke="#2b6cb0" stroke-width="4"/>
+  <line x1="96" y1="164" x2="96" y2="156" stroke="#2b6cb0" stroke-width="4"/>
+  <line x1="28" y1="96" x2="36" y2="96" stroke="#2b6cb0" stroke-width="4"/>
+</svg>

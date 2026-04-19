@@ -1,0 +1,1081 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" id="meta-theme" content="#5a7ff5">
+<title>とけい学習</title>
+<link rel="manifest" href="manifest.json">
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800;900&display=swap" rel="stylesheet">
+<style>
+/* ── Color Variables ── */
+:root {
+  --bg: #e8f4fd;
+  --card: #ffffff;
+  --shadow: rgba(0,0,0,0.12);
+  --text: #2d3748;
+  --text-sub: #718096;
+  --border: #e2e8f0;
+  --btn-sec-bg: #f7fafc;
+  --btn-sec-text: #4a5568;
+  --btn-sec-border: #e2e8f0;
+  --expl-bg: #ebf8ff;
+  --expl-border: #3182ce;
+  --expl-text: #1a365d;
+  --ans-bg: #f7fafc;
+  --progress-bg: #e2e8f0;
+  --quit-bg: #fff5f5;
+  --quit-border: #fed7d7;
+  --quit-text: #c53030;
+  --diff-btn-bg: white;
+}
+body.dark {
+  --bg: #1a202c;
+  --card: #2d3748;
+  --shadow: rgba(0,0,0,0.4);
+  --text: #e2e8f0;
+  --text-sub: #a0aec0;
+  --border: #4a5568;
+  --btn-sec-bg: #4a5568;
+  --btn-sec-text: #e2e8f0;
+  --btn-sec-border: #718096;
+  --expl-bg: #1a365d;
+  --expl-border: #5a7ff5;
+  --expl-text: #bee3f8;
+  --ans-bg: #1a202c;
+  --progress-bg: #4a5568;
+  --quit-bg: #2d1515;
+  --quit-border: #742a2a;
+  --quit-text: #fc8181;
+  --diff-btn-bg: #4a5568;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'M PLUS Rounded 1c', 'Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  padding: 52px 12px 12px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  transition: background 0.25s;
+}
+
+/* ── Toolbar ── */
+.toolbar {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  height: 46px;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 100;
+  box-shadow: 0 2px 8px var(--shadow);
+  transition: background 0.25s, border-color 0.25s;
+}
+.toolbar-title { font-size: 1rem; font-weight: 900; color: var(--text); }
+.toolbar-btns  { display: flex; gap: 8px; }
+.toolbar-btn {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: var(--btn-sec-bg);
+  color: var(--text-sub);
+  font-family: inherit;
+  font-size: 0.82rem; font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.toolbar-btn:hover { border-color: #5a7ff5; color: #5a7ff5; }
+
+#app { width: 100%; max-width: 540px; }
+
+/* ── Screen Card ── */
+.screen {
+  background: var(--card);
+  border-radius: 24px;
+  padding: 28px 22px;
+  box-shadow: 0 6px 24px var(--shadow);
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  transition: background 0.25s;
+}
+
+/* ===== TOP ===== */
+.top-screen { justify-content: center; gap: 22px; }
+.top-title    { font-size: 2.8rem; font-weight: 900; color: var(--text); text-align: center; letter-spacing: 2px; }
+.top-subtitle { font-size: 1.2rem; color: var(--text-sub); text-align: center; line-height: 1.6; }
+.top-clock-icon { font-size: 90px; filter: drop-shadow(0 4px 8px rgba(0,0,0,0.15)); }
+
+/* ===== BUTTONS ===== */
+.btn {
+  display: block; width: 100%;
+  padding: 18px 24px;
+  border: none; border-radius: 16px;
+  font-size: 1.35rem; font-weight: 800;
+  cursor: pointer; transition: transform 0.1s, box-shadow 0.1s;
+  font-family: inherit; letter-spacing: 1px;
+}
+.btn:active  { transform: scale(0.96); }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+.btn-primary {
+  background: linear-gradient(135deg, #5a7ff5, #8b5cf6);
+  color: white; box-shadow: 0 4px 16px rgba(90,127,245,0.45);
+}
+.btn-secondary {
+  background: var(--btn-sec-bg);
+  color: var(--btn-sec-text);
+  border: 2px solid var(--btn-sec-border);
+}
+.btn-next {
+  background: linear-gradient(135deg, #38bdf8, #0ea5e9);
+  color: white; box-shadow: 0 4px 14px rgba(14,165,233,0.4);
+}
+.btn-test {
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  color: white; box-shadow: 0 4px 16px rgba(217,119,6,0.4);
+}
+.btn-group { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 380px; }
+
+/* ===== MODE SELECT ===== */
+.screen-title { font-size: 1.6rem; font-weight: 800; color: var(--text); text-align: center; width: 100%; }
+.mode-grid    { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; width: 100%; }
+.mode-card {
+  padding: 18px 10px; border-radius: 18px;
+  border: 3px solid transparent; cursor: pointer;
+  text-align: center; font-family: inherit;
+  transition: transform 0.15s, box-shadow 0.15s, border-color 0.15s;
+  background: none;
+}
+.mode-card:active { transform: scale(0.95); }
+.mode-card.sel    { border-color: currentColor; transform: scale(1.04); box-shadow: 0 6px 20px rgba(0,0,0,0.12); }
+.mode-card-icon { font-size: 2.2rem; margin-bottom: 6px; display: block; }
+.mode-card-name { font-size: 1.05rem; font-weight: 800; display: block; }
+.mode-card-sub  { font-size: 0.78rem; margin-top: 4px; display: block; opacity: 0.75; }
+.m1 { background: #ebf4ff; color: #3182ce; }
+.m2 { background: #f0fff4; color: #38a169; }
+.m3 { background: #fffaf0; color: #c05621; }
+.m4 { background: #faf5ff; color: #6b46c1; }
+body.dark .m1 { background: #1a365d; }
+body.dark .m2 { background: #1c4532; }
+body.dark .m3 { background: #7b341e; }
+body.dark .m4 { background: #44337a; }
+
+/* ===== DIFFICULTY ===== */
+.diff-section { width: 100%; }
+.diff-label { font-size: 1rem; color: var(--text-sub); text-align: center; margin-bottom: 10px; font-weight: 700; }
+.diff-row   { display: flex; gap: 8px; }
+.diff-btn {
+  flex: 1; padding: 13px 4px;
+  border: 3px solid var(--border); border-radius: 14px;
+  font-size: 1rem; font-weight: 800;
+  cursor: pointer; font-family: inherit;
+  background: var(--diff-btn-bg); color: var(--text-sub);
+  transition: all 0.15s;
+}
+.diff-btn:active { transform: scale(0.95); }
+.diff-easy.sel   { background: #38a169; color: white; border-color: #38a169; }
+.diff-normal.sel { background: #c05621; color: white; border-color: #c05621; }
+.diff-hard.sel   { background: #e53e3e; color: white; border-color: #e53e3e; }
+
+/* ===== QUESTION ===== */
+.q-header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.q-num    { font-size: 1rem; color: var(--text-sub); font-weight: 700; }
+.q-badge  { font-size: 0.82rem; font-weight: 800; padding: 5px 13px; border-radius: 20px; color: white; }
+.badge-m1   { background: #3182ce; }
+.badge-m2   { background: #38a169; }
+.badge-m3   { background: #c05621; }
+.badge-m4   { background: #6b46c1; }
+.badge-test { background: linear-gradient(135deg, #d97706, #f59e0b); }
+
+.progress-bar  { width: 100%; height: 10px; background: var(--progress-bg); border-radius: 5px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, #5a7ff5, #8b5cf6); border-radius: 5px; transition: width 0.4s; }
+
+.q-text    { font-size: 1.22rem; font-weight: 800; color: var(--text); text-align: center; line-height: 1.7; width: 100%; padding: 4px; }
+.clock-wrap { padding: 4px; }
+
+/* ===== ANSWER UI ===== */
+.ans-section    { width: 100%; }
+.ans-label      { font-size: 0.95rem; color: var(--text-sub); font-weight: 700; text-align: center; margin-bottom: 12px; }
+.ampm-row       { display: flex; gap: 12px; justify-content: center; margin-bottom: 14px; }
+.ampm-btn {
+  flex: 1; max-width: 150px; padding: 15px;
+  border: 3px solid var(--border); border-radius: 14px;
+  font-size: 1.2rem; font-weight: 800;
+  cursor: pointer;
+  background: var(--btn-sec-bg); color: var(--text);
+  font-family: inherit; transition: all 0.15s;
+}
+.ampm-btn.sel {
+  background: linear-gradient(135deg, #5a7ff5, #8b5cf6);
+  color: white; border-color: transparent;
+  box-shadow: 0 4px 14px rgba(90,127,245,0.4);
+}
+.sel-row         { display: flex; gap: 10px; justify-content: center; align-items: flex-start; }
+.sel-group       { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.sel-group-title { font-size: 0.9rem; color: var(--text-sub); font-weight: 700; }
+.sel-colon       { font-size: 2rem; color: #cbd5e0; align-self: center; margin-top: 20px; }
+.sel-grid        { display: grid; gap: 6px; }
+.hour-grid       { grid-template-columns: repeat(4, 1fr); }
+.min-grid        { grid-template-columns: repeat(4, 1fr); }
+.sel-btn {
+  width: 50px; height: 46px;
+  border: 2px solid var(--border); border-radius: 10px;
+  font-size: 1rem; font-weight: 700;
+  cursor: pointer;
+  background: var(--btn-sec-bg); color: var(--text);
+  font-family: inherit; transition: all 0.12s;
+}
+.sel-btn:hover { background: #f0f4ff; }
+.sel-btn.sel {
+  background: linear-gradient(135deg, #5a7ff5, #8b5cf6);
+  color: white; border-color: transparent;
+  box-shadow: 0 2px 8px rgba(90,127,245,0.4);
+  transform: scale(1.08);
+}
+
+/* ===== EXPLANATION ===== */
+.expl-icon  { font-size: 68px; }
+.expl-title { font-size: 2rem; font-weight: 900; text-align: center; }
+.title-ok   { color: #38a169; }
+.title-ng   { color: #e53e3e; }
+
+.ans-box {
+  background: var(--ans-bg); border-radius: 16px;
+  padding: 16px 20px; text-align: center;
+  width: 100%; border: 2px solid var(--border);
+}
+.ans-box-label { font-size: 0.9rem; color: var(--text-sub); font-weight: 700; margin-bottom: 6px; }
+.ans-box-time  { font-size: 1.7rem; font-weight: 900; color: var(--text); }
+.ans-box-user  { font-size: 0.9rem; color: #e53e3e; margin-top: 6px; }
+
+.clocks-duo    { display: flex; gap: 16px; justify-content: center; align-items: flex-end; flex-wrap: wrap; width: 100%; }
+.clock-item    { text-align: center; }
+.clock-lbl     { font-size: 0.82rem; color: var(--text-sub); margin-top: 6px; font-weight: 700; }
+.arrow-between { font-size: 2rem; color: #5a7ff5; align-self: center; padding-bottom: 28px; }
+
+.expl-box {
+  background: var(--expl-bg);
+  border-left: 5px solid var(--expl-border);
+  border-radius: 0 14px 14px 0;
+  padding: 14px 16px;
+  font-size: 1rem; color: var(--expl-text);
+  line-height: 1.75; width: 100%;
+}
+
+/* ===== QUIT ===== */
+.btn-quit {
+  padding: 7px 14px;
+  border: 2px solid var(--quit-border);
+  border-radius: 10px;
+  background: var(--quit-bg);
+  color: var(--quit-text);
+  font-size: 0.85rem; font-weight: 800;
+  cursor: pointer; font-family: inherit; transition: all 0.12s;
+}
+.btn-quit:active { transform: scale(0.93); }
+.quit-banner {
+  background: var(--quit-bg); border: 2px solid var(--quit-border);
+  border-radius: 16px; padding: 16px; text-align: center; width: 100%;
+}
+.quit-banner-text { font-size: 1.1rem; font-weight: 800; color: var(--quit-text); margin-bottom: 12px; }
+.quit-banner-btns { display: flex; gap: 10px; justify-content: center; }
+.btn-quit-yes {
+  flex: 1; max-width: 140px; padding: 13px;
+  background: #e53e3e; color: white;
+  border: none; border-radius: 12px;
+  font-size: 1rem; font-weight: 800; cursor: pointer; font-family: inherit;
+}
+.btn-quit-no {
+  flex: 1; max-width: 140px; padding: 13px;
+  background: var(--btn-sec-bg); color: var(--text);
+  border: 2px solid var(--border); border-radius: 12px;
+  font-size: 1rem; font-weight: 800; cursor: pointer; font-family: inherit;
+}
+
+/* ===== TEST / RESULT ===== */
+.test-select-screen { justify-content: center; gap: 24px; }
+.test-select-icon   { font-size: 72px; }
+.breakdown-grid     { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: 100%; }
+.breakdown-card      { padding: 14px 10px; border-radius: 14px; text-align: center; }
+.breakdown-card-name  { font-size: 0.82rem; font-weight: 800; margin-bottom: 4px; }
+.breakdown-card-score { font-size: 1.5rem; font-weight: 900; }
+.breakdown-card-sub   { font-size: 0.75rem; margin-top: 3px; opacity: 0.8; }
+.result-screen { justify-content: center; }
+.result-trophy { font-size: 80px; }
+.score-big  { font-size: 3.8rem; font-weight: 900; color: #5a7ff5; text-align: center; }
+.score-sub  { font-size: 1.1rem; color: var(--text-sub); text-align: center; margin-top: 2px; }
+.result-msg { font-size: 1.5rem; font-weight: 800; color: var(--text); text-align: center; }
+.q-screen    { gap: 14px; }
+.expl-screen { gap: 14px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 520px) {
+  body { padding: 52px 6px 6px; }
+  .screen { padding: 12px 12px; gap: 6px; min-height: unset; }
+  .clock-wrap { padding: 0; }
+  .q-text { font-size: 1rem; line-height: 1.45; padding: 0; }
+  .ans-label { margin-bottom: 5px; font-size: 0.85rem; }
+  .ampm-row { gap: 10px; margin-bottom: 6px; }
+  .ampm-btn { padding: 9px; font-size: 1rem; }
+  .sel-row { flex-direction: column; align-items: center; gap: 6px; }
+  .sel-colon { display: none; }
+  .hour-grid { grid-template-columns: repeat(6, 1fr); }
+  .min-grid  { grid-template-columns: repeat(6, 1fr); }
+  .sel-btn { width: 42px; height: 36px; font-size: 0.85rem; }
+  .sel-group { gap: 4px; }
+  .sel-group-title { font-size: 0.8rem; }
+  .btn { padding: 12px 16px; font-size: 1.15rem; }
+  .progress-bar { height: 6px; }
+  .q-num { font-size: 0.9rem; }
+  .q-badge { font-size: 0.78rem; padding: 4px 10px; }
+  .q-screen    { gap: 6px; }
+  .expl-screen { gap: 8px; }
+  .expl-icon { font-size: 44px; }
+  .expl-title { font-size: 1.5rem; }
+  .ans-box { padding: 10px 14px; }
+  .ans-box-time { font-size: 1.4rem; }
+  .ans-box-user { font-size: 0.82rem; }
+  .clocks-duo { gap: 8px; }
+  .arrow-between { font-size: 1.4rem; padding-bottom: 14px; }
+  .clock-lbl { font-size: 0.75rem; margin-top: 4px; }
+  .expl-box { padding: 10px 12px; font-size: 0.9rem; line-height: 1.6; }
+  .result-screen { gap: 6px; justify-content: flex-start; }
+  .result-trophy { font-size: 38px; }
+  .score-big { font-size: 2.2rem; }
+  .score-sub { font-size: 0.9rem; }
+  .result-msg { font-size: 1rem; }
+  .breakdown-card { padding: 7px 5px; }
+  .breakdown-card-score { font-size: 1.1rem; }
+  .breakdown-card-name  { font-size: 0.75rem; }
+  .breakdown-card-sub   { font-size: 0.7rem; }
+  .breakdown-grid { gap: 6px; }
+  .btn-group { gap: 8px; }
+}
+@media (max-width: 400px) {
+  .top-title  { font-size: 2.2rem; }
+  .expl-title { font-size: 1.7rem; }
+}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <span class="toolbar-title" id="toolbar-title">とけい学習</span>
+  <div class="toolbar-btns">
+    <button class="toolbar-btn" id="btn-dark" onclick="toggleDark()">🌙</button>
+    <button class="toolbar-btn" id="btn-lang" onclick="toggleLang()">EN</button>
+  </div>
+</div>
+<div id="app"></div>
+
+<script>
+'use strict';
+
+// ============================================================
+// I18N
+// ============================================================
+const LANG = {
+  ja: {
+    appName: 'とけい学習',
+    subtitle: 'アナログとけいを読む\nれんしゅうをしよう！',
+    start: 'はじめる',
+    challengeTest: '📝 テストにちょうせん！',
+    chooseMode: 'モードをえらぶ',
+    modeSelectTitle: 'モードをえらぼう',
+    startWithThis: 'この設定ではじめる',
+    back: 'もどる',
+    m1Name:'とけいを読む', m1Sub:'アナログとけいを読もう', m1Icon:'🕐',
+    m2Name:'何分後',      m2Sub:'N分後の時刻を答えよう',  m2Icon:'⏩',
+    m3Name:'何分前',      m3Sub:'N分前の時刻を答えよう',  m3Icon:'⏪',
+    m4Name:'N時間後',     m4Sub:'N時間後の時刻を答えよう',m4Icon:'🕰️',
+    easy:'かんたん', normal:'ふつう', hard:'むずかしい',
+    chooseDiff: 'むずかしさをえらぼう',
+    testTitle: 'まとめテスト',
+    testDesc: '4つのモードがまじった\n10問にちょうせんしよう！',
+    startTest: 'テストをはじめる',
+    quitBtn: '✕ やめる',
+    chooseAnswer: '答えをえらんでね',
+    am:'午前', pm:'午後',
+    hourLabel:'じ（時）', minLabel:'ふん（分）',
+    answerBtn: 'こたえる',
+    confirmQuit: 'ほんとうに やめますか？',
+    quitYes:'やめる', quitNo:'つづける',
+    correctAnswerLabel: '正しい答え',
+    yourAnswerPrefix: 'あなたの答え：',
+    msgs_ok: ['せいかい！🎉','よくできました！','かんぺき！✨','すごい！🌟'],
+    msgs_ng: ['おしい！','ざんねん！','もういちど かんがえてみよう！'],
+    nextBtn:'つぎへ →', resultBtn:'結果をみる 🎉',
+    problemTime:'問題の時刻', correctAnswer:'正しい答え',
+    perfect:'全問せいかい！\nすごい！！', great:'よくできました！',
+    good:'がんばりました！', tryAgain:'もういちど\nれんしゅうしよう！',
+    scoreOf: (s,t) => `${t}問中 ${s}問せいかい`,
+    modeBreakdownTitle: 'モードべつ せいかい',
+    perfect_card:'✅ かんぺき！', wrongCount: n => `${n}問 まちがい`,
+    retryQuiz:'もういちど', retryTest:'もういちど テスト',
+    changeModeBtn:'モードをかえる', changeTestBtn:'テスト設定にもどる',
+    backToTop:'最初にもどる',
+  },
+  en: {
+    appName: 'Clock Learning',
+    subtitle: "Let's practice\nreading analog clocks!",
+    start: 'Start',
+    challengeTest: '📝 Take a Test!',
+    chooseMode: 'Choose Mode',
+    modeSelectTitle: 'Choose a Mode',
+    startWithThis: 'Start with this setting',
+    back: 'Back',
+    m1Name:'Read the Clock', m1Sub:'Read an analog clock',      m1Icon:'🕐',
+    m2Name:'Min Later',      m2Sub:'Find the time N min later', m2Icon:'⏩',
+    m3Name:'Min Ago',        m3Sub:'Find the time N min ago',   m3Icon:'⏪',
+    m4Name:'Hours Later',    m4Sub:'Find the time N hours later',m4Icon:'🕰️',
+    easy:'Easy', normal:'Normal', hard:'Hard',
+    chooseDiff: 'Choose Difficulty',
+    testTitle: 'Mixed Test',
+    testDesc: '10 questions mixing\nall 4 modes!',
+    startTest: 'Start Test',
+    quitBtn: '✕ Quit',
+    chooseAnswer: 'Choose your answer',
+    am:'AM', pm:'PM',
+    hourLabel:'Hour', minLabel:'Min',
+    answerBtn: 'Answer',
+    confirmQuit: 'Are you sure you want to quit?',
+    quitYes:'Quit', quitNo:'Continue',
+    correctAnswerLabel: 'Correct Answer',
+    yourAnswerPrefix: 'Your answer: ',
+    msgs_ok: ['Correct! 🎉','Well done!','Perfect! ✨','Amazing! 🌟'],
+    msgs_ng: ['So close!','Not quite!',"Let's try again!"],
+    nextBtn:'Next →', resultBtn:'See Results 🎉',
+    problemTime:'Problem', correctAnswer:'Correct',
+    perfect:'All correct!\nAmazing!!', great:'Well done!',
+    good:'Good effort!', tryAgain:'Keep practicing!',
+    scoreOf: (s,t) => `${s} out of ${t} correct`,
+    modeBreakdownTitle: 'Results by Mode',
+    perfect_card:'✅ Perfect!', wrongCount: n => `${n} wrong`,
+    retryQuiz:'Try Again', retryTest:'Retry Test',
+    changeModeBtn:'Change Mode', changeTestBtn:'Test Settings',
+    backToTop:'Back to Top',
+  }
+};
+
+function t(key)  { return LANG[lang][key] || key; }
+function ta(key) { return LANG[lang][key] || []; }
+
+// ============================================================
+// STATE
+// ============================================================
+let lang     = localStorage.getItem('clock_lang') || (navigator.language.startsWith('ja') ? 'ja' : 'en');
+let darkMode = localStorage.getItem('clock_dark') === 'true';
+
+const S = {
+  screen: 'top',
+  mode: 1, difficulty: 'easy',
+  isTest: false, confirmQuit: false,
+  questions: [], results: [], idx: 0, score: 0,
+  uAmPm: null, uHour: null, uMin: null,
+};
+
+// ============================================================
+// DARK MODE & LANG
+// ============================================================
+function applyDark() {
+  document.body.classList.toggle('dark', darkMode);
+  document.getElementById('btn-dark').textContent = darkMode ? '☀️' : '🌙';
+  const m = document.getElementById('meta-theme');
+  if (m) m.content = darkMode ? '#1a202c' : '#5a7ff5';
+}
+function toggleDark() {
+  darkMode = !darkMode;
+  localStorage.setItem('clock_dark', darkMode);
+  applyDark();
+  render();
+}
+function applyLang() {
+  document.documentElement.lang = lang;
+  document.getElementById('btn-lang').textContent = lang === 'ja' ? 'EN' : 'JA';
+  document.getElementById('toolbar-title').textContent = t('appName');
+}
+function toggleLang() {
+  lang = lang === 'ja' ? 'en' : 'ja';
+  localStorage.setItem('clock_lang', lang);
+  applyLang();
+  render();
+}
+
+// ============================================================
+// LOCAL STORAGE
+// ============================================================
+function loadSaved() {
+  try {
+    const d = JSON.parse(localStorage.getItem('clockApp_v1') || '{}');
+    if ([1,2,3,4].includes(d.mode)) S.mode = d.mode;
+    if (['easy','normal','hard'].includes(d.diff)) S.difficulty = d.diff;
+  } catch(e) {}
+}
+function saveProgress() {
+  try {
+    localStorage.setItem('clockApp_v1', JSON.stringify({
+      mode: S.mode, diff: S.difficulty,
+      lastScore: S.score, lastTotal: S.questions.length,
+    }));
+  } catch(e) {}
+}
+
+// ============================================================
+// TIME UTILITIES
+// ============================================================
+const ALL_MINUTES = [0,5,10,15,20,25,30,35,40,45,50,55];
+
+function toAbs(ampm, hour, minute) {
+  let h = (hour === 12) ? 0 : hour;
+  if (ampm === 'pm') h += 12;
+  return h * 60 + minute;
+}
+function fromAbs(abs) {
+  abs = ((abs % 1440) + 1440) % 1440;
+  const th = Math.floor(abs / 60), m = abs % 60;
+  const ampm = th < 12 ? 'am' : 'pm';
+  let h = th % 12; if (h === 0) h = 12;
+  return { ampm, hour: h, minute: m };
+}
+function fmtTime(ampm, hour, minute) {
+  if (lang === 'ja') {
+    const ap = ampm === 'am' ? '午前' : '午後';
+    return minute === 0 ? `${ap}${hour}時` : `${ap}${hour}時${minute}分`;
+  } else {
+    const ap = ampm === 'am' ? 'AM' : 'PM';
+    return `${hour}:${String(minute).padStart(2,'0')} ${ap}`;
+  }
+}
+
+// ============================================================
+// QUESTION & EXPLANATION TEXT (computed at render, language-aware)
+// ============================================================
+function getQText(q) {
+  const b = q.base;
+  const timeStr = fmtTime(b.ampm, b.hour, b.minute);
+  const apStr   = lang === 'ja' ? (b.ampm === 'am' ? '午前' : '午後') : (b.ampm === 'am' ? 'AM' : 'PM');
+  if (lang === 'ja') {
+    if (q.mode === 1) return `今は${apStr}の時間です。\nとけいを見て、何時何分か答えましょう。`;
+    if (q.mode === 2) return `今は ${timeStr} です。\n今から ${q.offset}分後 は 何時何分ですか？`;
+    if (q.mode === 3) return `今は ${timeStr} です。\n今から ${q.offset}分前 は 何時何分ですか？`;
+    if (q.mode === 4) return `今は ${timeStr} です。\n今から ${q.offset}時間後 は 何時何分ですか？`;
+  } else {
+    if (q.mode === 1) return `It is ${apStr}.\nWhat time does the clock show?`;
+    if (q.mode === 2) return `It is ${timeStr}.\nWhat time is it ${q.offset} minutes later?`;
+    if (q.mode === 3) return `It is ${timeStr}.\nWhat time was it ${q.offset} minutes ago?`;
+    if (q.mode === 4) return `It is ${timeStr}.\nWhat time is it ${q.offset} hours later?`;
+  }
+}
+
+function getExplText(q) {
+  const ca          = q.answer;
+  const correctTime = fmtTime(ca.ampm, ca.hour, ca.minute);
+  const baseTime    = fmtTime(q.base.ampm, q.base.hour, q.base.minute);
+  const crossAm     = ca.ampm !== q.base.ampm;
+  const crossHour   = ca.hour !== q.base.hour && !crossAm;
+  if (lang === 'ja') {
+    if (q.mode === 1) {
+      let e = `正しい答えは ${correctTime} です。\n`;
+      if (q.base.minute === 0)  e += `長い針が 12 を指しているとき、0分（ちょうど）です。`;
+      else if (q.base.minute === 30) e += `長い針が 6 を指しているとき、30分です。`;
+      else e += `長い針は ${q.base.minute/5} のめもりを指しているので、${q.base.minute}分です。\n短い針が ${q.base.hour} のそばにあるので、${q.base.hour}時です。`;
+      return e;
+    }
+    if (q.mode === 2) {
+      let e = `${q.offset}分後 なので、長い針を ${q.offset/5}つ 進めます。\n正しい答えは ${correctTime} です。`;
+      if (crossAm) e += `\n午前と午後が 入れかわります！`;
+      else if (crossHour) e += `\n12をこえると、1にもどります。`;
+      return e;
+    }
+    if (q.mode === 3) {
+      let e = `${q.offset}分前 なので、長い針を ${q.offset/5}つ もどします。\n正しい答えは ${correctTime} です。`;
+      if (crossAm) e += `\n午前と午後が 入れかわります！`;
+      else if (crossHour) e += `\n1をこえると、12にもどります。`;
+      return e;
+    }
+    if (q.mode === 4) {
+      let e = `${q.offset}時間後 なので、短い針を ${q.offset}つ 進めます。\n正しい答えは ${correctTime} です。`;
+      if (crossAm) e += `\n${baseTime} の ${q.offset}時間後は ${correctTime} です。\n午前と午後が 入れかわります！`;
+      return e;
+    }
+  } else {
+    if (q.mode === 1) {
+      let e = `Correct answer: ${correctTime}\n`;
+      if (q.base.minute === 0)  e += `Long hand at 12 → 0 minutes (o'clock).`;
+      else if (q.base.minute === 30) e += `Long hand at 6 → 30 minutes (half past).`;
+      else e += `Long hand at ${q.base.minute/5} marks → ${q.base.minute} min.\nShort hand near ${q.base.hour} → ${q.base.hour} o'clock.`;
+      return e;
+    }
+    if (q.mode === 2) {
+      let e = `Move the long hand forward ${q.offset/5} marks (${q.offset} min).\nCorrect: ${correctTime}`;
+      if (crossAm) e += `\nAM / PM switches!`;
+      else if (crossHour) e += `\nAfter 12, it goes back to 1.`;
+      return e;
+    }
+    if (q.mode === 3) {
+      let e = `Move the long hand back ${q.offset/5} marks (${q.offset} min).\nCorrect: ${correctTime}`;
+      if (crossAm) e += `\nAM / PM switches!`;
+      else if (crossHour) e += `\nBefore 1, it goes to 12.`;
+      return e;
+    }
+    if (q.mode === 4) {
+      let e = `Move the short hand forward ${q.offset} hours.\nCorrect: ${correctTime}`;
+      if (crossAm) e += `\n${q.offset} hours after ${baseTime} = ${correctTime}\nAM / PM switches!`;
+      return e;
+    }
+  }
+}
+
+// ============================================================
+// MODE / DIFF INFO
+// ============================================================
+function modeInfo(m) {
+  const L = LANG[lang];
+  return {
+    1:{name:L.m1Name,icon:L.m1Icon,sub:L.m1Sub,badgeCls:'badge-m1',cardCls:'m1'},
+    2:{name:L.m2Name,icon:L.m2Icon,sub:L.m2Sub,badgeCls:'badge-m2',cardCls:'m2'},
+    3:{name:L.m3Name,icon:L.m3Icon,sub:L.m3Sub,badgeCls:'badge-m3',cardCls:'m3'},
+    4:{name:L.m4Name,icon:L.m4Icon,sub:L.m4Sub,badgeCls:'badge-m4',cardCls:'m4'},
+  }[m];
+}
+function diffInfo(d) {
+  return {
+    easy:  {label:t('easy'),  cls:'diff-easy'},
+    normal:{label:t('normal'),cls:'diff-normal'},
+    hard:  {label:t('hard'),  cls:'diff-hard'},
+  }[d];
+}
+
+// ============================================================
+// QUESTION GENERATION
+// ============================================================
+function rnd(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+
+function minuteOffsets(diff) {
+  if (diff==='easy')   return [5,10,15,30];
+  if (diff==='normal') return [5,10,15,20,25,30,35,40,45];
+  return [5,10,15,20,25,30,35,40,45,50,55];
+}
+function hourOffsets(diff) {
+  if (diff==='easy')   return [1,2];
+  if (diff==='normal') return [2,3];
+  return [1,2,3,4,5];
+}
+
+function genQ(mode, diff) {
+  for (let attempt = 0; attempt < 200; attempt++) {
+    const ampm = rnd(['am','pm']);
+    if (mode === 1) {
+      let hour, minute;
+      if (diff==='easy')        { hour=rnd([1,2,3,4,5,6,7,8,9,10]); minute=0; }
+      else if (diff==='normal') { hour=rnd([1,2,3,4,5,6,7,8,9,10,11]); minute=rnd([0,30]); }
+      else                      { hour=rnd([1,2,3,4,5,6,7,8,9,10,11,12]); minute=rnd(ALL_MINUTES); }
+      return { mode, diff, base:{ampm,hour,minute}, answer:{ampm,hour,minute}, offset:null };
+    }
+    if (mode === 2) {
+      const offset = rnd(minuteOffsets(diff));
+      let hour, minute;
+      if (diff==='easy')        { hour=rnd([1,2,3,4,5,6,7,8,9,10]); minute=0; }
+      else if (diff==='normal') { hour=rnd([1,2,3,4,5,6,7,8,9,10,11]); minute=rnd([0,15,30,45]); }
+      else                      { hour=rnd([1,2,3,4,5,6,7,8,9,10,11,12]); minute=rnd(ALL_MINUTES); }
+      const base={ampm,hour,minute}, ans=fromAbs(toAbs(ampm,hour,minute)+offset);
+      if (diff==='easy' && (ans.ampm!==ampm || ans.hour>10)) continue;
+      return { mode, diff, base, answer:ans, offset };
+    }
+    if (mode === 3) {
+      const offset = rnd(minuteOffsets(diff));
+      let hour, minute;
+      if (diff==='easy')        { hour=rnd([2,3,4,5,6,7,8,9,10]); minute=0; }
+      else if (diff==='normal') { hour=rnd([1,2,3,4,5,6,7,8,9,10,11]); minute=rnd([0,15,30,45]); }
+      else                      { hour=rnd([1,2,3,4,5,6,7,8,9,10,11,12]); minute=rnd(ALL_MINUTES); }
+      const base={ampm,hour,minute}, ans=fromAbs(toAbs(ampm,hour,minute)-offset);
+      if (diff==='easy' && ans.ampm!==ampm) continue;
+      return { mode, diff, base, answer:ans, offset };
+    }
+    if (mode === 4) {
+      const offset = rnd(hourOffsets(diff));
+      let hour, minute;
+      if (diff==='easy')        { hour=rnd([1,2,3,4,5,6,7,8]); minute=rnd([0,30]); }
+      else if (diff==='normal') { hour=rnd([1,2,3,4,5,6,7,8,9,10]); minute=rnd([0,15,30,45]); }
+      else                      { hour=rnd([1,2,3,4,5,6,7,8,9,10,11,12]); minute=rnd(ALL_MINUTES); }
+      const base={ampm,hour,minute}, ans=fromAbs(toAbs(ampm,hour,minute)+offset*60);
+      if (diff==='easy' && ans.ampm!==ampm) continue;
+      return { mode, diff, base, answer:ans, offset };
+    }
+  }
+  return genQ(mode, 'easy');
+}
+
+function genQuestions(mode, diff) {
+  const qs=[], seen=new Set(); let tries=0;
+  while (qs.length < 10 && tries < 500) {
+    tries++;
+    const q=genQ(mode,diff);
+    const k=`${q.base.ampm}${q.base.hour}${q.base.minute}${q.offset}`;
+    if (!seen.has(k)) { seen.add(k); qs.push(q); }
+  }
+  return qs;
+}
+
+function genTestQuestions(diff) {
+  const perMode=[3,3,2,2], qs=[], seen=new Set();
+  for (let m=1; m<=4; m++) {
+    let added=0, tries=0;
+    while (added < perMode[m-1] && tries < 200) {
+      tries++;
+      const q=genQ(m,diff);
+      const k=`${m}${q.base.ampm}${q.base.hour}${q.base.minute}${q.offset}`;
+      if (!seen.has(k)) { seen.add(k); qs.push(q); added++; }
+    }
+  }
+  for (let i=qs.length-1; i>0; i--) {
+    const j=Math.floor(Math.random()*(i+1)); [qs[i],qs[j]]=[qs[j],qs[i]];
+  }
+  return qs;
+}
+
+// ============================================================
+// CLOCK SVG (dark mode aware)
+// ============================================================
+function clockColors() {
+  return darkMode ? {
+    face:'#2d3748', rim:'#a0aec0',
+    tickMaj:'#e2e8f0', tickMin:'#718096',
+    num:'#e2e8f0', handH:'#e2e8f0', handM:'#a0aec0', center:'#f56565',
+  } : {
+    face:'#ffffff', rim:'#333',
+    tickMaj:'#555', tickMin:'#bbb',
+    num:'#1a202c', handH:'#1a202c', handM:'#2d3748', center:'#e53e3e',
+  };
+}
+
+function clockSVG(ampm, hour, minute, size) {
+  size = size || 180;
+  const cx=100, cy=100, R=90;
+  const d2r = d => d * Math.PI / 180;
+  const c = clockColors();
+  const hDeg = ((hour%12)*30) + minute*0.5, mDeg = minute*6;
+  const hRad=d2r(hDeg), mRad=d2r(mDeg);
+  const hLen=50, mLen=73;
+  const hx=cx+hLen*Math.sin(hRad), hy=cy-hLen*Math.cos(hRad);
+  const mx=cx+mLen*Math.sin(mRad), my=cy-mLen*Math.cos(mRad);
+  let ticks='', nums='';
+  for (let i=1; i<=12; i++) {
+    const a=d2r(i*30), t1=79, t2=88;
+    ticks += `<line x1="${(cx+t1*Math.sin(a)).toFixed(1)}" y1="${(cy-t1*Math.cos(a)).toFixed(1)}" x2="${(cx+t2*Math.sin(a)).toFixed(1)}" y2="${(cy-t2*Math.cos(a)).toFixed(1)}" stroke="${c.tickMaj}" stroke-width="3" stroke-linecap="round"/>`;
+    const nr=68;
+    nums += `<text x="${(cx+nr*Math.sin(a)).toFixed(1)}" y="${(cy-nr*Math.cos(a)).toFixed(1)}" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="bold" fill="${c.num}">${i}</text>`;
+  }
+  for (let i=0; i<60; i++) {
+    if (i%5===0) continue;
+    const a=d2r(i*6);
+    ticks += `<line x1="${(cx+84*Math.sin(a)).toFixed(1)}" y1="${(cy-84*Math.cos(a)).toFixed(1)}" x2="${(cx+88*Math.sin(a)).toFixed(1)}" y2="${(cy-88*Math.cos(a)).toFixed(1)}" stroke="${c.tickMin}" stroke-width="1" stroke-linecap="round"/>`;
+  }
+  return `<svg width="${size}" height="${size}" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="${cx}" cy="${cy}" r="${R}" fill="${c.face}" stroke="${c.rim}" stroke-width="3.5"/>
+    ${ticks}${nums}
+    <line x1="${cx}" y1="${cy}" x2="${hx.toFixed(2)}" y2="${hy.toFixed(2)}" stroke="${c.handH}" stroke-width="9" stroke-linecap="round"/>
+    <line x1="${cx}" y1="${cy}" x2="${mx.toFixed(2)}" y2="${my.toFixed(2)}" stroke="${c.handM}" stroke-width="5" stroke-linecap="round"/>
+    <circle cx="${cx}" cy="${cy}" r="7" fill="${c.center}"/>
+    <circle cx="${cx}" cy="${cy}" r="3.5" fill="${c.face}"/>
+  </svg>`;
+}
+
+// ============================================================
+// RENDERERS
+// ============================================================
+function renderTop() {
+  return `<div class="screen top-screen">
+    <div class="top-clock-icon">🕐</div>
+    <h1 class="top-title">${t('appName')}</h1>
+    <p class="top-subtitle">${t('subtitle').replace(/\n/g,'<br>')}</p>
+    <div class="btn-group">
+      <button class="btn btn-primary"   onclick="startDefault()">${t('start')}</button>
+      <button class="btn btn-test"      onclick="go('testSelect')">${t('challengeTest')}</button>
+      <button class="btn btn-secondary" onclick="go('modeSelect')">${t('chooseMode')}</button>
+    </div>
+  </div>`;
+}
+
+function renderTestSelect() {
+  const dBtns = ['easy','normal','hard'].map(d => {
+    const info = diffInfo(d);
+    return `<button class="diff-btn ${info.cls}${S.difficulty===d?' sel':''}" onclick="setDiff('${d}')">${info.label}</button>`;
+  }).join('');
+  return `<div class="screen test-select-screen">
+    <div class="test-select-icon">📝</div>
+    <h2 class="screen-title">${t('testTitle')}</h2>
+    <p class="top-subtitle" style="text-align:center;">${t('testDesc').replace(/\n/g,'<br>')}</p>
+    <div class="diff-section" style="width:100%;max-width:380px;">
+      <div class="diff-label">${t('chooseDiff')}</div>
+      <div class="diff-row">${dBtns}</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-test"      onclick="startTest()">${t('startTest')}</button>
+      <button class="btn btn-secondary" onclick="go('top')">${t('back')}</button>
+    </div>
+  </div>`;
+}
+
+function renderModeSelect() {
+  const mCards = [1,2,3,4].map(m => {
+    const info = modeInfo(m);
+    return `<button class="mode-card ${info.cardCls}${S.mode===m?' sel':''}" onclick="setMode(${m})">
+      <span class="mode-card-icon">${info.icon}</span>
+      <span class="mode-card-name">${info.name}</span>
+      <span class="mode-card-sub">${info.sub}</span>
+    </button>`;
+  }).join('');
+  const dBtns = ['easy','normal','hard'].map(d => {
+    const info = diffInfo(d);
+    return `<button class="diff-btn ${info.cls}${S.difficulty===d?' sel':''}" onclick="setDiff('${d}')">${info.label}</button>`;
+  }).join('');
+  return `<div class="screen">
+    <h2 class="screen-title">${t('modeSelectTitle')}</h2>
+    <div class="mode-grid">${mCards}</div>
+    <div class="diff-section">
+      <div class="diff-label">${t('chooseDiff')}</div>
+      <div class="diff-row">${dBtns}</div>
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-primary"   onclick="startQuiz()">${t('startWithThis')}</button>
+      <button class="btn btn-secondary" onclick="go('top')">${t('back')}</button>
+    </div>
+  </div>`;
+}
+
+function renderQuestion() {
+  const q = S.questions[S.idx];
+  const total = S.questions.length;
+  const pct   = ((S.idx / total) * 100).toFixed(0);
+  const info  = modeInfo(q.mode);
+  const qText = getQText(q);
+  const hourBtns = Array.from({length:12}, (_,i) => {
+    const h = i+1;
+    return `<button class="sel-btn${S.uHour===h?' sel':''}" onclick="selHour(${h})">${h}</button>`;
+  }).join('');
+  const minBtns = ALL_MINUTES.map(m => {
+    const lbl = m===0 ? '00' : String(m).padStart(2,'0');
+    return `<button class="sel-btn${S.uMin===m?' sel':''}" onclick="selMin(${m})">${lbl}</button>`;
+  }).join('');
+  const canAnswer = S.uAmPm!==null && S.uHour!==null && S.uMin!==null;
+  const badgeCls   = S.isTest ? 'badge-test' : info.badgeCls;
+  const badgeLabel = S.isTest ? `📝 ${info.icon} ${info.name}` : `${info.icon} ${info.name}`;
+  const quitBanner = S.confirmQuit ? `
+    <div class="quit-banner">
+      <div class="quit-banner-text">${t('confirmQuit')}</div>
+      <div class="quit-banner-btns">
+        <button class="btn-quit-yes" onclick="doQuit()">${t('quitYes')}</button>
+        <button class="btn-quit-no"  onclick="cancelQuit()">${t('quitNo')}</button>
+      </div>
+    </div>` : '';
+  const clockSize = window.innerWidth <= 520 ? 128 : 180;
+  return `<div class="screen q-screen">
+    <div class="q-header">
+      <button class="btn-quit" onclick="confirmQuit()">${t('quitBtn')}</button>
+      <span class="q-num">${S.idx+1} / ${total}</span>
+      <span class="q-badge ${badgeCls}">${badgeLabel}</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+    ${quitBanner}
+    <p class="q-text">${qText.replace(/\n/g,'<br>')}</p>
+    <div class="clock-wrap">${clockSVG(q.base.ampm, q.base.hour, q.base.minute, clockSize)}</div>
+    <div class="ans-section">
+      <div class="ans-label">${t('chooseAnswer')}</div>
+      <div class="ampm-row">
+        <button class="ampm-btn${S.uAmPm==='am'?' sel':''}" onclick="selAmPm('am')">${t('am')}</button>
+        <button class="ampm-btn${S.uAmPm==='pm'?' sel':''}" onclick="selAmPm('pm')">${t('pm')}</button>
+      </div>
+      <div class="sel-row">
+        <div class="sel-group">
+          <div class="sel-group-title">${t('hourLabel')}</div>
+          <div class="sel-grid hour-grid">${hourBtns}</div>
+        </div>
+        <div class="sel-colon">:</div>
+        <div class="sel-group">
+          <div class="sel-group-title">${t('minLabel')}</div>
+          <div class="sel-grid min-grid">${minBtns}</div>
+        </div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="submitAns()"${canAnswer?'':' disabled'} style="max-width:380px;width:100%;">${t('answerBtn')}</button>
+  </div>`;
+}
+
+function renderExplanation() {
+  const q  = S.questions[S.idx];
+  const ca = q.answer;
+  const ua = { ampm:S.uAmPm, hour:S.uHour, minute:S.uMin };
+  const ok = ua.ampm===ca.ampm && ua.hour===ca.hour && ua.minute===ca.minute;
+  const msgsOk = ta('msgs_ok'), msgsNg = ta('msgs_ng');
+  const msg  = ok ? rnd(msgsOk) : rnd(msgsNg);
+  const icon = ok ? '⭕' : '❌';
+  const isMobile  = window.innerWidth <= 520;
+  const duoSize   = isMobile ? 108 : 135;
+  const soloSize  = isMobile ? 118 : 155;
+  const isCalcMode = q.mode !== 1;
+  const explText   = getExplText(q);
+  const nextLabel  = S.idx+1 < S.questions.length ? t('nextBtn') : t('resultBtn');
+  let clocksHTML;
+  if (isCalcMode && !ok) {
+    clocksHTML = `<div class="clocks-duo">
+      <div class="clock-item">
+        ${clockSVG(q.base.ampm,q.base.hour,q.base.minute,duoSize)}
+        <div class="clock-lbl">${t('problemTime')}<br>${fmtTime(q.base.ampm,q.base.hour,q.base.minute)}</div>
+      </div>
+      <div class="arrow-between">→</div>
+      <div class="clock-item">
+        ${clockSVG(ca.ampm,ca.hour,ca.minute,duoSize)}
+        <div class="clock-lbl">${t('correctAnswer')}<br>${fmtTime(ca.ampm,ca.hour,ca.minute)}</div>
+      </div>
+    </div>`;
+  } else {
+    clocksHTML = `<div class="clock-item" style="text-align:center;">
+      ${clockSVG(ca.ampm,ca.hour,ca.minute,soloSize)}
+      <div class="clock-lbl">${fmtTime(ca.ampm,ca.hour,ca.minute)}</div>
+    </div>`;
+  }
+  return `<div class="screen expl-screen">
+    <div style="width:100%;display:flex;justify-content:flex-start;">
+      <button class="btn-quit" onclick="confirmQuitFromExpl()">${t('quitBtn')}</button>
+    </div>
+    <div class="expl-icon">${icon}</div>
+    <div class="expl-title ${ok?'title-ok':'title-ng'}">${msg}</div>
+    <div class="ans-box">
+      <div class="ans-box-label">${t('correctAnswerLabel')}</div>
+      <div class="ans-box-time">${fmtTime(ca.ampm,ca.hour,ca.minute)}</div>
+      ${!ok ? `<div class="ans-box-user">${t('yourAnswerPrefix')}${fmtTime(ua.ampm,ua.hour,ua.minute)}</div>` : ''}
+    </div>
+    ${clocksHTML}
+    <div class="expl-box">${explText.replace(/\n/g,'<br>')}</div>
+    <button class="btn btn-next" onclick="nextQ()" style="max-width:380px;width:100%;">${nextLabel}</button>
+  </div>`;
+}
+
+function renderResult() {
+  const score=S.score, total=S.questions.length, pct=score/total;
+  let emoji, msg;
+  if (pct===1)       { emoji='🏆'; msg=t('perfect'); }
+  else if (pct>=0.8) { emoji='⭐'; msg=t('great'); }
+  else if (pct>=0.6) { emoji='😊'; msg=t('good'); }
+  else               { emoji='💪'; msg=t('tryAgain'); }
+  let breakdownHTML = '';
+  if (S.isTest) {
+    const cards = [1,2,3,4].map(m => {
+      const info=modeInfo(m);
+      const mRes=S.results.filter(r=>r.mode===m);
+      const mOk=mRes.filter(r=>r.correct).length;
+      const allOk=mOk===mRes.length;
+      return `<div class="breakdown-card ${info.cardCls}">
+        <div class="breakdown-card-name">${info.icon} ${info.name}</div>
+        <div class="breakdown-card-score">${mOk} / ${mRes.length}</div>
+        <div class="breakdown-card-sub">${allOk ? t('perfect_card') : LANG[lang].wrongCount(mRes.length-mOk)}</div>
+      </div>`;
+    }).join('');
+    breakdownHTML = `<div style="width:100%;">
+      <div class="diff-label" style="margin-bottom:10px;">${t('modeBreakdownTitle')}</div>
+      <div class="breakdown-grid">${cards}</div>
+    </div>`;
+  }
+  const retryLabel  = S.isTest ? t('retryTest') : t('retryQuiz');
+  const retryAction = S.isTest ? "startTest()" : "retryQuiz()";
+  const backAction  = S.isTest ? "go('testSelect')" : "go('modeSelect')";
+  const backLabel   = S.isTest ? t('changeTestBtn') : t('changeModeBtn');
+  return `<div class="screen result-screen">
+    <div class="result-trophy">${emoji}</div>
+    <div>
+      <div class="score-big">${score}<span style="font-size:2.2rem;color:#a0aec0;"> / ${total}</span></div>
+      <div class="score-sub">${LANG[lang].scoreOf(score,total)}</div>
+    </div>
+    <div class="result-msg">${msg.replace(/\n/g,'<br>')}</div>
+    ${breakdownHTML}
+    <div class="btn-group">
+      <button class="btn btn-primary"   onclick="${retryAction}">${retryLabel}</button>
+      <button class="btn btn-secondary" onclick="${backAction}">${backLabel}</button>
+      <button class="btn btn-secondary" onclick="go('top')">${t('backToTop')}</button>
+    </div>
+  </div>`;
+}
+
+// ============================================================
+// EVENT HANDLERS
+// ============================================================
+function go(screen) { S.screen=screen; S.confirmQuit=false; render(); }
+function setMode(m) { S.mode=m; render(); }
+function setDiff(d) { S.difficulty=d; render(); }
+function startDefault() { startQuiz(); }
+
+function startQuiz() {
+  S.isTest=false; S.questions=genQuestions(S.mode,S.difficulty);
+  S.idx=0; S.score=0; S.results=[]; S.confirmQuit=false;
+  clearUAns(); S.screen='question'; saveProgress(); render();
+}
+function startTest() {
+  S.isTest=true; S.questions=genTestQuestions(S.difficulty);
+  S.idx=0; S.score=0; S.results=[]; S.confirmQuit=false;
+  clearUAns(); S.screen='question'; saveProgress(); render();
+}
+function clearUAns()  { S.uAmPm=null; S.uHour=null; S.uMin=null; }
+function selAmPm(v)   { S.uAmPm=v; render(); }
+function selHour(v)   { S.uHour=v; render(); }
+function selMin(v)    { S.uMin=v;  render(); }
+
+function submitAns() {
+  if (S.uAmPm===null||S.uHour===null||S.uMin===null) return;
+  const q=S.questions[S.idx];
+  const correct=S.uAmPm===q.answer.ampm && S.uHour===q.answer.hour && S.uMin===q.answer.minute;
+  if (correct) S.score++;
+  S.results.push({mode:q.mode,correct});
+  S.screen='explanation'; render();
+}
+function nextQ() {
+  if (S.idx+1 < S.questions.length) { S.idx++; clearUAns(); S.screen='question'; }
+  else { S.screen='result'; saveProgress(); }
+  render();
+}
+function retryQuiz() { startQuiz(); }
+function confirmQuit()       { S.confirmQuit=true; render(); }
+function cancelQuit()        { S.confirmQuit=false; render(); }
+function doQuit()            { S.confirmQuit=false; go(S.isTest?'testSelect':'modeSelect'); }
+function confirmQuitFromExpl() { doQuit(); }
+
+// ============================================================
+// RENDER ENGINE
+// ============================================================
+function render() {
+  const app = document.getElementById('app');
+  switch (S.screen) {
+    case 'top':         app.innerHTML = renderTop(); break;
+    case 'modeSelect':  app.innerHTML = renderModeSelect(); break;
+    case 'testSelect':  app.innerHTML = renderTestSelect(); break;
+    case 'question':    app.innerHTML = renderQuestion(); break;
+    case 'explanation': app.innerHTML = renderExplanation(); break;
+    case 'result':      app.innerHTML = renderResult(); break;
+  }
+  window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// ============================================================
+// INIT
+// ============================================================
+loadSaved();
+applyDark();
+applyLang();
+render();
+
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
