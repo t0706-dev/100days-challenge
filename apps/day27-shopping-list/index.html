@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#5AAF7A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="買い物リスト">
+  <title>買い物リスト</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ========== LIST VIEW ========== -->
+  <div id="list-view" class="view active">
+    <header class="header">
+      <h1 id="app-title" class="app-title">🛒 買い物リスト</h1>
+      <div class="header-actions">
+        <button id="lang-btn" class="lang-btn">EN</button>
+        <button id="sort-lists-btn" class="icon-btn" title="並び替え">⇅</button>
+        <button id="template-from-list-btn" class="icon-btn" title="テンプレート">☆</button>
+      </div>
+    </header>
+    <div class="content">
+      <div id="lists-container" class="lists-container">
+        <div id="empty-lists" class="empty-state">
+          <div class="empty-icon">🛒</div>
+          <p id="empty-lists-title">買い物リストがありません</p>
+          <p id="empty-lists-sub" class="empty-sub">右下のボタンから作成しましょう</p>
+        </div>
+      </div>
+    </div>
+    <button id="new-list-btn" class="fab">＋</button>
+  </div>
+
+  <!-- ========== DETAIL VIEW ========== -->
+  <div id="detail-view" class="view">
+    <header class="header">
+      <button id="back-btn" class="icon-btn back-btn">←</button>
+      <h2 id="detail-title" class="list-title"></h2>
+      <div class="header-actions">
+        <button id="detail-menu-btn" class="icon-btn">⋮</button>
+      </div>
+    </header>
+    <div class="detail-meta">
+      <div id="progress-info" class="progress-info">0 / 0</div>
+      <div class="progress-bar"><div id="progress-fill" class="progress-fill"></div></div>
+    </div>
+    <div class="filter-bar">
+      <input type="text" id="search-input" class="search-input" placeholder="検索...">
+      <select id="filter-category" class="filter-select"><option value="">カテゴリ</option></select>
+      <select id="filter-shop" class="filter-select"><option value="">店舗</option></select>
+      <select id="sort-items" class="filter-select">
+        <option value="default">登録順</option>
+        <option value="name">商品名順</option>
+        <option value="category">カテゴリ順</option>
+        <option value="shop">店舗順</option>
+      </select>
+    </div>
+    <div class="content detail-content">
+      <div id="empty-items" class="empty-state hidden">
+        <div class="empty-icon">📝</div>
+        <p id="empty-items-title">商品がありません</p>
+        <p id="empty-items-sub" class="empty-sub">下の入力欄から追加しましょう</p>
+      </div>
+      <div id="unchecked-list" class="items-section"></div>
+      <div id="checked-section" class="checked-section hidden">
+        <div class="section-divider">
+          <span id="checked-section-label">購入済み</span>
+          <button id="delete-checked-btn" class="text-btn danger-text">一括削除</button>
+        </div>
+        <div id="checked-list" class="items-section"></div>
+      </div>
+    </div>
+    <div class="quick-add">
+      <input type="text" id="quick-add-input" class="quick-add-input" placeholder="商品を追加...">
+      <button id="quick-add-btn" class="add-btn">追加</button>
+      <button id="bulk-add-open-btn" class="icon-btn" title="まとめ追加">≡</button>
+      <button id="template-use-btn" class="icon-btn" title="テンプレート">☆</button>
+    </div>
+  </div>
+
+  <!-- ========== DROPDOWNS ========== -->
+  <div id="detail-menu" class="dropdown hidden">
+    <button data-action="rename"       id="menu-rename">リスト名を変更</button>
+    <button data-action="duplicate"    id="menu-duplicate">リストを複製</button>
+    <button data-action="uncheck-all"  id="menu-uncheck">全チェックを外す</button>
+    <button data-action="delete-all-items" id="menu-delete-items">全項目削除</button>
+    <button data-action="delete-list"  id="menu-delete-list" class="danger">リストを削除</button>
+  </div>
+  <div id="sort-lists-menu" class="dropdown hidden">
+    <button data-sort="updatedAt" id="sort-updated">更新日順</button>
+    <button data-sort="createdAt" id="sort-created">作成日順</button>
+    <button data-sort="name"      id="sort-name-lists">名前順</button>
+  </div>
+
+  <!-- ========== OVERLAY ========== -->
+  <div id="overlay" class="overlay hidden"></div>
+
+  <!-- ========== MODALS ========== -->
+
+  <!-- Edit Modal -->
+  <div id="edit-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="edit-modal-title">商品を編集</h3>
+        <button class="modal-close" data-modal="edit-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label id="label-item-name">商品名 <span class="required">*</span></label>
+          <input type="text" id="edit-name" class="form-input" placeholder="商品名">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label id="label-quantity">数量</label>
+            <input type="text" id="edit-quantity" class="form-input" placeholder="例：2個">
+          </div>
+          <div class="form-group">
+            <label id="label-category">カテゴリ</label>
+            <select id="edit-category" class="form-input"><option value="">未設定</option></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label id="label-shop">店舗</label>
+          <select id="edit-shop" class="form-input"><option value="">未設定</option></select>
+        </div>
+        <div class="form-group">
+          <label id="label-memo">メモ</label>
+          <textarea id="edit-memo" class="form-input" rows="2" placeholder="メモ"></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal="edit-modal" id="edit-cancel">キャンセル</button>
+        <button id="edit-save-btn" class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Add Modal -->
+  <div id="bulk-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="bulk-modal-title">まとめて追加</h3>
+        <button class="modal-close" data-modal="bulk-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <p id="bulk-hint" class="modal-hint">1行につき1商品を入力してください</p>
+        <textarea id="bulk-input" class="form-input bulk-textarea" rows="8" placeholder="牛乳&#10;卵&#10;パン&#10;バナナ"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal="bulk-modal" id="bulk-cancel">キャンセル</button>
+        <button id="bulk-confirm-btn" class="btn btn-primary">追加</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Template Modal -->
+  <div id="template-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="template-modal-title">テンプレート</h3>
+        <button class="modal-close" data-modal="template-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="template-list"></div>
+        <div class="template-add-section">
+          <h4 id="template-add-section-title">テンプレートを追加</h4>
+          <div class="form-group">
+            <input type="text" id="template-name-input" class="form-input" placeholder="商品名">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <input type="text" id="template-qty-input" class="form-input" placeholder="数量">
+            </div>
+            <div class="form-group">
+              <select id="template-category-select" class="form-input"><option value="">カテゴリ</option></select>
+            </div>
+          </div>
+          <div class="form-group">
+            <select id="template-shop-select" class="form-input"><option value="">店舗</option></select>
+          </div>
+          <button id="template-add-btn" class="btn btn-primary" style="width:100%;margin-top:4px">テンプレートに追加</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rename Modal -->
+  <div id="rename-modal" class="modal hidden">
+    <div class="modal-content compact">
+      <div class="modal-header">
+        <h3 id="rename-modal-title">リスト名を変更</h3>
+        <button class="modal-close" data-modal="rename-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <input type="text" id="rename-input" class="form-input">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal="rename-modal" id="rename-cancel">キャンセル</button>
+        <button id="rename-save-btn" class="btn btn-primary">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- New List Modal -->
+  <div id="new-list-modal" class="modal hidden">
+    <div class="modal-content compact">
+      <div class="modal-header">
+        <h3 id="new-list-modal-title">新しいリストを作成</h3>
+        <button class="modal-close" data-modal="new-list-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label id="new-list-label">リスト名</label>
+          <input type="text" id="new-list-name-input" class="form-input">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-modal="new-list-modal" id="new-list-cancel">キャンセル</button>
+        <button id="new-list-confirm-btn" class="btn btn-primary">作成</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirm Modal -->
+  <div id="confirm-modal" class="modal hidden">
+    <div class="modal-content compact">
+      <div class="modal-header">
+        <h3 id="confirm-title">確認</h3>
+      </div>
+      <div class="modal-body">
+        <p id="confirm-message"></p>
+      </div>
+      <div class="modal-footer">
+        <button id="confirm-cancel-btn" class="btn btn-secondary">キャンセル</button>
+        <button id="confirm-ok-btn" class="btn btn-danger">削除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div id="toast" class="toast hidden"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "買い物リスト / Shopping List",
+  "short_name": "買い物",
+  "description": "Personal shopping list manager with multiple lists, templates, and bilingual support.",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f4f7f5",
+  "theme_color": "#5AAF7A",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
