@@ -504,11 +504,11 @@ body {
   color: var(--text-sub);
   margin-bottom: 12px;
 }
-.setting-row { display: flex; gap: 8px; align-items: center; }
+.setting-row { display: flex; flex-direction: column; gap: 8px; }
 .setting-input {
   font-family: var(--font);
   font-size: 1rem;
-  flex: 1;
+  width: 100%;
   padding: 10px 14px;
   border: 1.5px solid var(--border);
   border-radius: var(--radius-sm);
@@ -522,9 +522,9 @@ body {
 .setting-input:focus { outline: none; border-color: var(--green); }
 .btn-small {
   font-family: var(--font);
-  font-size: .88rem;
+  font-size: .92rem;
   font-weight: 700;
-  padding: 10px 16px;
+  padding: 12px;
   background: var(--green);
   color: #fff;
   border: none;
@@ -532,7 +532,7 @@ body {
   cursor: pointer;
   transition: opacity .15s;
   touch-action: manipulation;
-  white-space: nowrap;
+  width: 100%;
 }
 .btn-small:active { opacity: .8; }
 .bmi-info { margin-top: 10px; font-size: .85rem; color: var(--text-sub); min-height: 20px; }
