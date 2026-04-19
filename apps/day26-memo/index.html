@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MemoPad - シンプルメモ帳</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#6b7fd7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="MemoPad">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ヘッダー -->
+  <header class="header">
+    <div class="header-inner">
+      <div class="header-left">
+        <span class="app-icon">📝</span>
+        <h1 class="app-title">MemoPad</h1>
+      </div>
+      <div class="header-right">
+        <button id="btnDarkMode" class="btn-icon" title="ダークモード切替">🌙</button>
+        <button id="btnExport" class="btn-icon" title="バックアップ（JSONエクスポート）">⬇️</button>
+        <button id="btnImport" class="btn-icon" title="インポート（JSONファイル）">⬆️</button>
+        <input type="file" id="importFile" accept=".json" style="display:none">
+      </div>
+    </div>
+  </header>
+
+  <!-- メインコンテンツ -->
+  <main class="main">
+
+    <!-- クイックメモエリア -->
+    <section class="quick-memo-section">
+      <div class="quick-memo-card">
+        <div class="quick-memo-header">
+          <span class="quick-memo-label">⚡ 3秒メモ</span>
+          <span class="quick-memo-hint">Ctrl+Enter で保存</span>
+        </div>
+        <div class="quick-memo-body">
+          <textarea id="quickMemoText" class="quick-memo-input" placeholder="今思ったことをすぐメモ..." rows="2"></textarea>
+          <button id="btnQuickSave" class="btn-quick-save">保存</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 新規メモボタン -->
+    <div class="new-memo-area">
+      <button id="btnNewMemo" class="btn-new-memo">
+        <span class="btn-new-memo-icon">+</span>
+        新規メモを作成
+      </button>
+    </div>
+
+    <!-- 検索・フィルタ・並び替えエリア -->
+    <section class="filter-section">
+      <div class="search-bar">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="タイトル・本文を検索...">
+        <button id="btnClearSearch" class="btn-clear-search" style="display:none" title="検索クリア">✕</button>
+      </div>
+
+      <div class="filter-controls">
+        <!-- 感情フィルタ -->
+        <div class="filter-group">
+          <label class="filter-label">感情で絞り込み</label>
+          <div class="emotion-filter-pills" id="emotionFilter">
+            <button class="pill pill-active" data-emotion="all">すべて</button>
+            <button class="pill" data-emotion="😊">😊</button>
+            <button class="pill" data-emotion="😌">😌</button>
+            <button class="pill" data-emotion="😐">😐</button>
+            <button class="pill" data-emotion="😢">😢</button>
+            <button class="pill" data-emotion="😡">😡</button>
+            <button class="pill" data-emotion="😴">😴</button>
+            <button class="pill" data-emotion="💡">💡</button>
+            <button class="pill" data-emotion="none">なし</button>
+          </div>
+        </div>
+
+        <!-- テンプレートフィルタ -->
+        <div class="filter-group">
+          <label class="filter-label">テンプレートで絞り込み</label>
+          <select id="templateFilter" class="filter-select">
+            <option value="all">すべてのテンプレート</option>
+            <option value="free">自由メモ</option>
+            <option value="prep">PREPメモ</option>
+            <option value="problem">問題/原因/解決</option>
+            <option value="todo">ToDo整理</option>
+            <option value="idea">アイデア整理</option>
+            <option value="review">振り返りメモ</option>
+          </select>
+        </div>
+
+        <div class="filter-row">
+          <!-- 並び替え -->
+          <div class="filter-group flex-1">
+            <label class="filter-label">並び替え</label>
+            <select id="sortOrder" class="filter-select">
+              <option value="newest">新しい順</option>
+              <option value="oldest">古い順</option>
+              <option value="updated">更新順</option>
+              <option value="favorite">お気に入り優先</option>
+              <option value="pinned">ピン留め優先</option>
+            </select>
+          </div>
+
+          <!-- 特殊絞り込み -->
+          <div class="filter-group">
+            <label class="filter-label">絞り込み</label>
+            <div class="toggle-filters">
+              <button class="toggle-btn" id="filterFavorite" data-active="false">⭐ お気に入り</button>
+              <button class="toggle-btn" id="filterRemind" data-active="false">⏰ リマインド</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- メモ件数 -->
+    <div class="memo-count" id="memoCount">メモ 0件</div>
+
+    <!-- メモ一覧 -->
+    <section class="memo-list" id="memoList">
+      <!-- JavaScriptで動的に生成されます -->
+    </section>
+
+  </main>
+
+  <!-- メモ編集モーダル -->
+  <div class="modal-overlay" id="editorModal" style="display:none" role="dialog" aria-modal="true">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title" id="modalTitle">新規メモ</h2>
+        <div class="modal-header-actions">
+          <span class="autosave-indicator" id="autosaveIndicator"></span>
+          <button class="btn-icon" id="btnCloseModal" title="閉じる（Esc）">✕</button>
+        </div>
+      </div>
+
+      <div class="modal-body">
+        <!-- タイトル -->
+        <div class="form-group">
+          <input type="text" id="memoTitle" class="input-title" placeholder="タイトル（省略可）" maxlength="100">
+        </div>
+
+        <!-- テンプレート・感情 -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="memoTemplate">テンプレート</label>
+            <select id="memoTemplate" class="form-select">
+              <option value="free">自由メモ</option>
+              <option value="prep">PREPメモ</option>
+              <option value="problem">問題/原因/解決</option>
+              <option value="todo">ToDo整理</option>
+              <option value="idea">アイデア整理</option>
+              <option value="review">振り返りメモ</option>
+            </select>
+          </div>
+          <div class="form-group flex-1">
+            <label class="form-label" for="memoEmotion">今の気持ち</label>
+            <select id="memoEmotion" class="form-select">
+              <option value="">選択しない</option>
+              <option value="😊">😊 うれしい</option>
+              <option value="😌">😌 落ち着き</option>
+              <option value="😐">😐 ふつう</option>
+              <option value="😢">😢 しんどい</option>
+              <option value="😡">😡 イライラ</option>
+              <option value="😴">😴 疲れた</option>
+              <option value="💡">💡 ひらめき</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- 本文 -->
+        <div class="form-group">
+          <label class="form-label" for="memoBody">本文</label>
+          <textarea id="memoBody" class="input-body" placeholder="メモを入力..." rows="10"></textarea>
+        </div>
+
+        <!-- AI風アシストエリア -->
+        <div class="ai-assist" id="aiAssist">
+          <div class="ai-assist-row">
+            <span class="ai-label">✨ アシスト</span>
+            <button class="btn-ai" id="btnSuggestTitle" type="button">タイトル候補</button>
+            <button class="btn-ai" id="btnExtractKeywords" type="button">キーワード</button>
+            <span class="word-count" id="wordCount">0文字</span>
+          </div>
+          <div class="ai-result" id="aiResult"></div>
+        </div>
+
+        <!-- リマインド・フラグ -->
+        <div class="form-row">
+          <div class="form-group flex-1">
+            <label class="form-label" for="memoRemind">⏰ リマインド日時</label>
+            <input type="datetime-local" id="memoRemind" class="form-input">
+          </div>
+          <div class="form-group flag-group">
+            <label class="form-label">フラグ</label>
+            <div class="flag-buttons">
+              <button class="flag-btn" id="btnFavorite" data-active="false" title="お気に入り" type="button">⭐</button>
+              <button class="flag-btn" id="btnPin" data-active="false" title="ピン留め" type="button">📌</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <div class="modal-footer-left">
+          <button class="btn-secondary" id="btnDuplicate" style="display:none" type="button">📄 複製</button>
+          <button class="btn-secondary btn-danger" id="btnDeleteInModal" style="display:none" type="button">🗑️ 削除</button>
+        </div>
+        <div class="modal-footer-right">
+          <button class="btn-secondary" id="btnCancelModal" type="button">キャンセル</button>
+          <button class="btn-primary" id="btnSaveMemo" type="button">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- トースト通知 -->
+  <div class="toast" id="toast" role="alert" aria-live="polite"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

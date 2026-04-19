@@ -1,0 +1,29 @@
+{
+  "name": "MemoPad - シンプルメモ帳",
+  "short_name": "MemoPad",
+  "description": "感情を記録できるシンプルなメモ帳アプリ。テンプレート・リマインド・バックアップ機能付き。",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f5f5f0",
+  "theme_color": "#6b7fd7",
+  "lang": "ja",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
