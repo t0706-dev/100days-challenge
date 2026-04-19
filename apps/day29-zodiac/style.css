@@ -114,10 +114,10 @@ body {
 .tab-btn:hover  { color: var(--text-primary); }
 
 /* ── メイン ── */
-.main-content { flex: 1; padding: 20px 16px 40px; }
+.main-content { flex: 1; padding: 20px 16px 40px; overflow: hidden; }
 .tab-section { display: none; }
 .tab-section.active { display: block; }
-.section-inner { max-width: 440px; margin: 0 auto; }
+.section-inner { max-width: 440px; margin: 0 auto; min-width: 0; }
 
 .section-title {
   font-size: 1rem;
@@ -138,6 +138,8 @@ body {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 0;
+  overflow: hidden;
 }
 .input-card label {
   color: var(--text-secondary);
@@ -153,9 +155,14 @@ body {
   font-family: var(--font);
   font-size: 1rem;
   width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
   outline: none;
   transition: border-color 0.2s;
   color-scheme: dark;
+  -webkit-appearance: none;
+  appearance: none;
 }
 .date-input:focus { border-color: var(--accent); }
 
