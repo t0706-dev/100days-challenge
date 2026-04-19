@@ -22,6 +22,7 @@
     <header class="header">
       <h1 id="app-title" class="app-title">🛒 買い物リスト</h1>
       <div class="header-actions">
+        <button id="help-btn" class="icon-btn help-icon-btn" title="使い方">？</button>
         <button id="lang-btn" class="lang-btn">EN</button>
         <button id="sort-lists-btn" class="icon-btn" title="並び替え">⇅</button>
         <button id="template-from-list-btn" class="icon-btn" title="テンプレート">☆</button>
@@ -79,10 +80,14 @@
       </div>
     </div>
     <div class="quick-add">
-      <input type="text" id="quick-add-input" class="quick-add-input" placeholder="商品を追加...">
-      <button id="quick-add-btn" class="add-btn">追加</button>
-      <button id="bulk-add-open-btn" class="icon-btn" title="まとめ追加">≡</button>
-      <button id="template-use-btn" class="icon-btn" title="テンプレート">☆</button>
+      <div class="quick-add-row">
+        <input type="text" id="quick-add-input" class="quick-add-input" placeholder="商品を追加...">
+        <button id="quick-add-btn" class="add-btn">追加</button>
+      </div>
+      <div class="quick-add-sub">
+        <button id="bulk-add-open-btn" class="sub-btn">≡ <span id="bulk-open-label">まとめて追加</span></button>
+        <button id="template-use-btn" class="sub-btn">☆ <span id="template-open-label">テンプレート</span></button>
+      </div>
     </div>
   </div>
 
@@ -243,6 +248,19 @@
       <div class="modal-footer">
         <button id="confirm-cancel-btn" class="btn btn-secondary">キャンセル</button>
         <button id="confirm-ok-btn" class="btn btn-danger">削除</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Help Modal -->
+  <div id="help-modal" class="modal hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="help-modal-title">使い方</h3>
+        <button class="modal-close" data-modal="help-modal">✕</button>
+      </div>
+      <div class="modal-body">
+        <div id="help-list" class="help-list"></div>
       </div>
     </div>
   </div>

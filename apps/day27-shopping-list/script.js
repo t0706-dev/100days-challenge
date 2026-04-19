@@ -32,6 +32,8 @@ const I18N = {
     deleteCheckedBtn: '一括削除',
     quickAddPlaceholder: '商品を追加...',
     addBtnLabel: '追加',
+    bulkOpenBtnLabel: 'まとめて追加',
+    templateOpenBtnLabel: 'テンプレート',
     menuRename: 'リスト名を変更',
     menuDuplicate: 'リストを複製',
     menuUncheck: '全チェックを外す',
@@ -84,6 +86,17 @@ const I18N = {
     defaultCategories: ['食品', '飲料', '冷凍食品', '調味料', '日用品', '薬・衛生用品', 'その他'],
     defaultShops: ['スーパー', 'ドラッグストア', '100円ショップ', 'コンビニ', 'その他'],
     unset: '未設定',
+    helpModalTitle: '使い方',
+    helpItems: [
+      { icon: '🛒', title: 'リストを作成', desc: '右下の ＋ ボタンをタップして新しいリストを作成します。' },
+      { icon: '✏️', title: '商品を追加', desc: '下の入力欄に商品名を入力して「追加」ボタンで登録します。Enterキーでも追加できます。' },
+      { icon: '≡', title: 'まとめて追加', desc: '「まとめて追加」ボタンから複数の商品を一度に登録できます。1行につき1商品を入力してください。' },
+      { icon: '✅', title: 'チェックして購入済みに', desc: '商品の○をタップすると購入済みになり、下部の「購入済み」エリアに移動します。' },
+      { icon: '📋', title: 'リストを複製', desc: '一覧画面の 📋 ボタン、または詳細画面の ⋮ メニューからリストを複製できます。過去のリストを再利用するときに便利です。' },
+      { icon: '☆', title: 'テンプレート', desc: 'よく買う商品を登録しておくと、次回からワンタップで追加できます。' },
+      { icon: '🔍', title: '検索・絞り込み', desc: '商品名で検索したり、カテゴリ・店舗で絞り込みができます。' },
+      { icon: '🌐', title: '日英切り替え', desc: 'ヘッダーの EN ボタンで英語表示に切り替えられます。' },
+    ],
   },
   en: {
     appTitle: '🛒 Shopping List',
@@ -111,6 +124,8 @@ const I18N = {
     deleteCheckedBtn: 'Delete all',
     quickAddPlaceholder: 'Add item...',
     addBtnLabel: 'Add',
+    bulkOpenBtnLabel: 'Bulk add',
+    templateOpenBtnLabel: 'Templates',
     menuRename: 'Rename list',
     menuDuplicate: 'Duplicate list',
     menuUncheck: 'Uncheck all items',
@@ -163,6 +178,17 @@ const I18N = {
     defaultCategories: ['Food', 'Drinks', 'Frozen', 'Condiments', 'Household', 'Health & Hygiene', 'Other'],
     defaultShops: ['Supermarket', 'Drug Store', '100 Yen Shop', 'Convenience Store', 'Other'],
     unset: 'Unset',
+    helpModalTitle: 'How to use',
+    helpItems: [
+      { icon: '🛒', title: 'Create a list', desc: 'Tap the + button at the bottom right to create a new shopping list.' },
+      { icon: '✏️', title: 'Add items', desc: 'Type an item name in the bottom input and tap "Add". You can also press Enter.' },
+      { icon: '≡', title: 'Bulk add', desc: 'Tap "Bulk add" to add multiple items at once. Enter one item per line.' },
+      { icon: '✅', title: 'Check off items', desc: 'Tap the circle to mark an item as purchased. It moves to the "Purchased" section at the bottom.' },
+      { icon: '📋', title: 'Duplicate a list', desc: 'Use the 📋 button on a list card or the ⋮ menu in detail view to duplicate a list for reuse.' },
+      { icon: '☆', title: 'Templates', desc: 'Save frequently bought items as templates to add them with a single tap next time.' },
+      { icon: '🔍', title: 'Search & filter', desc: 'Search by item name, or filter by category and shop.' },
+      { icon: '🌐', title: 'Switch language', desc: 'Tap the JP button in the header to switch back to Japanese.' },
+    ],
   }
 };
 
@@ -430,6 +456,8 @@ function applyTranslations() {
   document.getElementById('delete-checked-btn').textContent    = t('deleteCheckedBtn');
   document.getElementById('quick-add-input').placeholder = t('quickAddPlaceholder');
   document.getElementById('quick-add-btn').textContent   = t('addBtnLabel');
+  document.getElementById('bulk-open-label').textContent     = t('bulkOpenBtnLabel');
+  document.getElementById('template-open-label').textContent = t('templateOpenBtnLabel');
   document.getElementById('search-input').placeholder   = t('searchPlaceholder');
 
   const catSel  = document.getElementById('filter-category');
@@ -483,6 +511,8 @@ function applyTranslations() {
 
   document.getElementById('confirm-cancel-btn').textContent = t('confirmCancelBtn');
   document.getElementById('confirm-ok-btn').textContent     = t('confirmDeleteBtn');
+  document.getElementById('help-modal-title').textContent   = t('helpModalTitle');
+  renderHelpList();
 }
 
 /* ================================================================
@@ -684,6 +714,23 @@ function renderTemplateList() {
   });
 }
 
+function renderHelpList() {
+  const container = document.getElementById('help-list');
+  if (!container) return;
+  container.innerHTML = '';
+  I18N[state.lang].helpItems.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'help-item';
+    div.innerHTML = `
+      <div class="help-icon">${item.icon}</div>
+      <div class="help-text">
+        <div class="help-title">${esc(item.title)}</div>
+        <div class="help-desc">${esc(item.desc)}</div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
 /* ================================================================
    Navigation
    ================================================================ */
@@ -797,6 +844,12 @@ function setupEvents() {
     applyTranslations();
     renderListView();
     if (state.currentListId) renderDetailView();
+  });
+
+  // Help
+  document.getElementById('help-btn').addEventListener('click', () => {
+    renderHelpList();
+    openModal('help-modal');
   });
 
   // New list
