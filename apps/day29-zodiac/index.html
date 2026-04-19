@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>星座アプリ</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1a1040">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="bg-stars" id="bg-stars"></div>
+
+  <div id="app">
+    <header class="app-header">
+      <h1 id="app-title">星座アプリ</h1>
+      <button id="lang-toggle" class="lang-btn">EN</button>
+    </header>
+
+    <nav class="tab-nav">
+      <button class="tab-btn active" data-tab="judge" id="tab-judge-btn">判定</button>
+      <button class="tab-btn" data-tab="fortune" id="tab-fortune-btn">運勢</button>
+      <button class="tab-btn" data-tab="compat" id="tab-compat-btn">相性</button>
+      <button class="tab-btn" data-tab="zukan" id="tab-zukan-btn">図鑑</button>
+    </nav>
+
+    <main class="main-content">
+
+      <!-- ① 星座判定 -->
+      <section id="sec-judge" class="tab-section active">
+        <div class="section-inner">
+          <h2 class="section-title" id="judge-title">生年月日を入力</h2>
+          <div class="input-card">
+            <label id="label-birthday" for="input-birthday">生年月日</label>
+            <input type="date" id="input-birthday" class="date-input">
+            <button id="btn-judge" class="primary-btn">判定する</button>
+          </div>
+
+          <div id="judge-result" class="result-card hidden">
+            <div class="star-animation" id="star-anim"></div>
+            <div class="zodiac-symbol" id="result-symbol"></div>
+            <div class="zodiac-name" id="result-name"></div>
+            <div class="zodiac-range" id="result-range"></div>
+            <div class="zodiac-element" id="result-element"></div>
+            <div class="zodiac-desc" id="result-desc"></div>
+            <div class="zodiac-keywords">
+              <span class="keyword-tag" id="result-love"></span>
+              <span class="keyword-tag" id="result-work"></span>
+            </div>
+            <div id="cusp-msg" class="cusp-message hidden"></div>
+            <button id="btn-to-fortune" class="secondary-btn">今日の運勢を見る</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ② 今日の運勢 -->
+      <section id="sec-fortune" class="tab-section">
+        <div class="section-inner">
+          <h2 class="section-title" id="fortune-title">今日の運勢</h2>
+          <div class="zodiac-select-row">
+            <label id="label-select-zodiac" for="fortune-zodiac-select">星座を選択</label>
+            <select id="fortune-zodiac-select" class="zodiac-select"></select>
+          </div>
+          <div id="fortune-result" class="fortune-card">
+            <div class="fortune-header">
+              <span class="fortune-symbol" id="fortune-symbol"></span>
+              <span class="fortune-name" id="fortune-name"></span>
+            </div>
+            <div class="fortune-grid">
+              <div class="fortune-item">
+                <div class="fortune-label" id="label-total">総合運</div>
+                <div class="fortune-stars" id="fortune-total-stars"></div>
+                <div class="fortune-comment" id="fortune-total-comment"></div>
+              </div>
+              <div class="fortune-item">
+                <div class="fortune-label" id="label-love-fortune">恋愛運</div>
+                <div class="fortune-stars" id="fortune-love-stars"></div>
+                <div class="fortune-comment" id="fortune-love-comment"></div>
+              </div>
+              <div class="fortune-item">
+                <div class="fortune-label" id="label-work-fortune">仕事運</div>
+                <div class="fortune-stars" id="fortune-work-stars"></div>
+                <div class="fortune-comment" id="fortune-work-comment"></div>
+              </div>
+              <div class="fortune-item">
+                <div class="fortune-label" id="label-money">金運</div>
+                <div class="fortune-stars" id="fortune-money-stars"></div>
+                <div class="fortune-comment" id="fortune-money-comment"></div>
+              </div>
+            </div>
+            <div class="lucky-section">
+              <div class="lucky-item">
+                <span class="lucky-label" id="label-color">🎨 ラッキーカラー</span>
+                <span class="lucky-value" id="lucky-color"></span>
+              </div>
+              <div class="lucky-item">
+                <span class="lucky-label" id="label-item">✨ ラッキーアイテム</span>
+                <span class="lucky-value" id="lucky-item-val"></span>
+              </div>
+              <div class="lucky-item">
+                <span class="lucky-label" id="label-number">🔢 ラッキーナンバー</span>
+                <span class="lucky-value" id="lucky-number"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ③ 相性診断 -->
+      <section id="sec-compat" class="tab-section">
+        <div class="section-inner">
+          <h2 class="section-title" id="compat-title">相性診断</h2>
+          <div class="compat-inputs">
+            <div class="input-card">
+              <label id="label-my-birthday" for="input-my-bday">自分の生年月日</label>
+              <input type="date" id="input-my-bday" class="date-input">
+            </div>
+            <div class="compat-heart">💫</div>
+            <div class="input-card">
+              <label id="label-their-birthday" for="input-their-bday">相手の生年月日</label>
+              <input type="date" id="input-their-bday" class="date-input">
+            </div>
+          </div>
+          <button id="btn-compat" class="primary-btn">相性を診断する</button>
+
+          <div id="compat-result" class="compat-card hidden">
+            <div class="compat-pair">
+              <div class="compat-person">
+                <div class="compat-symbol" id="compat-my-symbol"></div>
+                <div class="compat-person-name" id="compat-my-name"></div>
+              </div>
+              <div class="compat-vs">×</div>
+              <div class="compat-person">
+                <div class="compat-symbol" id="compat-their-symbol"></div>
+                <div class="compat-person-name" id="compat-their-name"></div>
+              </div>
+            </div>
+            <div class="compat-types">
+              <div class="compat-type-card">
+                <div class="compat-type-label" id="label-compat-love">💕 恋愛相性</div>
+                <div class="compat-score-bar"><div class="compat-score-fill" id="compat-love-fill"></div></div>
+                <div class="compat-score-num" id="compat-love-score"></div>
+                <div class="compat-comment" id="compat-love-comment"></div>
+              </div>
+              <div class="compat-type-card">
+                <div class="compat-type-label" id="label-compat-friend">👫 友達相性</div>
+                <div class="compat-score-bar"><div class="compat-score-fill" id="compat-friend-fill"></div></div>
+                <div class="compat-score-num" id="compat-friend-score"></div>
+                <div class="compat-comment" id="compat-friend-comment"></div>
+              </div>
+              <div class="compat-type-card">
+                <div class="compat-type-label" id="label-compat-work">💼 仕事相性</div>
+                <div class="compat-score-bar"><div class="compat-score-fill" id="compat-work-fill"></div></div>
+                <div class="compat-score-num" id="compat-work-score"></div>
+                <div class="compat-comment" id="compat-work-comment"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ④ 星座図鑑 -->
+      <section id="sec-zukan" class="tab-section">
+        <div class="section-inner">
+          <h2 class="section-title" id="zukan-title">星座図鑑</h2>
+          <div class="zodiac-grid" id="zodiac-grid"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- 図鑑モーダル -->
+  <div id="modal-overlay" class="hidden">
+    <div id="modal-box">
+      <button id="modal-close">✕</button>
+      <div id="modal-content"></div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
