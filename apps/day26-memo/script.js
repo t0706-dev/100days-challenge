@@ -821,9 +821,31 @@ function extractKeywordsFromBody() {
     .slice(0, 6)
     .map(([word]) => `#${word}`);
 
-  aiResult.textContent = keywords.length > 0
-    ? t('aiKeywordsResult', keywords.join('  '))
-    : t('aiNoKeywords');
+  aiResult.innerHTML = '';
+  if (keywords.length === 0) {
+    aiResult.textContent = t('aiNoKeywords');
+    return;
+  }
+
+  const label = document.createElement('span');
+  label.style.cssText = 'font-size:12px;color:var(--text-sub);margin-right:6px;';
+  label.textContent = settings.lang === 'ja' ? 'クリックで本文に追加:' : 'Click to insert:';
+  aiResult.appendChild(label);
+
+  keywords.forEach(kw => {
+    const chip = document.createElement('button');
+    chip.className = 'btn-ai keyword-chip';
+    chip.textContent = kw;
+    chip.type = 'button';
+    chip.addEventListener('click', () => {
+      const ta = document.getElementById('memoBody');
+      const sep = ta.value && !ta.value.endsWith('\n') ? ' ' : '';
+      ta.value += sep + kw;
+      ta.dispatchEvent(new Event('input'));
+      chip.classList.add('keyword-chip--used');
+    });
+    aiResult.appendChild(chip);
+  });
 }
 
 /** 文字数カウントを更新する */

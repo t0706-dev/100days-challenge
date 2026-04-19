@@ -905,6 +905,12 @@ button {
   color: white;
 }
 
+.keyword-chip--used {
+  background: var(--accent);
+  color: white;
+  opacity: 0.6;
+}
+
 .word-count {
   font-size: 12px;
   color: var(--text-sub);
