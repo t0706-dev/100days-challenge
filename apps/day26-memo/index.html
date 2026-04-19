@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" id="htmlRoot">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -24,6 +24,7 @@
         <h1 class="app-title">MemoPad</h1>
       </div>
       <div class="header-right">
+        <button id="btnLang" class="btn-icon" title="言語 / Language">🌐</button>
         <button id="btnDarkMode" class="btn-icon" title="ダークモード切替">🌙</button>
         <button id="btnExport" class="btn-icon" title="バックアップ（JSONエクスポート）">⬇️</button>
         <button id="btnImport" class="btn-icon" title="インポート（JSONファイル）">⬆️</button>
@@ -68,7 +69,7 @@
       <div class="filter-controls">
         <!-- 感情フィルタ -->
         <div class="filter-group">
-          <label class="filter-label">感情で絞り込み</label>
+          <label class="filter-label" id="labelFilterEmotion">感情で絞り込み</label>
           <div class="emotion-filter-pills" id="emotionFilter">
             <button class="pill pill-active" data-emotion="all">すべて</button>
             <button class="pill" data-emotion="😊">😊</button>
@@ -84,7 +85,7 @@
 
         <!-- テンプレートフィルタ -->
         <div class="filter-group">
-          <label class="filter-label">テンプレートで絞り込み</label>
+          <label class="filter-label" id="labelFilterTemplate">テンプレートで絞り込み</label>
           <select id="templateFilter" class="filter-select">
             <option value="all">すべてのテンプレート</option>
             <option value="free">自由メモ</option>
@@ -99,7 +100,7 @@
         <div class="filter-row">
           <!-- 並び替え -->
           <div class="filter-group flex-1">
-            <label class="filter-label">並び替え</label>
+            <label class="filter-label" id="labelSort">並び替え</label>
             <select id="sortOrder" class="filter-select">
               <option value="newest">新しい順</option>
               <option value="oldest">古い順</option>
@@ -111,7 +112,7 @@
 
           <!-- 特殊絞り込み -->
           <div class="filter-group">
-            <label class="filter-label">絞り込み</label>
+            <label class="filter-label" id="labelFilterToggle">絞り込み</label>
             <div class="toggle-filters">
               <button class="toggle-btn" id="filterFavorite" data-active="false">⭐ お気に入り</button>
               <button class="toggle-btn" id="filterRemind" data-active="false">⏰ リマインド</button>
@@ -151,7 +152,7 @@
         <!-- テンプレート・感情 -->
         <div class="form-row">
           <div class="form-group flex-1">
-            <label class="form-label" for="memoTemplate">テンプレート</label>
+            <label class="form-label" id="labelTemplate" for="memoTemplate">テンプレート</label>
             <select id="memoTemplate" class="form-select">
               <option value="free">自由メモ</option>
               <option value="prep">PREPメモ</option>
@@ -162,7 +163,7 @@
             </select>
           </div>
           <div class="form-group flex-1">
-            <label class="form-label" for="memoEmotion">今の気持ち</label>
+            <label class="form-label" id="labelEmotion" for="memoEmotion">今の気持ち</label>
             <select id="memoEmotion" class="form-select">
               <option value="">選択しない</option>
               <option value="😊">😊 うれしい</option>
@@ -178,7 +179,7 @@
 
         <!-- 本文 -->
         <div class="form-group">
-          <label class="form-label" for="memoBody">本文</label>
+          <label class="form-label" id="labelBody" for="memoBody">本文</label>
           <textarea id="memoBody" class="input-body" placeholder="メモを入力..." rows="10"></textarea>
         </div>
 
@@ -193,14 +194,14 @@
           <div class="ai-result" id="aiResult"></div>
         </div>
 
-        <!-- リマインド・フラグ -->
-        <div class="form-row">
-          <div class="form-group flex-1">
-            <label class="form-label" for="memoRemind">⏰ リマインド日時</label>
+        <!-- リマインド・フラグ（スマホ対応：縦積みレイアウト） -->
+        <div class="remind-flag-row">
+          <div class="form-group">
+            <label class="form-label" id="labelRemind" for="memoRemind">⏰ リマインド日時</label>
             <input type="datetime-local" id="memoRemind" class="form-input">
           </div>
-          <div class="form-group flag-group">
-            <label class="form-label">フラグ</label>
+          <div class="form-group flag-group-inline">
+            <label class="form-label" id="labelFlag">フラグ</label>
             <div class="flag-buttons">
               <button class="flag-btn" id="btnFavorite" data-active="false" title="お気に入り" type="button">⭐</button>
               <button class="flag-btn" id="btnPin" data-active="false" title="ピン留め" type="button">📌</button>
@@ -225,6 +226,6 @@
   <!-- トースト通知 -->
   <div class="toast" id="toast" role="alert" aria-live="polite"></div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=3"></script>
 </body>
 </html>

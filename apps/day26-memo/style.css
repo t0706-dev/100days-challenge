@@ -918,10 +918,57 @@ button {
 }
 
 /* ===========================
+   リマインド・フラグ行（スマホ対応）
+=========================== */
+.remind-flag-row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+
+/* スマホでは縦並び */
+@media (max-width: 480px) {
+  .remind-flag-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .flag-group-inline {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .flag-group-inline .form-label {
+    margin-bottom: 0;
+  }
+}
+
+/* PC: リマインドを伸ばしてフラグを右に */
+@media (min-width: 481px) {
+  .remind-flag-row > .form-group:first-child {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .flag-group-inline {
+    flex-shrink: 0;
+  }
+}
+
+/* ===========================
    フラグボタン
 =========================== */
 .flag-group {
   min-width: 90px;
+}
+
+.flag-group-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .flag-buttons {
